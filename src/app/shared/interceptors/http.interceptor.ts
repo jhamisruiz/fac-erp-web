@@ -5,13 +5,16 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpResponse,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { UserService } from '../services/user.service';
-import { TRANSACTION_HEADER } from '../constantes/app.constantes';
+import { TRANSACTION_HEADER } from '../common/constants';
+
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 declare const alertify: any;
 
 @Injectable()
@@ -35,8 +38,13 @@ export class HttpConfig implements HttpInterceptor {
     }
 
     // Obtener el token de usuario.
+    //NOTE: jalar tocken key de nuevo
+    /* const getToken = (this.user.userToken) ?
+      this.user.userToken : JSON.parse(localStorage.getItem('token') ?? 'null'); */
+    const newToken = JSON.parse(localStorage.getItem('token') ?? 'null');
     const httpMethod = req.method;
-    const authToken = this.user.userToken ?? '';
+    //const authToken = this.user.userToken ?? '';
+    const authToken = newToken ? newToken : '';//FIXME:
     const cloneParams = req.params;
     const isTransaction = cloneParams.has('transactionId');
     const customHeaders: Record<string, string | string[]> = {};
@@ -53,7 +61,7 @@ export class HttpConfig implements HttpInterceptor {
     const httpReq = req.clone({
       url,
       setHeaders: customHeaders,
-      params: cloneParams
+      params: cloneParams,
     });
 
     return next
@@ -88,12 +96,12 @@ export class HttpConfig implements HttpInterceptor {
             customError['message'] = `#(${err.status}) ${errorMessage}`;
           }
 
-          /* alertify.set('notifier', 'position', 'top-right');
+          alertify.set('notifier', 'position', 'top-right');
           alertify.
-            error(`${customError['message']}: ${(customError['error']?.errorMessage) ?? 'Error de servidor'}`); */
+            error(`${(customError['message']) ?? 'Error de servidor'}`);
 
           return throwError(customError);
-        })
+        }),
       );
   }
 }

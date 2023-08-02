@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { LOGIN_API_PATH } from '../constantes/app.constantes';
+import { LOGIN_API_PATH } from '../common/constants';
 import { includes } from 'lodash-es';
 import { AppService } from '../services/app.service';
 import { Router } from '@angular/router';
@@ -26,11 +26,9 @@ export class AuthInterceptor implements HttpInterceptor {
         if (event && includes(event.url, LOGIN_API_PATH) && event.body && event.body?.id) {
           //NOTE: datos del usuario para crear session
           const data = event.body;
-          console.log('data', event);
 
           //FIXME: fixear TOKEN, FECHA DE EXPIRACION y mas datos
           //8888
-          console.log('data', data);
           //data.token = event.body?.id;
           data.expire = this.fechaexpire();
           // Verificar si el login es válido.

@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { UserGuard } from '@app/shared/guards/guards/user.guard';
 import { ViewsComponent } from './views.component';
-import { PlanillasComponent } from './planillas/planillas.component';
 
 const routes: Routes = [
   {
@@ -19,7 +18,6 @@ const routes: Routes = [
       },
       {
         path: 'planillas',
-        //component: PlanillasComponent,
         loadChildren: (): Promise<any> =>
           import('./planillas/planillas.module')
             .then(m => m.PlanillasModule),

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { PersistenceApiClass } from './http-service/persistence.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LocalStoreService extends PersistenceApiClass {
 

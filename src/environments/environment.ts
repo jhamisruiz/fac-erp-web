@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   host: 'localhost:9080',
+  wsHost: 'prueba/ws',
+  wsSSL: true,
 
   apiHost: 'localhost:9080',
   apiVersion: 'v1',

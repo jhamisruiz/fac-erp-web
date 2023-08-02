@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { LOGIN_API_PATH } from '@app/shared/common/constants';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { LOGIN_API_PATH } from '@app/shared/constantes/app.constantes';
 import { finalize } from 'rxjs';
 
 @Component({
