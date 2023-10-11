@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Directive, Inject, Injector, Optional } from '@angular/core';
+import { APP_KEY } from './../constants/app.constants';
+import { AfterViewInit, Directive, Inject, Injector, Optional } from '@angular/core';
 import { AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { cloneDeep } from 'lodash-es';
@@ -9,20 +10,21 @@ import { v4 } from 'uuid';
 import { DOCUMENT_VERSION, ID_FIELD, TRANSACTION_UID_FIELD } from '../constants';
 import { GetElements } from '../utils/dom/get-elements.util';
 import { AbstractComponent, ComponentMode } from './abstract-component.class';
-import { SweetAlertService } from '@app/shared/services/util-services/sweet-alert.service';
 import { HttpClient } from '@angular/common/http';
+import { FormService } from '@app/shared/services/util-services/form.service';
 declare const alertify: any;
+
 /**
  * La clase AbstractForm se usa para el manejo automatico de los formurlarios
  * de un componente o otra clase.
  */
 @Directive()
 // eslint-disable-next-line @angular-eslint/directive-class-suffix
-export abstract class AbstractForm extends AbstractComponent {
+export abstract class AbstractForm extends AbstractComponent implements AfterViewInit {
   public static FORM_ID_KEY = 'id';
 
   /** Identificador del formulario */
-  public formId!: string | number;
+  public formId!: string | number | undefined;
 
   /** ID de la transacción del formulario */
   public transactionId!: string;
@@ -45,18 +47,21 @@ export abstract class AbstractForm extends AbstractComponent {
   protected resetForm = true;
   /** Defaut http client */
   protected httpClient: HttpClient;
+
+  private fs: FormService;
   /**
    * Establece que que las actualizaciones de los valores del formulario
    * se hacen de forma parcial ( PATCH )
    */
   protected isPartialUpdate!: boolean;
-
+  protected auto = false;
   protected onPatchValue = new Subject();
-  private altr: SweetAlertService;
   /** Estructura del formulario */
   abstract form: UntypedFormGroup;
   originalForm: any;
   abstract fullPath: string;
+
+  protected hashValues: any[] = [];
 
   constructor(
     injector: Injector,
@@ -64,8 +69,9 @@ export abstract class AbstractForm extends AbstractComponent {
     super(injector);
     this.fb = injector.get(UntypedFormBuilder);
     this.httpClient = injector.get(HttpClient);
+    this.fs = new FormService(this.httpClient);
+    //this.fs = injector.get(FormService);
 
-    this.altr = new SweetAlertService();
     setTimeout(() => {
       if (!this.transactionId && this.isCreateMode) {
         this.transactionId = v4().toUpperCase();
@@ -140,7 +146,6 @@ export abstract class AbstractForm extends AbstractComponent {
     }
 
     const templateHtml = `
-      <h3>Formulario no valido</h3>
       <p>verifica los siguientes campos:</p>
       <div style="display:flex; justify-content: center;">
       <ol>${inputInvalid}</ol>
@@ -155,15 +160,8 @@ export abstract class AbstractForm extends AbstractComponent {
       control.focus();
     }
 
-    this.altr.warn('Formulario no valido', '', {
-      showCancelButton: false,
-      showConfirmButton: false,
-      showCloseButton: true,
-      html: templateHtml,
-      // confirmButtonText: 'Salir',
-      // confirmButtonClass: 'btn btn-warning'
-    },
-    );
+    alertify.alert('Formulario no es valido.', templateHtml);
+
     console.log('Formulario no es valido.', this.form, { aca: this.form.getRawValue() }, this.form.errors);
     // this.testFormValidate();
   }
@@ -178,36 +176,127 @@ export abstract class AbstractForm extends AbstractComponent {
         formArray.clear();
       }
     });
+
+  }
+
+  /** Envia los campos del formulario para registrar */
+  createForm(form: any): Observable<any> {
+    const fm = this.hashValues?.length ? this.encrypt(form) : form;
+    return this.fs.create(fm);
+  }
+
+  resForm(id: any): Observable<any> {
+    return this.fs.get(id);
+  }
+  /** Envia los campos del formulario para reemplazar el contenido */
+  replaceForm(form: any): Observable<any> {
+    const fm = this.hashValues?.length ? this.encrypt(form) : form;
+    return this.fs.update(this.formId, fm);
+  }
+
+  deleteForm(): Observable<any> {
+    return this.fs.delete(this.formId);
+  }
+
+  getForm(d: any): void {
+    if (undefined === this.formId && d[ID_FIELD]) {
+      this.changeMode('PREVIEW')
+      this.formId = d[ID_FIELD];
+      this.saveForm();
+    }
+  }
+
+  delForm(d: any): void {
+    if (undefined === this.formId && d[ID_FIELD]) {
+      this.changeMode('DELETE')
+      this.formId = d[ID_FIELD];
+      this.saveForm();
+    }
   }
 
   saveForm(): void {
+    this.auto = false;
     // Guardar formulario.
-    const value = this.form.getRawValue();
-    console.log('saveForm', { patch: this.getPatchValue(this.form.controls, value), value });
-    if (this.fullPath) { }
+    if (this.form.value?.fecha_update === null || this.form.value?.fecha_update === undefined || this.form.value?.fecha_update) {
+      const currentDate = new Date();
 
-    this.httpClient.post(this.fullPath, value)
+      // Obtener los componentes de fecha y hora
+      const year = currentDate.getFullYear();
+      const month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Sumamos 1 ya que los meses comienzan desde 0
+      const day = ('0' + currentDate.getDate()).slice(-2);
+      const hours = ('0' + currentDate.getHours()).slice(-2);
+      const minutes = ('0' + currentDate.getMinutes()).slice(-2);
+      const seconds = ('0' + currentDate.getSeconds()).slice(-2);
+
+      // Formatear la fecha y hora en el formato deseado
+      const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      this.form.patchValue({ fecha_update: formattedDateTime });
+    }
+    const value = this.form.getRawValue();
+
+    // Validación extra para sacar el valor de ID del cuerpo
+    if (undefined === this.formId && value[ID_FIELD]) {
+      this.formId = value[ID_FIELD];
+    }
+    const formMethod = this.isCreateMode ? this.createForm : (this.isEditMode ? this.replaceForm : (this.isDeleteMode ? this.deleteForm : this.resForm));
+
+    console.log('saveForm...', { value, patch: this.getPatchValue(this.form.controls, value) });
+
+    formMethod.call(this, (this.isPreViewMode || this.isDeleteMode) && !this.isCreateMode ? this.formId : value)
       .pipe(
         takeUntil(this.destroyTrigger),
       )
       .subscribe({
         next: (data: any) => {
-
           this.rawData = data;
-
-          alertify.set('notifier', 'position', 'top-right');
-
           if (data) {
-            alertify.success(`OK: Datos guardados`);
 
-            this.reset();
+            alertify.set('notifier', 'position', 'top-right');
+            if (!this.isPreViewMode) {
 
+              const message = data?.message ?? `OK: Datos guardados`;
+              alertify.success(message);
+            }
+
+            if (data?.length) {
+              alertify.error(`El formulario de angular no acepta arreglos  [${data?.length}]`);
+            }
+
+            if (this.isCreateMode || this.isPreViewMode) {
+              if (data?.fecha_update) {
+                const currentDate = new Date();
+
+                // Obtener los componentes de fecha y hora
+                const year = currentDate.getFullYear();
+                const month = ('0' + (currentDate.getMonth() + 1)).slice(-2); // Sumamos 1 ya que los meses comienzan desde 0
+                const day = ('0' + currentDate.getDate()).slice(-2);
+                const hours = ('0' + currentDate.getHours()).slice(-2);
+                const minutes = ('0' + currentDate.getMinutes()).slice(-2);
+                const seconds = ('0' + currentDate.getSeconds()).slice(-2);
+
+                // Formatear la fecha y hora en el formato deseado
+                const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+                data.fecha_update = formattedDateTime;
+              }
+
+              this.form.patchValue(data);
+              this.changeMode('EDIT')
+            }
+
+
+            if (this.isDeleteMode) {
+              this.changeMode('VIEW')
+              this.reset();
+            }
+            this.auto = true;
           }
-
-          //}
+          this.formId = undefined;
         },
         error: err => {
           console.log('error.. al guardar', err);
+          this.changeMode('VIEW');
+          this.formId = undefined;
         },
         complete: () => {
           //this.reset();
@@ -223,9 +312,32 @@ export abstract class AbstractForm extends AbstractComponent {
     }
   }
 
+  codeValidator(value: string): Observable<any> {
+    return this.httpClient.get(`/${this.fullPath}-codigo`, {
+      params: {
+        code: value,
+      },
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.originalForm = { ...this.form.value };
+    this.fs.setControllerId(this.formControllerId ?? this.fullPath);
+  }
+
   public get hasFormChanged(): boolean {
     const changes = this.getPatchValue(this.form.controls, this.form.getRawValue());
     return !!changes;
+  }
+
+  private encrypt(d: any | any[]): any {
+    const data = d;
+    if (this.hashValues?.length) {
+      this.hashValues.forEach((v) => {
+        data[v] = APP_KEY + `${btoa(d[v])}`;
+      })
+    }
+    return data;
   }
 
   private deepPatch(data: any, form: UntypedFormGroup): void {

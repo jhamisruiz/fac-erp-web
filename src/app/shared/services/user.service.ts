@@ -54,7 +54,21 @@ export class UserService implements OnDestroy {
     const expire = this.userLoginExpireAt;
     const userToken = this.persistence.get(STOREKEY.USER_TOKEN);
     const userId = this.persistence.get(STOREKEY.USER_ID);
-    return Date.now() < expire && userToken && userId;
+    return this.fechaexpire < expire && userToken && userId;
+  }
+
+  get fechaexpire(): number {
+    const fechaActual = new Date();
+    const newDate = new Date(
+      fechaActual.getFullYear(),
+      fechaActual.getMonth(),
+      fechaActual.getDate(),
+      fechaActual.getHours(),
+      fechaActual.getMinutes(),
+      fechaActual.getSeconds(),
+    );
+    const time = (newDate.getTime()).toString()
+    return Number(time.slice(0, -3));
   }
 
   authLogin(): any {
@@ -70,9 +84,10 @@ export class UserService implements OnDestroy {
   }
   createSession(data: any, renew?: boolean): void {
     // Expiración del token
-    this.userLoginExpireAt = (data.expire ?? 0) * 1e3;
+    console.log('isAuthenticated', this.isAuthenticated, 'timex-exp:', (((data.login_expire ?? 0) * 1e3) > Date.now()));
+    this.userLoginExpireAt = data.expire;//(data.login_expire ?? 0) * 1e3;
     this.userName = data?.name;
-    if (this.userLoginExpireAt > Date.now()) {
+    if (((data.login_expire ?? 0) * 1e3) > Date.now()) {
       this.persistence.set('currentUser', data.id);
       this.persistence.set(STOREKEY.USER_TOKEN, data.token);
 
@@ -86,9 +101,11 @@ export class UserService implements OnDestroy {
           user_name: data.user_name,
           phone: data.phone,
           photo: data.photo,
+          expire: data.expire,
         });
       }
-      this.persistence.set(STOREKEY.USER_LOGIN_EXPIRE, this.userLoginExpireAt);
+      this.persistence.set(STOREKEY.USER_LOGIN_EXPIRE, data.expire); //this.data.expire);
+      this.persistence.set(STOREKEY.USER_EXPIRE, Number(data.expire)); //this.data.expire);
     }
 
     this.verifyLoginExpire();

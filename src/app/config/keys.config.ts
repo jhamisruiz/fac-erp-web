@@ -9,6 +9,7 @@ export const enum STOREKEY {
   ID_CORP = 'corporation_id',
   USER_ID = 'user_id',
   USER_LOGIN_EXPIRE = 'login_expire',
+  USER_EXPIRE = 'expire',
   MODULE_ID = 'moduleId',
   CURRENT_MODULE = 'module',
   SESSIONID = 'sessid',

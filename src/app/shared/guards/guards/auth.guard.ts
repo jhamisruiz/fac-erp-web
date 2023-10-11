@@ -4,7 +4,7 @@ import { UserService } from '@app/shared/services/user.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
 

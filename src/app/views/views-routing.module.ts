@@ -17,10 +17,24 @@ const routes: Routes = [
             .then(m => m.InicioRoutingModule),
       },
       {
+        path: 'administracion',
+        loadChildren: (): Promise<any> =>
+          import('./administracion/administracion.module')
+            .then(m => m.AdministracionModule),
+        canActivate: [UserGuard],
+      },
+      {
         path: 'planillas',
         loadChildren: (): Promise<any> =>
           import('./planillas/planillas.module')
             .then(m => m.PlanillasModule),
+        canActivate: [UserGuard],
+      },
+      {
+        path: 'caja',
+        loadChildren: (): Promise<any> =>
+          import('./caja/caja.module')
+            .then(m => m.CajaModule),
         canActivate: [UserGuard],
       },
     ],

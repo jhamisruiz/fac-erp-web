@@ -1,0 +1,130 @@
+/*  */
+
+
+[data-layout-mode=dark] :host ::ng-deep .th-dark {
+  background-color: var(--vz-header-bg-dark);
+  color: var(--vz-body-color);
+}
+
+/* [data-layout-mode=dark] :host ::ng-deep .td-dark {
+  background-color: var(--vz-input-bg);
+  color: var(--vz-body-color);
+} */
+[data-layout-mode=dark] :host ::ng-deep .p-datatable .p-datatable-tbody>tr {
+  background-color: var(--vz-input-bg);
+  color: var(--vz-body-color);
+}
+
+
+[data-layout-mode=dark] :host ::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
+  background: rgb(185, 212, 247) !important;
+  color: #000 !important;
+}
+
+[data-layout-mode=dark] :host ::ng-deep .p-paginator {
+  background-color: var(--vz-input-bg);
+  color: var(--vz-body-color);
+}
+
+[data-layout-mode=dark] :host ::ng-deep .p-datatable-header {
+  background-color: var(--vz-input-bg);
+  color: var(--vz-body-color);
+}
+
+[data-layout-mode=light] :host ::ng-deep .th-dark {
+  background-color: var(--gray-300);
+}
+
+[data-layout-mode=light] :host ::ng-deep.p-datatable .p-datatable-tbody>tr.p-highlight {
+  background: rgb(185, 212, 247);
+  color: #000;
+}
+
+
+
+
+:host ::ng-deep .p-badge {
+  line-height: 1.4rem !important;
+}
+
+:host ::ng-deep .p-button-success {
+  background-color: #22C55E;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-button.p-button-icon-only {
+  width: auto;
+}
+
+:host ::ng-deep .p-button-danger {
+  background-color: #EF4444;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-button-primary {
+  background-color: #3B82F6;
+  color: #ffffff;
+}
+
+:host ::ng-deep .p-datatable {
+  .p-datatable-header {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+}
+
+
+:host ::ng-deep .p-dropdown {
+
+  .p-dropdown-label {
+    padding: 6.5px 12px 6.5px;
+  }
+
+  .p-dropdown-clear-icon {
+    right: 1.7rem;
+  }
+
+
+  .p-dropdown-trigger {
+    width: 30px;
+  }
+}
+
+.tds {
+  border-left: 1px solid rgb(131, 127, 127);
+  border-right: 1px solid rgb(131, 127, 127);
+}
+
+//:host ::ng-deep .p-autocomplete {
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+  padding: 6.5px 12px 6.5px;
+  padding-left: 0.7rem !important;
+}
+
+:host ::ng-deep .p-badge {
+
+  .darck {
+    background-color: #282e38 !important;
+    color: #ffffff !important;
+  }
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody>tr:focus {
+  outline: none;
+  outline-offset: 0.15rem;
+}
+
+.table .thead-light th {
+  font-size: 11px;
+  text-transform: uppercase;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.table tr,
+.table th,
+.table td {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}

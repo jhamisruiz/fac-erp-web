@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PlanillasComponent } from './planillas.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -31,5 +31,6 @@ import { HomePlanillasComponent } from './home-planillas/home-planillas.componen
     HomePlanillasComponent,
     EmpleadoReportesComponent,
   ],
+  providers: [{ provide: LOCALE_ID, useValue: 'es' }],
 })
 export class PlanillasModule { }

@@ -29,6 +29,7 @@ export const INPUT_ERROR_MESSAGES: Record<string, string> = {
   invalidUrl: 'Formato de Url inválido',
   invalidNumber: 'Solo se permiten números',
   codeExist: 'Este codigo ya existe',
+  docExist: 'Este documento ya existe',
   periodClose: 'La fecha seleccionada se encuentra cerrada',
   periodExist: 'Fecha no registrada. ¡Asignar periodo!',
 };

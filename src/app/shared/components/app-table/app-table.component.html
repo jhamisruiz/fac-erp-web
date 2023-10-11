@@ -1,0 +1,475 @@
+<p-toast></p-toast>
+<p-contextMenu #cm [model]="(menu ?items : [])" appendTo="body"
+  styleClass="{{menu?'':'d-none'}} {{contextDisabled?'d-none':''}} border border-info">
+</p-contextMenu>
+
+<!--  selectionMode="single"  -->
+<p-table #dt [contextMenu]="cm" [columns]="headerstab" [value]="data" dataKey="index" [resizableColumns]="true"
+  [selectionMode]="(isViewTab && selectionMode==='single'? 'single': null)" columnResizeMode="expand"
+  responsiveLayout="scroll" editMode="row" [(selection)]="selectedIndex" [paginator]="paginator" [rows]="pageRowInit"
+  [showCurrentPageReport]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+  [style]="{'width': '100%!important','overflow':'auto!important'}"
+  styleClass="{{!daysEachMont?'p-datatable-gridlines':''}}"
+  currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} Filas" [rowsPerPageOptions]="[5,10,25,50]"
+  [loading]="loading">
+  <ng-template pTemplate="caption">
+    <div class="d-flex justify-content-between flex-wrap bg-success">
+      <div class="col-lg-3" *ngIf="isFProd">
+        <div class="nav-link pt-0 pb-0 d-flex align-self-center w-100">
+          <p-dropdown [options]="fprod" (onChange)="selectFiltro($event)" styleClass="p-0 w-100" class="w-100"
+            [(ngModel)]="filtroprod" optionLabel="name">
+          </p-dropdown>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div *ngIf="search">
+          <input type="search" pInputText [(ngModel)]="filterGlobal" (input)="dt.filterGlobal(filterGlobal, 'contains')"
+            class="focusedInput border p-2 w-100" placeholder="Buscar">
+        </div>
+      </div>
+    </div>
+    <div class="w-100 pt-1 d-flex justify-content-end" *ngIf="isViewTab">
+      <div style="max-width: 50px;" class="d-flex" *ngIf="crud">
+        <div *ngIf="!rowSelect">
+          <button *ngIf="!isediting" (click)="addRow()" type="button" class="btn p-button-success pl-2 p-1 pr-2 mr-1">
+            <i class="pi pi-plus"></i>
+          </button>
+        </div>
+        <div class="d-flex" *ngIf="btnsMin && rowSelect">
+          <div *ngIf="!isediting" class="p-0">
+            <button *ngIf="!isediting" pButton pRipple icon="pi pi-pencil"
+              class="p-button p-button-primary pl-2 p-1 pr-2 mr-1" (click)="onRowEditInit(rowData)">
+            </button>
+          </div>
+          <div *ngIf="!!isDelete" class="p-0">
+            <button *ngIf="!isediting" pButton pRipple icon="pi pi-trash"
+              class="p-button p-button-danger pl-2 p-1 pr-2 mr-1"
+              (click)="onRowEditDelete(rowData, rowData?.index ?? 0);cangeData()">
+            </button>
+          </div>
+        </div>
+        <div *ngIf="btnsMin && editing" class="p-0">
+          <button pButton pRipple icon="pi pi-check" class="p-button p-button-success pl-2 p-1 pr-2 mr-1"
+            (click)="onRowEditSave(rowData)">
+          </button>
+        </div>
+        <div *ngIf="btnsMin && editing">
+          <button pButton pRipple icon="pi pi-times" class="p-button p-button-warning pl-2 p-1 pr-2 mr-1"
+            (click)="onRowEditCancel(rowData, rowData?.index);cangeData()">
+          </button>
+        </div>
+      </div>
+
+      <button *ngIf="btnNew" (click)="newR()" type="button" class="btn p-button-success pl-2 p-1 pr-2 mr-1">
+        <i class="pi pi-plus"></i>
+      </button>
+      <div *ngIf="btnsMin && rowSelect && !crud">
+        <button pButton pRipple type="button" (click)="onRowUnselect($event)"
+          class="btn p-button-outlined p-button-secondary pl-2 p-1 pr-2 mr-1">
+          <i class="pi pi-minus-circle"></i>
+        </button>
+      </div>
+      <div *ngIf="btnsMin && rowSelect">
+        <span class="sizes">
+          <button *ngIf="btnEnable" pButton (click)="enableR(rowData, headerstab)" type="button"
+            class="btn  p-button-help pl-2 p-1 pr-2 mr-1">
+            <i class="pi pi-thumbs-up"></i>
+          </button>
+
+          <button *ngIf="btnSelect" (click)="selectR(rowData)" type="button"
+            class="btn p-button-success pl-2 p-1 pr-2 mr-1">
+            <i class="pi pi-check"></i>
+          </button>
+
+          <button *ngIf="btnConfig" (click)="configR(rowData)" type="button"
+            class="btn p-button-primary pl-2 p-1 pr-2 mr-1">
+            <i class="pi {{iconBtnConfig?iconBtnConfig:'pi-cog'}}"></i>
+          </button>
+
+          <button *ngIf="btnHand" (click)="handR(rowData)" type="button"
+            class="btn p-button-primary pl-2 p-1 pr-2 mr-1">
+            <i class='far fa-hand-point-up'></i>
+          </button>
+
+          <button *ngIf="btnEdit" (click)="editR(rowData)" type="button"
+            class="btn p-button-success pl-2 p-1 pr-2 mr-1">
+            <i class="pi pi-pencil"></i>
+          </button>
+
+          <button *ngIf="btnDelete" (click)="deleteR(rowData, tableName?? '', headerstab)" type="button"
+            class="btn  p-button-danger pl-2 p-1 pr-2 mr-1">
+            <i class="pi pi-trash"></i>
+          </button>
+
+        </span>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr *ngIf="!sort">
+      <th style="width: 2.25em" *ngIf="tableCheckbox" class="th-dark" ngClass="th-dark">
+        <p-tableHeaderCheckbox (click)="selectCheckbox()"></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="index" *ngIf="rowIndex" ngClass="th-dark" style="width: 50px;" class="pb-1 pt-1 p-1">#</th>
+      <th *ngFor="let col of columns" ngClass="th-dark" [hidden]="col.visible !== undefined"
+        class="pb-1 pt-1 pl-1 text-capitalize {{col.center ? 'text-center': ''}}">
+        <div class="d-flex">
+          <div class="bg">
+            {{ col.label }} {{ col.join }}
+          </div>
+        </div>
+      </th>
+      <th *ngFor="let mnt of currentMData" ngClass="th-dark " [hidden]="daysEachMont" class="p-1 text-center">
+        <div class="p-0">
+          {{mnt.id}}
+        </div>
+      </th>
+      <th ngClass="th-dark">
+        Acciones
+      </th>
+    </tr>
+    <tr *ngIf="sort">
+      <th pSortableColumn="index" ngClass="th-dark" style="width: 50px;" class="pb-1 pt-1 p-1">#</th>
+      <th *ngFor="let col of columns" ngClass="th-dark" pSortableColumn="{{col.field}}"
+        [hidden]="col.visible !== undefined" class="pb-1 pt-1 pl-1 text-capitalize {{col.center ? 'text-center': ''}}">
+        <div class="d-flex">
+          <div class="bg">
+            {{ col.label }} {{ col.join }}
+          </div>
+          <p-sortIcon field="{{col.field}}"></p-sortIcon>
+        </div>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-d let-columns="columns" let-editing="editing" let-index="rowIndex">
+    <tr [pEditableRow]="d" [pSelectableRow]="d" [pContextMenuRow]="d" (contextmenu)="onContextMenu(d)">
+      <td *ngIf="tableCheckbox">
+        <p-tableCheckbox [value]="d" (click)="selectCheckbox()"></p-tableCheckbox>
+        <!-- <p-checkbox [binary]="true" (onChange)="selectCheckbox($event, d)" inputId="binary"></p-checkbox> -->
+      </td>
+      <td class="p-1 td-dark" *ngIf="rowIndex">{{index+1}}</td>
+      <td *ngFor="let h of columns" class="p-1 pl-1 td-dark" style="min-width: 80px;"
+        [hidden]="h.visible !== undefined">
+        <p-cellEditor>
+          <ng-template pTemplate="input">
+            <div class="ml-1" *ngIf="h?.type==='suggest' || h?.suggest">
+              <p-autoComplete appendTo="body" [(ngModel)]="d[h?.fieldname]" [suggestions]="h?.data ?? filterSelect"
+                [inputStyle]="{'width': '100%', 'min-width': '100px' }" [style]="{'width':'100%','min-width':'100%'}"
+                inputStyleClass="{{h?.disabled || h?.readonly?'':'border border-secondary'}} rounded rounded-3"
+                (onSelect)="selectedItem($event, d,h?.field,h?.optionValue, h?.parents);cangeData()"
+                (completeMethod)="filterData($event,h, h?.url, h?.fake)" [dataKey]="h?.dataKey"
+                [attr.optionValue]="h?.optionValue" [field]="h?.olabel" [minLength]="1" [readonly]="h?.readonly"
+                [disabled]="h?.disabled" (change)="change($event,d,h?.field, h?.parents);cangeData()">
+                <ng-template let-value pTemplate="item">
+                  <span style="font-size:11px; text-transform: uppercase;" class="pt-1 pb-1">
+                    <p-badge *ngIf="value?.[h?.codigo]" [value]="(value?.[h?.codigo] ?? '')" severity="info"
+                      styleClass="m-0 mr-1"></p-badge>
+                    {{value?.[h?.olabel]}}
+                  </span>
+                </ng-template>
+              </p-autoComplete>
+            </div>
+
+            <div class="ml-1" *ngIf="(!h?.type ) || h?.type==='text'">
+              <input pInputText type="text" style="min-height: 32px;" [ngStyle]="{width: h?.minWidth ?? '100%'}"
+                class="{{h?.disabled?'':'border border-info'}}" [placeholder]="h?.placeholder??''"
+                [readonly]="h?.readonly" [disabled]="h?.disabled" [(ngModel)]="d[h.field]">
+            </div>
+
+            <div class="ml-1" *ngIf="h?.type==='file'">
+              <input pInputText type="file" style="min-height: 32px;" [ngStyle]="{width: h?.minWidth ?? '100%'}"
+                class="{{h?.disabled?'':'border border-info'}}" [placeholder]="h?.placeholder??''"
+                [readonly]="h?.readonly" [disabled]="h?.disabled" [(ngModel)]="d[h.field]">
+            </div>
+
+            <div class="ml-1" *ngIf="h?.type==='date'">
+              <input pInputText type="date" style="min-height: 32px;" [ngStyle]="{width: h?.minWidth ?? '100%'}"
+                class="{{h?.disabled?'':'border border-info'}}" [placeholder]="h?.placeholder??''"
+                [readonly]="h?.readonly" [disabled]="h?.disabled" [(ngModel)]="d[h.field]">
+            </div>
+            <div class="" *ngIf="h?.type==='inputMask'">
+              <!-- // DAR ESPACIO A PALABARAS -->
+              <input pInputText (keyup)="spaceCuenta($event ,d[h.field])" type="text" style="min-height: 32px;"
+                class="{{h?.disabled?'':'border border-info'}}" [placeholder]="h?.placeholder??''"
+                [(ngModel)]="d[h.field]">
+            </div>
+
+            <div class="text-area w-100 d-flex justify-content-center" *ngIf="h?.type==='textArea' || h?.textArea">
+              <textarea rows="{{h?.textArea['rows']}}" [(ngModel)]="d[h.field]"
+                class="{{h?.disabled?'':'border border-info'}}" [readonly]="h?.readonly"
+                [disabled]="h?.disabled"></textarea>
+            </div>
+            <div class="number ml-1 w-100 d-flex justify-content-center" *ngIf="h?.type==='number'">
+              <p-inputNumber [(ngModel)]="d[h.field]" mode="decimal" (focusout)="cangeData()"
+                [inputStyle]="{'width':h?.minWidth ?? '100%','min-width':'100%'}"
+                class="{{h?.disabled?'':'border border-info'}} rounded rounded-3" [min]="h?.min"
+                [max]="(h?.max?h?.max:(d[h?.lmax]))"
+                [minFractionDigits]="(h?.minDecimal || h?.minDecimal===0 ? h?.minDecimal : 2)" locale="en-US"
+                [readonly]="h?.readonly" [disabled]="h?.disabled">
+              </p-inputNumber>
+            </div>
+            <div class="select w-100 d-flex" *ngIf="h?.type==='select'">
+              <div class="data w-100" *ngIf="h?.data && !h?.url">
+                <p-dropdown appendTo="body" [options]="h?.data ??[]" styleClass="w-25" [(ngModel)]="d[h.field]"
+                  (onChange)="cangeData()" [style]="{'width':h?.minWidth ??'100%','min-width':'100%'}"
+                  optionValue="{{h?.optionValue ?? 'code'}}" optionLabel="{{h?.optionLabel ?? h?.olabel ?? 'name'}}"
+                  [placeholder]="h?.placeholder??''" [showClear]="h?.showClear ?? false">
+                </p-dropdown>
+              </div>
+              <div class="data w-100" *ngIf="h?.url">
+                <div class="data w-100" *ngIf="!h?.keyData">
+                  <p-dropdown appendTo="body" [options]="h?.data ?? []" [(ngModel)]="d[h.field]"
+                    (onChange)="selected($event, d,h?.field, h?.parents ?? [], h);cangeData()"
+                    [style]="{'width': h?.minWidth ??'100%','min-width':'100%'}"
+                    optionValue="{{h?.optionValue ?? 'code'}}" optionLabel="{{h?.optionLabel ?? h?.olabel ?? 'name'}}"
+                    [placeholder]="h?.placeholder??''" [showClear]="h?.showClear ?? false">
+                  </p-dropdown>
+                </div>
+                <div class="data w-100" *ngIf="h?.keyData">
+                  <p-dropdown appendTo="body" [options]="d[h?.keyData]" [(ngModel)]="d[h.field]"
+                    (onChange)="selected($event, d,h?.field, h?.parents ?? [], h);cangeData()"
+                    [style]="{'width': h?.minWidth ??'100%','min-width':'100%'}"
+                    optionValue="{{h?.optionValue ?? 'code'}}" optionLabel="{{h?.optionLabel ?? h?.olabel ?? 'name'}}"
+                    [placeholder]="h?.placeholder??''" [showClear]="h?.showClear ?? false">
+                  </p-dropdown>
+                </div>
+              </div>
+            </div>
+            <div class="multiple w-100 d-flex justify-content-center" *ngIf="h?.type==='multiple'">
+              <!-- //FIXME: OPTION VALUE -->
+              <p-multiSelect appendTo="body" [options]="h?.data ??[]" [style]="{'width':h?.minWidth ?? '100%'}"
+                [(ngModel)]="d[h.fieldname]" [defaultLabel]="h?.placeholder??''" (onChange)="cangeData()"
+                optionLabel="{{h?.optionCode ?? 'name'}}">
+                <ng-template let-value pTemplate="item">
+                  <div class="value-item">
+                    <div>
+                      <span class="bg-info p-1 rounded-3">
+                        {{value[h?.optionCode]}}
+                      </span> -
+                      {{value[h?.optionLabel]??''}}
+                    </div>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="output">
+            <div class="" *ngIf="h?.type==='suggest' || h?.suggest">
+              <p-badge *ngIf="d[h?.fieldname]?.[h?.codigo]" [value]="(d[h?.fieldname]?.[h?.codigo] ?? '')"
+                severity="info" styleClass="m-0 mr-1"></p-badge>
+              {{d[h?.fieldname]?.[h.olabel] ?? 'no data'}}
+            </div>
+            <div class="w-100 d-flex" *ngIf="!h?.type && !h?.estado">
+              {{d[h?.field]??h?.value}}
+            </div>
+            <div class="w-100 d-flex" *ngIf="h?.type==='text'">
+              <div class="w-100 d-flex" *ngIf="!h?.linkDownload">
+                {{d[h.field]}}
+              </div>
+              <div class="w-100 d-flex" *ngIf="h?.linkDownload">
+                <a target="_blank"
+                  [href]="d['rutaArchivoCompleto'] ?? (h?.linkDownload+'/'+d[h.field])">{{d[h.field]}}</a>
+              </div>
+            </div>
+            <div class="w-100 d-flex" *ngIf="h?.type==='inners'">
+              {{d[h.field]}} {{concatInners(d, h?.inners ?? [])}}
+            </div>
+            <div class="w-100 d-flex" *ngIf="h?.type==='binary'">
+              {{d[h.field]===true? h?.binary[0]: h?.binary[1]}}
+            </div>
+            <div class="w-100 d-flex" *ngIf="h?.type==='simpleSelect'">
+              {{outputSug(h?.data,d[h?.field], h?.optionValue ?? 'name',h?.optionLabel ?? 'name', h?.optionCode)}}
+            </div>
+            <div class="w-100 d-flex justify-content-center align-items-center" *ngIf="h?.type==='textArea'">
+              {{d[h.field]}}</div>
+            <div class="w-100 d-flex justify-content-center align-items-center" *ngIf="h?.type==='number'">
+              <div *ngIf="h?.minFractionDigits">
+                {{d[h.field] | number : '1.'+h?.minFractionDigits +'-'+h?.minFractionDigits +''}}
+              </div>
+              <div *ngIf="!h?.minFractionDigits">
+                {{d[h.field]}}
+              </div>
+            </div>
+
+            <div class="w-100 d-flex justify-content-center align-items-center" *ngIf="h?.type==='inputMask'">
+              {{d[h.field]}}
+            </div>
+
+            <div class="select w-100 d-flex" *ngIf="h?.type==='select'">
+              <div class="data" *ngIf="!h?.data &&!h?.url">
+                {{(h?.estado) ? '': (d[h?.field]==='SOLES'? 'S/ Soles': (d[h?.field]==='DOLARES'? '$ Dolares':
+                d[h?.field]))}}
+              </div>
+              <div class="data" *ngIf="h?.data">
+                {{outputSug(h?.data,d[h?.field], h?.optionValue ?? 'name',h?.optionLabel ?? 'name',
+                h?.optionCode)}}
+              </div>
+              <div class="data" *ngIf="h?.url">
+                <!-- {{h?.optionCode? (d[h?.field]?.[h?.optionCode] + ' - ') : ''}}{{h?.optionLabel ?
+                                d[h?.field]?.[h?.optionLabel] : d[h?.field]?.['name']}} -->
+
+                <div class="data w-100" *ngIf="!h?.keyData">
+                  <p-badge *ngIf="d[h?.codigo]" [value]="(d[h?.codigo] ?? '')" severity="info"
+                    styleClass="m-0 mr-1"></p-badge>
+                  {{outputSug(h?.data,d[h?.field], h?.optionValue ?? 'name',h?.optionLabel ?? 'name',
+                  h?.optionCode)}}
+                </div>
+                <div class="data w-100" *ngIf="h?.keyData">
+                  <p-badge *ngIf="d[h?.codigo]" [value]="(d[h?.codigo] ?? '')" severity="info"
+                    styleClass="m-0 mr-1"></p-badge>
+                  {{outputSug(d[h?.keyData],d[h?.field], h?.optionValue ?? 'name',h?.optionLabel ?? 'name',
+                  h?.optionCode)}}
+                </div>
+              </div>
+            </div>
+
+            <div class="w-100 d-flex justify-content-center align-items-center" *ngIf="h?.type==='date'">
+              {{ d[h.field] | date: 'dd/MM/yyyy' }}
+            </div>
+            <div *ngIf="h.estado" class="{{h.center ? 'text-center': ''}}">
+              <p-badge *ngIf="!h?.estadoDocs"
+                value="{{d[h.field]===0||d[h.field]===false?'Inactivo':(d[h.field]===1 || d[h.field]===true?'Activo':(d[h.field]===2?'Boqueado':(d[h.field]===3?'Anulado':(''))))}}"
+                [severity]="(d[h.field]===0||d[h.field]===false? 'danger':
+                (d[h.field]===1 || d[h.field]===true?'success':(d[h.field]===2?'warning':null)))"
+                styleClass="mr-2 {{(d[h.field]===3?'bg-secondary':(''))}}"></p-badge>
+
+              <div *ngIf="h?.estadoDocs">
+                <div *ngFor="let i of h?.estadoDocs">
+                  <p-badge *ngIf="d[h.field]=== i.id" value="{{i.name}}" styleClass="mr-2 {{i.color}}">
+
+                  </p-badge>
+                </div>
+              </div>
+
+            </div>
+          </ng-template>
+        </p-cellEditor>
+      </td>
+      <td *ngFor="let t of currentMData;let i = index" class="td-dark p-1" [hidden]="daysEachMont">
+        <!-- {{d.asistencia[i]?.nombre ===t.name}} -->
+        <div *ngFor="let a of d.asistencia?? [];let j = index">
+          <div class="" *ngIf="(a?.nombre ===t?.name )">
+            <div class="text-center" *ngIf="a.valor===true">
+              <i class="pi pi-check-circle text-success"></i>
+            </div>
+            <div class="text-center" *ngIf="a.valor===false">
+              <i class="pi pi-times-circle text-danger"></i>
+            </div>
+
+            <!--  <div class="text-center" *ngIf="a.valor===3">
+              <i class="pi pi-minus-circle" [ngStyle]="{color: 'var(--surface-400)'}"></i>
+            </div> -->
+          </div>
+          <!-- <div class="">
+            <div class=" text-center" *ngIf="!(!(a.valor===3) || !(a.valor===0)|| !(a.valor===1))">
+              <i class="pi pi-minus-circle" [ngStyle]="{color: 'var(--surface-400)'}"></i>
+            </div>
+          </div> -->
+        </div>
+        <!-- <div class="text-center" *ngIf="!(d.asistencia?.length)">
+          <i class="pi pi-minus-circle" [ngStyle]="{color: 'var(--surface-400)'}"></i>
+        </div> -->
+      </td>
+      <!-- botones de mantenedor -->
+      <td class="p-1 pl-1 td-dark">
+        <span class="sizes p-0 m-0 d-flex" *ngIf="crud">
+
+          <div *ngIf="!isediting" class="p-0">
+            <button *ngIf="!isediting" (click)="onRowEditInit(d)" pButton pRipple icon="pi pi-pencil m-0 p-0"
+              class="btn p-button-success pl-2 p-1 pr-2 mr-1" styleClass="p-button-sm">
+            </button>
+          </div>
+          <div *ngIf="!!isDelete" class="p-0">
+            <button *ngIf="!isediting" (click)="onRowEditDelete(rowData, rowData?.index ?? 0);cangeData()" pButton
+              pRipple icon="pi pi-trash m-0 p-0" class="btn  p-button-danger pl-2 p-1 pr-2 mr-1"
+              styleClass="p-button-sm">
+            </button>
+          </div>
+          <!-- cacel save -->
+          <div *ngIf="editing" class="p-0">
+            <button pButton pRipple icon="pi pi-check" class="p-button p-button-success pl-2 p-1 pr-2 mr-1"
+              (click)="onRowEditSave(d)">
+            </button>
+          </div>
+          <div *ngIf="editing">
+            <button pButton pRipple icon="pi pi-times" class="p-button p-button-warning pl-2 p-1 pr-2 mr-1"
+              (click)="onRowEditCancel(d, d?.index);cangeData()">
+            </button>
+          </div>
+        </span>
+
+
+        <div *ngIf="!crud">
+          <span class="sizes">
+            <button *ngIf="btnEnable" pButton (click)="enableR(d, headerstab)" type="button"
+              class="btn  p-button-help pl-2 p-1 pr-2 mr-1">
+              <i class="pi pi-thumbs-up"></i>
+            </button>
+
+            <button *ngIf="btnSelect" (click)="selectR(d)" type="button"
+              class="btn p-button-success pl-2 p-1 pr-2 mr-1">
+              <i class="pi pi-check"></i>
+            </button>
+
+            <button *ngIf="btnConfig" (click)="configR(d)" type="button"
+              class="btn p-button-primary pl-2 p-1 pr-2 mr-1">
+              <i class="pi {{iconBtnConfig?iconBtnConfig:'pi-cog'}}"></i>
+            </button>
+
+            <button *ngIf="btnHand" (click)="handR(d)" type="button" class="btn p-button-primary pl-2 p-1 pr-2 mr-1">
+              <i class='far fa-hand-point-up'></i>
+            </button>
+
+            <button *ngIf="btnEdit" (click)="editR(d)" type="button" class="btn p-button-success pl-2 p-1 pr-2 mr-1">
+              <i class="pi pi-pencil"></i>
+            </button>
+
+            <button *ngIf="btnDelete" (click)="deleteR(d, tableName?? '', headerstab)" type="button"
+              class="btn  p-button-danger pl-2 p-1 pr-2 mr-1">
+              <i class="pi pi-trash"></i>
+            </button>
+
+          </span>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-sidebar [(visible)]="displayModal" position="top" styleClass="wid100" [baseZIndex]="10000">
+  <div class="w-100 text-center">
+    <h2 class="w-100 text-center"><strong>{{nombrecuadro}}</strong></h2>
+    <div class="w-100">
+      <p-carousel [value]="imagenes" dataKey="index" [numVisible]="1" [numScroll]="1" [circular]="true">
+        <ng-template pTemplate="item" let-product let-i>
+          <div class="mt-1 text-center w-100">
+            <h3 class="w-100 text-center">
+              <p-badge value="{{product.cantidad}}" styleClass="p-mr-2"></p-badge>
+              {{product.nombre}}
+            </h3>
+            <div class="w-100 d-flex justify-content-center">
+              <!-- //FIXME: CORREGIR -->
+              <p-image [src]="(product.nombre[0]==='L'? product.url_img : (host+'/'+ product.url_img))"
+                [imageStyle]="{'max-width': '400px', 'max-height': '400px'}" [preview]="false">
+              </p-image>
+            </div>
+          </div>
+        </ng-template>
+      </p-carousel>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center">
+    <a [href]="zip" target="_blank" rel="noopener noreferrer">
+      <p-button type="button" class="p-button-sm" label="Descargar" styleClass="p-button-success">
+      </p-button>
+    </a>
+  </div>
+</p-sidebar>
+<p-confirmDialog #cd [style]="{width: 'auto'}" [baseZIndex]="10000">
+  <p-footer>
+    <button type="button" pButton class="p-button-danger" icon="pi pi-times" label="No" (click)="cd.reject()">
+    </button>
+    <button type="button" pButton class="p-button-info" icon="pi pi-check" label="Si" (click)="cd.accept()">
+    </button>
+  </p-footer>
+</p-confirmDialog>

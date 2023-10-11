@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/router';
 import { ViewsRoutingModule } from './views-routing.module';
 import { ViewsComponent } from './views.component';
 import { PlanillasModule } from './planillas/planillas.module';
+import { CajaModule } from './caja/caja.module';
+import { AdministracionModule } from './administracion/administracion.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { PlanillasModule } from './planillas/planillas.module';
   imports: [
     CommonModule,
     InicioModule,
+    AdministracionModule,
     PlanillasModule,
+    CajaModule,
     ReactiveFormsModule,
     FormsModule,
     ViewsRoutingModule,
@@ -24,7 +28,9 @@ import { PlanillasModule } from './planillas/planillas.module';
   ],
   exports: [
     InicioModule,
+    AdministracionModule,
     PlanillasModule,
+    CajaModule,
   ],
 })
 export class ViewsModule { }

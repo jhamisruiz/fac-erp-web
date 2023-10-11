@@ -12,6 +12,6 @@ export class AppServicesService {
   ) { }
 
   getDniRuc(d: any): Observable<any> {
-    return this.http.post<any>(`empleados-ruc-dni`, d);
+    return this.http.post<any>(`user-ruc-dni`, d);
   }
 }

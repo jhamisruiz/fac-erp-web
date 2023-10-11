@@ -30,7 +30,8 @@ export enum ComponentMode {
   CREATE = 'CREATE',
   EDIT = 'EDIT',
   VIEW = 'VIEW',
-  PREVIEW = 'PREVIEW'
+  DELETE = 'DELETE',
+  PREVIEW = 'PREVIEW',
 }
 
 export type ComponentModeType = keyof typeof ComponentMode;
@@ -94,7 +95,7 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   public fetchPath = '';
 
   /** Modo de visualización del componente */
-  public mode: ComponentModeType = ComponentMode.CREATE;
+  public mode: ComponentModeType = ComponentMode.PREVIEW;
 
   /** Estado del componente */
   public get status(): Observable<ComponentStatus> {
@@ -102,13 +103,17 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   }
 
   /** Indica que el componente se encuentra en modo de lectura */
-  public isViewMode!: boolean;
+  public isViewMode: boolean = false;
+
+  public isPreViewMode: boolean = false;
 
   /** Indica que el componente se encuentra en modo edición */
-  public isEditMode!: boolean;
+  public isEditMode: boolean = false;
 
   /** Indica que el componente se encuentra en modo creación */
-  public isCreateMode!: boolean;
+  public isCreateMode: boolean = false;
+
+  public isDeleteMode: boolean = false;
 
   /** Indica que el componente aún no está validado (funcionalidad exclusiva para movimientos, por defecto falso) */
   public isValidated = false;
@@ -253,9 +258,12 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
    */
   changeMode(mode: ComponentModeType): void {
     this.mode = mode;
+    //console/;p
     this.isViewMode = ComponentMode.VIEW === mode;
+    this.isPreViewMode = ComponentMode.PREVIEW === mode;
     this.isEditMode = ComponentMode.EDIT === mode;
     this.isCreateMode = ComponentMode.CREATE === mode;
+    this.isDeleteMode = ComponentMode.DELETE === mode;
     this.onChangeMode.emit(this.mode);
   }
 

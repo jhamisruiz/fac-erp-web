@@ -30,7 +30,7 @@ export class AuthInterceptor implements HttpInterceptor {
           //FIXME: fixear TOKEN, FECHA DE EXPIRACION y mas datos
           //8888
           //data.token = event.body?.id;
-          data.expire = this.fechaexpire();
+          data.login_expire = this.fechaexpire();
           // Verificar si el login es válido.
           if (data && data.token) {
             this.app.user.createSession(data);

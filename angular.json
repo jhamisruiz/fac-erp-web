@@ -19,6 +19,7 @@
           "options": {
             "allowedCommonJsDependencies": [
               "src/resources/js/plugins/notifications/sweet_alert.min.js",
+              "src/resources/js/plugins/notifications/pnotify.min.js",
               "src/resources/js/plugins/forms/tags/tokenfield.min.js",
               "qs",
               "lodash",

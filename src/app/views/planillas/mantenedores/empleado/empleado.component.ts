@@ -1,6 +1,7 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { UntypedFormGroup, Validators } from '@angular/forms';
 import { AbstractDocument } from '@app/shared/common/classes';
+import { AppTable } from '@app/shared/components/app-table/app-table.interface';
 import { AppServicesService } from '@app/shared/services/app-services/app-services.service';
 
 @Component({
@@ -11,7 +12,36 @@ import { AppServicesService } from '@app/shared/services/app-services/app-servic
 
 export class EmpleadoComponent extends AbstractDocument implements OnInit {
 
-  fullPath = '/empleados';
+  fullPath = '/empleado';
+  headers: AppTable[] = [
+    {
+      field: 'dni_ruc',
+      label: 'dni / ruc',
+    },
+    {
+      field: 'nombres',
+      label: 'nombres',
+    },
+    {
+      field: 'apellido_paterno',
+      label: 'apellido paterno',
+    },
+    {
+      field: 'apellido_materno',
+      label: 'apellido materno',
+    },
+    {
+      field: 'idgrupo_empleado',
+      label: 'grupo',
+      type: 'select',
+      data: this.dataGrupo,
+      fieldname: 'objidGrupo',
+      optionLabel: 'nombre',
+      optionValue: 'id',
+      dataKey: 'id',
+    },
+  ];
+  data: any[] = [];
 
   form: UntypedFormGroup = this.fb.group({
     id: [],
@@ -23,9 +53,11 @@ export class EmpleadoComponent extends AbstractDocument implements OnInit {
     nombre_completo: ['', [Validators.required]],
     fecha_creacion: [new Date().toISOString().slice(0, 10)],
     habilitado: [true],
+    es_planilla: [true, [Validators.required]],
     idgrupo_empleado: ['', [Validators.required]],
     telefono: [],
     direccion: [],
+    descripcion: [],
   });
 
 
@@ -59,5 +91,6 @@ export class EmpleadoComponent extends AbstractDocument implements OnInit {
       });
     }
   }
+
 
 }

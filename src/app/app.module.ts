@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,10 +16,11 @@ import { SharedModule } from './shared/shared.module';
     // RouterModule.forRoot([
     //   { path: '', component: AppComponent }
     // ]),
+    //StoreModule.forRoot({ counter: counterReducer }),
     CoreModule,
     SharedModule,
   ],
-  providers: [],
+  providers: [{ provide: LOCALE_ID, useValue: 'es' }],
   bootstrap: [AppComponent],
 })
 export class AppModule { }

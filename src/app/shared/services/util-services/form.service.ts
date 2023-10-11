@@ -6,6 +6,7 @@ import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Md5 } from 'ts-md5';
 import { v4 } from 'uuid';
+
 //import { LocalStoreService } from '../local-store.service';
 import { STOREKEY } from '@app/config/keys.config';
 
@@ -58,6 +59,7 @@ export class FormService implements OnDestroy {
   /** Id del formulario o documento */
   public formId!: string | number;
 
+
   /** Alias de formId */
   public documentId!: string | number;
 
@@ -82,61 +84,6 @@ export class FormService implements OnDestroy {
     let nooop;
   }
 
-  /**
-   * Establecer el Path del servicio
-   *
-   * @param controllerId Path http
-   */
-  setControllerId(controllerId: string): void {
-    this.controllerId = controllerId;
-  }
-
-  /**
-   * Establecer el Id de la vista o ventana.
-   *
-   * @param viewComponentId Id de la vista donde está contenido el formulario.
-   */
-  setViewComponentId(viewComponentId: string): void {
-    this.viewComponentId = viewComponentId;
-  }
-
-  /**
-   * Establecer el Id del documento o formulario.
-   *
-   * @param formId Id del documento
-   */
-  setFormId(formId: string | number): void {
-    this.formId = formId;
-    this.documentId = formId;
-  }
-
-  /**
-   * Alias de setFormId
-   *
-   * @param documentId Id del documento
-   */
-  setDocumentId(documentId: string | number): void {
-    this.setFormId(documentId);
-  }
-
-  /**
-   * Establece el id de la transacción del documento actual.
-   *
-   * @param transactionId Id de la transacción del documento.
-   */
-  setTransactionId(transactionId: string): void {
-    this.transactionId = transactionId;
-  }
-
-  /**
-   * Establece el id de la transacción del documento actual.
-   *
-   * @param documentVersion Id de la transacción del documento.
-   */
-  setDocumentVersion(documentVersion: number): void {
-    this.documentVersion = documentVersion;
-  }
-
   fetch(path: string, data?: any): Observable<any> {
     return this.request(HttpMethods.GET, { params: data });
   }
@@ -153,6 +100,7 @@ export class FormService implements OnDestroy {
       m: sessionStorage.getItem(STOREKEY.MODULE_ID), //this.localStore.get(STOREKEY.MODULE_ID),
       cid: this.viewComponentId,
     };
+
     let messg = 'Cargando...';
 
     if (HttpMethods.GET !== type) {
@@ -160,42 +108,13 @@ export class FormService implements OnDestroy {
       messg = 'Actualizando...';
     }
 
-    if (options.action === 'secuence') {
-      return this.http.get(`document-approval/${options.id}`, {
-        params: {
-          cid: options.body.cid,
-          eid: Number(options.body.eid),
-        },
-      }).pipe(
-        tap(
-          {
-            next: result => {
-              this.lastResult = result;
-              this.formStatus.next({ status: FormRequest.DONE, data: result });
-            },
-            error: err => {
-              this.lastError = err;
-              this.formStatus.next({ status: FormRequest.ERROR, data: err });
-            },
-            complete: () => {
-
-              this.formStatus.next({ status: FormRequest.LOADING, data: !0 });
-              this.formStatus.next({ status: FormStatusFromMethod[HttpMethods.GET], data: this.lastResult });
-            },
-          },
-        ),
-      );
-    }
-
-
-
     return this.http
       .request(
         HttpMethods[type],
-        `${this.controllerId}/${options.id ?? ''}/${options.action ?? ''}`,
+        `${this.controllerId}/${options.id ?? ''}`,
         {
           body: httpOptions['body'],
-          params: httpOptions['params'],
+          //params: httpOptions['params'],
         },
       )
       .pipe(
@@ -227,6 +146,10 @@ export class FormService implements OnDestroy {
       ...options,
       body: data,
     });
+  }
+
+  setControllerId(controllerId: string): void {
+    this.controllerId = controllerId;
   }
 
   /**

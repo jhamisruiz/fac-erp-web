@@ -8,7 +8,7 @@ import {
 import { UntypedFormArray, UntypedFormGroup, FormGroupDirective } from '@angular/forms';
 
 
-import { FormRequest, FormService } from '@app/shared/services/util-services/form.service';
+import { FormService } from '@app/shared/services/util-services/form.service';
 import { cloneDeep } from 'lodash-es';
 import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -56,7 +56,7 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
 
   private cdr: ChangeDetectorRef;
 
-  public dataGenero: any[] = [
+  public dataGrupo: any[] = [
     {
       id: 1,
       nombre: 'Ingeniero',
@@ -87,6 +87,16 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
       nombre: 'Arquitecto',
       sexo: 'ARQ',
     },
+    {
+      id: 7,
+      nombre: 'Administrador',
+      sexo: 'ADM',
+    },
+    {
+      id: 9,
+      nombre: 'OTROS',
+      sexo: 'OTR',
+    },
   ];
 
   constructor(injector: Injector) {
@@ -106,37 +116,16 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     this.tableComponentId = this.options.tableComponentId ?? '';
     this.componentId = this.options.viewComponentId ?? '';
     this.isPartialUpdate = !!this.options.partialUpdate;
-
-
-    const tab = injector.get<WTab | null>(DOCUMENT_TAB, null, InjectFlags.Optional);
+    this.changeMode('VIEW');
 
     this.documentId = this.options?.id ?? ''; // String(tab?.id ?? '');
-    this.isFetchable = (void 0 !== tab?.mode && 'CREATE' !== tab.mode) && !!this.options.fetchable;
-
-    if (void 0 !== tab && null !== tab) {
-      this.documentTitle = tab.title ?? '';
-      this.formId = tab.id;
-      this.isEnabled = !!tab.enabled;
-
-      this.fetchPath = `${this.options.formControllerId ?? ''}/${this.formId}`;
-
-      if (null !== this.rawData) {
-        ComponentMode.CREATE !== tab.mode && this.setTransactionId(this.rawData[TRANSACTION_UID_FIELD]);
-      }
-
-      this.setWindowTab(tab);
-      this.changeMode(tab.mode);
-    }
-
-    if (this.formSection) {
-
-    }
   }
 
   ngOnInit(): void {
     // llamar obligatoriamente al metodo del padre.
     super.ngOnInit();
 
+    //this.isViewMode = true;
     // Escucha los estados de sincronización del componente.
     this.fetching$
       .pipe(
@@ -185,17 +174,6 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     this.options = value;
   }
 
-  // getStatusSequence(): void {
-  //   // this.fs.fetchSequence(this.componentId, this.formId).subscribe(sequence => {
-  //   //   const current = sequence.find((it: any) => it.idestado === this.currentSequence);
-
-  //   //   this.statusSequence = sequence.map((it: any) => {
-  //   //     it.disabled = it.secuencia !== current.secuencia + 1;
-  //   //     return it;
-  //   //   }).sort((a: any, b: any) => this.compare(a, b, 'secuencia'));
-  //   // });
-  // }
-
   compare(a: any, b: any, key: string): number {
     if (a[key] < b[key]) {
       return -1;
@@ -215,6 +193,9 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
   }
 
   changeMode(mode: ComponentModeType): void {
+    if (mode === 'CREATE') {
+      this.reset();
+    }
     super.changeMode(mode);
   }
 
@@ -222,61 +203,8 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     this.onChangeMode.pipe(
       takeUntil(this.destroyTrigger),
     ).subscribe(mode => {
-      this.updateTab(this.formId, { mode });
+      //this.updateTab(this.formId, { mode });
     });
-
-    // this.fs.formStatus
-    //   .pipe(
-    //     takeUntil(this.destroyTrigger),
-    //   ).subscribe(({ status, data }) => {
-    //     if (this.formId && this.options.isMovement && status === FormRequest.DONE) {
-    //       const resumen = 'resumen';
-    //       if (this.form.controls[resumen]) {
-    //         this.form.controls[resumen].patchValue(data?.resumen);
-    //       }
-    //     }
-    //     // Recargar la tabla cuando hay actualizaciónes
-    //     if (status === FormRequest.DONE) {
-    //     }
-
-    //     if ((FormRequest.PATCHED === status || FormRequest.CREATED === status) && data?.details) {
-    //       // TODO: Refactorizar
-    //       for (const d of data.details) {
-    //         if (this.form.controls[d.key]) {
-    //           const control = this.form.controls[d.key];
-    //           if (control instanceof UntypedFormArray) {
-    //             for (let i = 0, k = 0, len = control.length; i < len; i++) {
-    //               if (control.controls[i].value?.isNew) {
-    //                 d.index === k && control.controls[i].patchValue({
-    //                   id: d?.id,
-    //                   isNew: false,
-    //                   resumen: d?.resumen,
-    //                 });
-    //                 k++;
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-
-    //     if (this.isCreateMode && FormRequest.DONE === status) {
-    //       const formId = Number(data && 'object' === typeof data ? data.id : data);
-
-    //       this.updateTab(this.formId, {
-    //         mode: ComponentMode.VIEW,
-    //         id: formId,
-    //         data: {
-    //           ...this.form.getRawValue(),
-    //           [TRANSACTION_UID_FIELD]: this.transactionId,
-    //         },
-    //       });
-
-    //       this.formId = formId;
-    //       //this.fs.setFormId(this.formId);
-    //     }
-
-    //   });
 
   }
 

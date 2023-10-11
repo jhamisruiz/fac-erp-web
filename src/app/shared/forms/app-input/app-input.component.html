@@ -1,11 +1,12 @@
-<div *ngIf="(inputType==='text' || inputType==='date')" class="field d-flex flex-column">
+<div *ngIf="(inputType==='text' || inputType==='date' || inputType==='time')" class="field d-flex flex-column">
   <label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>
   <!-- input text -->
-  <input #input [id]="id" [(ngModel)]="value" type="{{type==='text'? type: 'date'}}" [placeholder]="(placeholder ?? '')"
-    (input)="!nsNumber ? onChangeValue($any($event).target) : onInpt($event)" [disabled]="locked ? locked: disabled"
+  <input #input [id]="id" [(ngModel)]="value" type="{{type==='text'? type: (type==='date'?'date':'time')}}"
+    [placeholder]="(placeholder ?? '')" (input)="!nsNumber ? onChangeValue($any($event).target) : onInpt($event)"
+    [disabled]="locked ? locked: disabled"
     class="{{inputClass}} {{((hasError && (currentControl?.touched || currentControl?.dirty)) || borderRequired)||(borderRequired2)?'border-danger':''}}"
     [style]="inputStyle" [required]="required" (focus)="getReqError();OnFocus.emit($event);"
     (focusout)="OnFocusOut.emit($event);" (blur)="nsBlur.emit($event);onTouched($event)"

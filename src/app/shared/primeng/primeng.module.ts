@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -30,7 +30,8 @@ import { ChipsModule } from 'primeng/chips';
 import { CardModule } from 'primeng/card';
 import { PaginatorModule } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-
+import { CalendarModule } from 'primeng/calendar';
+import { InputSwitchModule } from 'primeng/inputswitch';
 @NgModule({
   declarations: [],
   imports: [CommonModule],
@@ -65,7 +66,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     CardModule,
     PaginatorModule,
     ProgressSpinnerModule,
+    CalendarModule,
+    InputSwitchModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, { provide: LOCALE_ID, useValue: 'es' }],
 })
 export class PrimengModule { }

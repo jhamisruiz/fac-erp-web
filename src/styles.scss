@@ -50,3 +50,9 @@
 .shadow-class {
   box-shadow: 0 0 7px rgb(127, 148, 243);
 }
+
+[data-layout-mode=dark] .p-dialog .p-dialog-content {
+  background: #4e555c !important;
+  box-shadow: 0 0 7px rgb(165, 180, 245);
+  color: white;
+}

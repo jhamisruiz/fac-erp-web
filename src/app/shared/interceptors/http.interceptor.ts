@@ -12,6 +12,7 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { UserService } from '../services/user.service';
 import { TRANSACTION_HEADER } from '../common/constants';
+import { STOREKEY } from '@app/config/keys.config';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -100,8 +101,13 @@ export class HttpConfig implements HttpInterceptor {
           alertify.
             error(`${(customError['message']) ?? 'Error de servidor'}`);
 
+          const exp = localStorage.getItem(STOREKEY.USER_EXPIRE) ?? '0';
+          if (this.user.fechaexpire > Number(exp)) {
+            this.user.clearUserSession();
+          }
           return throwError(customError);
         }),
       );
   }
+
 }

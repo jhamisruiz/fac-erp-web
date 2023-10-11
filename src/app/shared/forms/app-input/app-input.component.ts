@@ -27,7 +27,7 @@ import { INPUT_ERROR_MESSAGES, NsCustomFormControl } from '../../common/classes/
 })
 export class AppInputComponent implements NsCustomFormControl, ControlValueAccessor, AfterViewInit, OnInit {
   @ViewChild('input') inputRef?: ElementRef;
-  @Output() inputText = new EventEmitter<string | number>();
+  @Output() OnInput = new EventEmitter<string | number>();
   @Output() clear = new EventEmitter<any>();
   @Output() nsBlur = new EventEmitter<any>();
   @Output() OnFocus = new EventEmitter<any>();
@@ -298,7 +298,7 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
       elm.target.value = elm.target.value.slice(0, this.maxlength);
     }
     const realValue = +elm.target.value;
-    this.inputText.emit(realValue);
+    this.OnInput.emit(realValue);
     this.propagateChange(realValue);
   }
   getReqError(): void {
@@ -326,7 +326,7 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
     }
 
     const realValue = 'number' === this.type ? element.valueAsNumber : this.value;
-    this.inputText.emit(realValue);
+    this.OnInput.emit(realValue);
     this.propagateChange(realValue);
     this.getError();
     if (element.value && this.required === true) {
@@ -348,7 +348,7 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
       }
     }
     const realValue = ('number' === this.type || 'number' === this.inputType) ? e.value : this.value;
-    this.inputText.emit(realValue);
+    this.OnInput.emit(realValue);
     this.propagateChange(realValue);
     this.getError();
 
