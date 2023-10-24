@@ -54,6 +54,7 @@ export class AppInputFileComponent implements OnInit {
             id: i,
             data: result,
             nombre: f.name,
+            create: true,
           };
           this.NgModelResponse.emit(this.dataFile);
         };

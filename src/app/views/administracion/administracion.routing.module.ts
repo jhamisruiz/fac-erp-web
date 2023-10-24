@@ -6,6 +6,9 @@ import { AdministracionComponent } from './administracion.component';
 import { UsuarioComponent } from './mantenedores/usuario/usuario.component';
 import { HomeAdministracionComponent } from './home-administracion/home-administracion.component';
 import { EmpresaComponent } from './mantenedores/empresa/empresa.component';
+import { SucursalComponent } from './mantenedores/sucursal/sucursal.component';
+import { CategoriaComponent } from './mantenedores/categoria/categoria.component';
+import { ProductoComponent } from './mantenedores/producto/producto.component';
 
 const routes: Routes = [
   {
@@ -26,6 +29,21 @@ const routes: Routes = [
       {
         path: 'registro-de-empresas',
         component: EmpresaComponent,
+        canActivate: [UserGuard],
+      },
+      {
+        path: 'registro-de-sucursales',
+        component: SucursalComponent,
+        canActivate: [UserGuard],
+      },
+      {
+        path: 'registro-de-categorias',
+        component: CategoriaComponent,
+        canActivate: [UserGuard],
+      },
+      {
+        path: 'registro-de-productos',
+        component: ProductoComponent,
         canActivate: [UserGuard],
       },
     ],

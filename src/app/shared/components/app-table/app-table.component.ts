@@ -8,8 +8,12 @@ import { AppTable } from './app-table.interface';
 import { AppTableService } from './app-table.service';
 import { Table } from 'primeng/table';
 import * as _ from 'lodash';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { NUMEROS_NOMBRES } from '@app/shared/common/constants';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../store/state/app.state';
+import { selectLoadingDataTable } from '../../../store/selectors/app-table.selectors';
+import { loadTAbleAction, loadedTAbleAction } from '../../../store/actions/app-table.actions';
 
 export class Items {
   edit?: boolean;
@@ -72,16 +76,18 @@ export class AppTableComponent implements OnInit, OnDestroy {
   @Input() path?: string;
 
   ////////
-  @Input() menu = true;//?: boolean;
+  @Input() menuContext = true;//?: boolean;
   items: MenuItem[] = [];
   menuItem: Items = {};
 
 
   @Input() set dataSourse(d: any[]) {
     this.isediting = false;
-    this.editing = false;
+    this.getIsEditRow(false);
     this.data = d ?? [];
-
+    this.data.forEach((v, i) => {
+      this.data[i].index = i;
+    });
     if (d === null) {
       this.data = [];
     }
@@ -123,8 +129,8 @@ export class AppTableComponent implements OnInit, OnDestroy {
     }
   }
 
-  @Input() set edit(d: any) {
-    this.editing = d;
+  @Input() set edit(d: boolean) {
+    this.getIsEditRow(d);
   }
 
   @Input() isDelete = true;
@@ -150,9 +156,9 @@ export class AppTableComponent implements OnInit, OnDestroy {
   @Output() dataResponse = new EventEmitter<any>();
 
   @Output() OnTable = new EventEmitter<any>();
+  toastPosition: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right' | 'center' = 'top-right';
   daysEachMont = true;
   currentMData: any[] = [];
-
   currentSPath?: string;
   filterGlobal = '';
   data: any[] = [];
@@ -181,7 +187,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
   selectedIndex: any[] = [];
   rowData: any;
   loading = false;
-  loading$: Subscription;
+  loading$: Observable<any> = new Observable();
   totalLoading = false;
   date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
@@ -192,15 +198,15 @@ export class AppTableComponent implements OnInit, OnDestroy {
   filtroprod = 1;
 
   constructor(
+    private store: Store<AppState>,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private primengConfig: PrimeNGConfig,
     private sv: AppTableService,
   ) {
-    this.loading$ = this.sv.refreshData.subscribe((r) => {
-      //console.log('actualizando....', r);
+    this.sv.refreshData.subscribe((r) => {
     });
-    this.loading$ = this.sv.isRefresh$.subscribe(r => {
+    this.sv.isRefresh$.subscribe(r => {
       if (r) {
         this.OnRefresh.emit();
         this.getData(this.path ?? this.currentSPath ?? null);
@@ -209,9 +215,8 @@ export class AppTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     this.isediting = false;
-    this.editing = false;
+    this.getIsEditRow(false);
     this.primengConfig.ripple = true;
 
     if (this.path) {
@@ -239,6 +244,11 @@ export class AppTableComponent implements OnInit, OnDestroy {
         command: (e): void => this.deleteR(this.rowData, this.tableName ?? '', this.headerstab),
       },
     ];
+  }
+
+  getIsEditRow(e: boolean): void {
+    this.editing = e;
+    this.sv.setChangeState(e);
   }
 
   getAsistencia(d: any[]): void {
@@ -302,15 +312,16 @@ export class AppTableComponent implements OnInit, OnDestroy {
     this.headerstab.forEach((v, i) => {
       this.headerstab[i].data = v?.data ? v?.data : [];
       if ((v?.type === 'select' && v?.url && v?.useUrl === undefined) || (v?.type === 'simpleSelect' && v?.url && v?.useUrl === undefined)) {
-        this.sv.select(v?.url).subscribe((r: any) => {
-          const data: any[] = r?.data ?? [];
+        const url = `${v.url}?start=0&length=10&search=&order=asc`;// + d[pnt.queryParent[0]];
+        this.sv.select(url).subscribe((r: any) => {
+          const data: any[] = r ?? [];
           v.data = data;
         });
       }
 
       if (v?.type === 'multiple' && v?.url) {
         this.sv.select(v?.url).subscribe((r: any) => {
-          const data: any[] = r?.data ?? [];
+          const data: any[] = r ?? [];
           v.data = data;
         });
       }
@@ -321,7 +332,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
     });
   }
 
-  cangeData(): void {
+  changeData(): void {
     this.OnChangeData.emit(this.data);
   }
 
@@ -331,9 +342,9 @@ export class AppTableComponent implements OnInit, OnDestroy {
 
   getSugget(h: any, u: any, f: boolean): void {
     this.sv.suggest(u, f).subscribe((r: any) => {
-      //const data: any[] = r?.data ?? [];
-      this.filterSelect = r?.data?.length ? r.data : (r?.length ? r : []);
-      h.data = r?.data?.length ? r.data : (r?.length ? r : []);
+      //const data: any[] = r ?? [];
+      this.filterSelect = r?.length ? r : (r?.length ? r : []);
+      h.data = r?.length ? r : (r?.length ? r : []);
     });
   }
 
@@ -356,7 +367,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
         this.data.forEach((v, i) => {
           const url = `${h.url}` + v[h.queryParent[0]];
           this.sv.select(url).subscribe((r: any) => {
-            const data: any[] = r?.data ?? [];
+            const data: any[] = r ?? [];
             const k = h?.keyData ?? 'data';
             v[k] = data;
           });
@@ -388,12 +399,11 @@ export class AppTableComponent implements OnInit, OnDestroy {
           d[pnt.keyData] = [];
         }
         if (d[pnt.queryParent[0]]) {
-          const url = `${pnt.url}` + d[pnt.queryParent[0]];
+          const url = `${pnt.url}?start=0&length=10&search=&order=asc`;// + d[pnt.queryParent[0]];
           this.sv.select(url).subscribe((r: any) => {
-            const data: any[] = r?.data ?? [];
+            const data: any[] = r ?? [];
             const k = pnt?.keyData ?? 'data';
             d[k] = data;
-            console.log('data', data);
           });
         }
       }
@@ -447,101 +457,6 @@ export class AppTableComponent implements OnInit, OnDestroy {
     }
 
   }
-
-  onRowEditInit(d: any): void {
-    this.isediting = true;
-    this.OnTable.emit(this.isediting);
-    this.cloneRow = _.cloneDeep(d);
-    this.editing = true;
-    this.currentEdit = d;
-    this.tb.initRowEdit(d);
-    this.rowData = {};
-    this.rowSelect = false;
-  }
-
-  onRowEditSave(d: any): void {
-    console.log('data', d);
-    const h: any[] = this.headerstab;
-    this.required = false;
-    h.forEach((v, i) => {
-      if (v?.required) {
-        if (d[v.field] === null || d[v.field] === undefined) {
-          this.required = true;
-        }
-      }
-    });
-    this.editing = false;
-    if (!this.required) {
-
-      //this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Datos guardados.' });
-      this.isediting = false;
-      this.OnTable.emit(this.isediting);
-      this.isaddrow = false;
-      this.tb.saveRowEdit(d, this.tb.el.nativeElement);
-      this.tb.cancelRowEdit(this.cloneRow);
-      this.tb.isRowEditing(d);
-      this.cloneRow = {};
-      this.editing = false;
-    }
-    else {
-      const index = this.data.length - 1;
-      //delete this.data[index];
-      this.isaddrow = false;
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Completa los campos requeridos' });
-      this.isediting = true;
-      this.OnTable.emit(this.isediting);
-      this.tb.initRowEdit(d);
-      this.editing = true;
-    }
-    this.dataResponse.emit(this.data);
-    this.OnRowSave.emit(d);
-  }
-
-  onRowEditCancel(d: any, index: number): void {
-    this.isediting = false;
-    this.OnTable.emit(this.isediting);
-    this.data[index] = this.cloneRow;
-
-    if (this.isaddrow) {
-      this.cloneRow = {};
-      this.data.splice(index, 1);
-      this.isaddrow = false;
-    }
-
-    this.tb.cancelRowEdit(this.cloneRow);
-    this.editing = false;
-  }
-
-  onRowEditDelete(d: any, index: number): void {
-    const h: any[] = this.headerstab;
-    const key = 'index';
-    let id: any;
-    const sel = h.find((v) => v?.[key]);
-    if (sel) {
-      id = sel?.id;
-    }
-    this.confirmationService.confirm({
-      message: 'Seguro quieres eliminar?',
-      header: 'Eliminar Columna',
-      icon: 'pi pi-info-circle text-danger',
-      accept: () => {
-        delete this.cloneRow[d?.[id]];
-        this.cloneRow = {};
-        if (d?.[id]) {
-          this.dataDeleted.push({
-            id: d?.[id],
-          });
-          this.delResponse.emit(this.dataDeleted);
-        }
-        this.data.splice(index, 1);
-        this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Columna eliminada.' });
-        this.dataResponse.emit(this.data);
-        this.editing = false;
-        this.rowSelect = false;
-      },
-    });
-  }
-
   addRow(): void {
     this.isaddrow = true;
 
@@ -563,13 +478,144 @@ export class AppTableComponent implements OnInit, OnDestroy {
     this.tb.initRowEdit(ob);
     this.isediting = true;
     this.OnTable.emit(this.isediting);
-    this.editing = true;
+    this.getIsEditRow(true);
     this.rowData = ob ?? {};
+  }
+
+  onRowEditInit(d: any): void {
+    this.isediting = true;
+    this.OnTable.emit(this.isediting);
+    this.cloneRow = _.cloneDeep(d);
+    this.getIsEditRow(true);
+    this.currentEdit = d;
+    this.tb.initRowEdit(d);
+    this.rowData = {};
+    this.rowSelect = false;
+  }
+
+  errorStyle(d: any, h: any, val: any, req: boolean): void {
+    h.errStyle = undefined;
+    if (h?.unique && this.data?.length > 1) {
+      let conteo = 0;
+      this.data.forEach((v, i) => {
+        if (val && v?.[h.field] === val) {
+          conteo++;
+          if (conteo > 1) {
+            h.errStyle = 'danger';
+            const row = d;
+            row[h.field] = null;
+            this.tb.initRowEdit(row);
+            this.messageService.add({ severity: 'warning', summary: 'Warning', detail: 'El dato ' + h.label + ' ya existe!' });
+          }
+        }
+
+      });
+    }
+    if (req) {
+      if (val === null || val === undefined || val === '') {
+        h.errStyle = 'danger';
+      }
+    }
+  }
+
+  onRowEditSave(d: any): void {
+    console.log('data', d);
+    const h: any[] = this.headerstab;
+    this.required = false;
+    h.forEach((v, i) => {
+      if (v?.required) {
+        h[i].errStyle = undefined;
+        if (d[v.field] === null || d[v.field] === undefined || d[v.field] === '') {
+          this.required = true;
+          h[i].errStyle = 'danger';
+        }
+      }
+
+      if (v?.toUpperCase) {
+        d[v.field] = (d[v.field]).toUpperCase();
+      }
+    });
+    this.getIsEditRow(false);
+    if (!this.required) {
+
+      //this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Datos guardados.' });
+      this.isediting = false;
+      this.OnTable.emit(this.isediting);
+      this.isaddrow = false;
+      this.tb.saveRowEdit(d, this.tb.el.nativeElement);
+      this.tb.cancelRowEdit(this.cloneRow);
+      this.tb.isRowEditing(d);
+      this.cloneRow = {};
+      this.getIsEditRow(false);
+    }
+    else {
+      const index = this.data.length - 1;
+      //delete this.data[index];
+      this.isaddrow = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Completa los campos requeridos' });
+      this.isediting = true;
+      this.OnTable.emit(this.isediting);
+      this.tb.initRowEdit(d);
+      this.getIsEditRow(true);
+    }
+    this.dataResponse.emit(this.data);
+    this.OnRowSave.emit(d);
+  }
+
+  onRowEditCancel(d: any, index: number): void {
+    this.isediting = false;
+    this.OnTable.emit(this.isediting);
+    this.data[index] = this.cloneRow;
+
+    if (this.isaddrow) {
+      this.cloneRow = {};
+      this.data.splice(index, 1);
+      this.isaddrow = false;
+    }
+
+    this.tb.cancelRowEdit(this.cloneRow);
+    this.getIsEditRow(false);
+  }
+
+  onRowEditDelete(d: any, rowData: any, index: number): void {
+    //FIXME: cuando el boton sea en el header de la tabla (click)="onRowEditDelete(rowData, rowData, rowData?.index ?? 0)"
+    const h: any[] = this.headerstab;
+    const key = 'index';
+    let id: any;
+    const sel = h.find((v) => v?.[key]);
+    if (sel) {
+      id = sel?.id;
+    }
+    this.confirmationService.confirm({
+      message: 'Seguro quieres eliminar?',
+      header: 'Eliminar Columna',
+      icon: 'pi pi-info-circle text-danger',
+      accept: () => {
+        //---fix
+        if (rowData?.[id]) {
+          delete this.cloneRow[rowData?.[id]];
+          this.cloneRow = {};
+          this.dataDeleted.push({
+            id: rowData?.[id],
+          });
+          this.delResponse.emit(this.dataDeleted);
+        }
+        //---fix
+        const indice = this.data.findIndex(ob => ob.index === d.index);
+        this.data.splice(indice, 1);
+        this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Columna eliminada.' });
+        this.dataResponse.emit(this.data);
+        this.getIsEditRow(false);
+        this.rowSelect = false;
+      },
+    });
   }
 
   getData(path: string | null): void {
     if (path) {
-      this.loading = true;
+      this.loading$ = this.store.select(selectLoadingDataTable);
+      this.store.dispatch(loadTAbleAction());
+
       this.sv.getDatasourse(path).subscribe(
         {
           next: (r: any) => {
@@ -577,19 +623,16 @@ export class AppTableComponent implements OnInit, OnDestroy {
               console.log('dataTable: ', r);
               const d: any[] = r ?? [];
               this.data = d;
-              this.loading = false;
+              //this.loading = false;
+              this.store.dispatch(loadedTAbleAction({ dataTable: d }));
               //
               this.rowSelect = false;
               this.selectedIndex = [];
               this.selectedIndex.length = 0;
-              //
-              d.forEach((v, i) => {
-                this.data[i].index = i;
-              });
             }
           },
           error: err => {
-            this.loading = false;
+            this.store.dispatch(loadedTAbleAction({ dataTable: [] }));
           },
           complete: () => {
             //this.reset();
@@ -683,9 +726,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
               }
 
             },
-            error: err => {
-              //console.log('error..', err);
-            },
+            error: err => { },
             complete: () => {
               //this.reset();
             },
@@ -704,7 +745,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
     }
     this.confirmationService.confirm({
       message: 'Seguro quieres eliminar?',
-      header: 'Eliminar ' + (n),
+      header: 'Eliminar ' + (n) + ' ' + (d?.codigo ?? d?.nombre ?? ''),
       icon: 'pi pi-info-circle text-danger',
       accept: () => {
         this.OnDelete.emit(d);
@@ -719,7 +760,6 @@ export class AppTableComponent implements OnInit, OnDestroy {
       icon: 'pi pi-info-circle text-danger',
       accept: () => {
         //this.eliminando(id, index);
-        //console.log('deleteRC', d);
       },
     });
   }
@@ -795,6 +835,23 @@ export class AppTableComponent implements OnInit, OnDestroy {
       return res;
     }
   }
+  outputSugLabs(d: any, f: any, ov: any, lbl: Array<string>, sep: string | undefined): any {
+
+    const dr: any[] = d ? d : [];
+
+    const c = dr.find((v) => v[ov] === f);
+    if (c) {
+      let res = '';
+      if (lbl?.length) {
+        lbl.forEach((v, i) => {
+          const spd = (sep && i > 0) ? ` ${sep} ` : ' '
+          res += spd + c[v];
+        });
+      }
+      return res;
+    }
+  }
+
   concatInners(d: any, inrs: any[]): string {
     let str = '';
     inrs.forEach(v => { str += `-` + d[v] + str; });
@@ -807,7 +864,8 @@ export class AppTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.loading$.unsubscribe();
+    //this.loading$.unsubscribe();
+    if (1) { }
   }
 
 }

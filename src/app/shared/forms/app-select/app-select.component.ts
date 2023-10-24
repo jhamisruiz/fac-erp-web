@@ -65,9 +65,8 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   @Input() optionLabel?: string;
   @Input() placeholder: string | undefined;
   @Input() optionValue: string | undefined;
-  @Input() optionValue1: string | undefined;
-  @Input() optionValue2: string | undefined;
-  @Input() optionValue3: string | undefined;
+  @Input() separador: string | undefined;
+  @Input() Labels: Array<string> = [];
 
   @Input() showClear = false;
 
@@ -162,8 +161,8 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
 
     if (this.path) {
       this.sv.getDatasourse(this.path).subscribe((r: any) => {
-        if (r?.data) {
-          const d: any[] = r?.data ?? [];
+        if (r) {
+          const d: any[] = r ?? [];
           this.data = d;
           this.descriptionValue = value ?? null;
           this.selectChange.emit((value ?? null));
@@ -330,9 +329,10 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   /* //// */
   getData(path: string | null): void {
     if (path) {
-      this.sv.getDatasourse(path).subscribe((r: any) => {
-        if (r?.data) {
-          const d: any[] = r?.data ?? [];
+      const p = path + '?start=0&length=10&search=&order=asc';
+      this.sv.getDatasourse(p).subscribe((r: any) => {
+        if (r) {
+          const d: any[] = r ?? [];
           this.data = d;
 
           if (this.inputValue && this.optionValue) {//fixme:

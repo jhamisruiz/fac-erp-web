@@ -1,6 +1,3 @@
-/*  */
-
-
 [data-layout-mode=dark] :host ::ng-deep .th-dark {
   background-color: var(--vz-header-bg-dark);
   color: var(--vz-body-color);
@@ -14,7 +11,6 @@
   background-color: var(--vz-input-bg);
   color: var(--vz-body-color);
 }
-
 
 [data-layout-mode=dark] :host ::ng-deep .p-datatable .p-datatable-tbody>tr.p-highlight {
   background: rgb(185, 212, 247) !important;
@@ -39,9 +35,6 @@
   background: rgb(185, 212, 247);
   color: #000;
 }
-
-
-
 
 :host ::ng-deep .p-badge {
   line-height: 1.4rem !important;
@@ -73,21 +66,38 @@
   }
 }
 
-
 :host ::ng-deep .p-dropdown {
 
   .p-dropdown-label {
-    padding: 6.5px 12px 6.5px;
+    padding: 3px 9px 3px;
+    min-height: 31px;
   }
 
   .p-dropdown-clear-icon {
     right: 1.7rem;
   }
 
-
   .p-dropdown-trigger {
     width: 30px;
+    max-height: 32px;
   }
+}
+
+:host ::ng-deep .form-control {
+  padding-top: 0;
+  padding-bottom: 0;
+  background-color: var(--vz-topbar-user-bg);
+  color: var(--vz-body-color);
+  border: 1px solid var(--vz-input-border);
+}
+
+[data-layout-mode=dark] :host ::ng-deep .p-dropdown-label {
+  color: var(--vz-body-color);
+}
+
+[data-layout-mode=dark] :host ::ng-deep .p-dropdown .p-dropdown-panel {
+  background-color: var(--vz-topbar-user-bg);
+  color: var(--vz-body-color);
 }
 
 .tds {
@@ -98,8 +108,12 @@
 //:host ::ng-deep .p-autocomplete {
 :host ::ng-deep .p-inputtext {
   width: 100%;
-  padding: 6.5px 12px 6.5px;
+  padding: 3px 9px 3px;
   padding-left: 0.7rem !important;
+}
+
+:host ::ng-deep .p-inputnumber {
+  width: 100%;
 }
 
 :host ::ng-deep .p-badge {

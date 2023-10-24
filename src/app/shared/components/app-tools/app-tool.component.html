@@ -1,5 +1,5 @@
 <div class="row mb-1 mt-2 d-flex justify-content-between">
-  <div class="col-xxl-2 col-md-4 m-1" *ngIf="isBtnSave">
+  <div class="col-xxl-2 col-md-4 m-1" *ngIf="isBtnBack">
     <div>
       <button type="button" class="w-100 btn btn-danger p-0" (click)="onClickBack()">
         <i class="mdi mdi-keyboard-return m-0" style="font-size: 24px"></i>
@@ -13,8 +13,8 @@
     </div>
   </div>
 
-  <div class="col-xxl-2 col-md-4 m-1" *ngIf="isBtnSave">
-    <div>
+  <div class="col-xxl-2 col-md-4 m-1">
+    <div *ngIf="isBtnSave">
       <button type="button" class="w-100 btn btn-success" (click)="onClickSave()">GUARDAR</button>
     </div>
   </div>

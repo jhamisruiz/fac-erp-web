@@ -1,13 +1,40 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, delay, of } from 'rxjs';
+import { ItemModel } from '../intrefaces/app.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppConfigService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
 
+  getUpdate(): Observable<boolean> {
+    const d = true;
+    return of(d).pipe(delay(1));
+  }
+
+  getDataApi2(): Observable<any> {
+    return this.http.get(`empresa-efecto`);
+  }
+  getDataApi(): Observable<ItemModel[]> {
+    const d = [{
+      name: 'item 1',
+      price: 10.00,
+      image: '',
+    }, {
+      name: 'item 2',
+      price: 10.00,
+      image: '',
+    }, {
+      name: 'item 3',
+      price: 10.00,
+      image: '',
+    }];
+    return of(d).pipe(delay(1));
+  }
   menuGlobal(): any[] {
     return [
       {

@@ -1,6 +1,6 @@
-<app-tools (OnClickNew)="changeMode('CREATE')" (OnClickSave)="onSubmit()"
-  [isBtnNew]="(isViewMode? true:(form.valid?true:false)) || isEditMode" [isBtnSave]="isCreateMode || isEditMode"
-  (OnClickBack)="changeMode('VIEW')"></app-tools>
+<app-tools (OnClickNew)="changeMode($event)" (OnClickSave)="onSubmit()" [isBtnNew]="isBtnNew" [isBtnSave]="isBtnSave"
+  [isBtnBack]="isBtnBack" (OnClickBack)="changeMode($event)">
+</app-tools>
 
 <ng-container *ngIf="isViewMode || isDeleteMode">
   <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
@@ -9,8 +9,6 @@
   </app-table>
 </ng-container>
 
-
-
 <ng-container *ngIf="isCreateMode || isEditMode">
   <div class="card-body">
     <form [formGroup]="form">
@@ -18,8 +16,8 @@
         <!--end col-->
         <div class="col-xxl-3 col-md-6">
           <div>
-            <app-input inputClass="form-control" formControlName="nombres" label="NOMBRES" type="text"
-              [formValid]="ok"></app-input>
+            <app-input inputClass="form-control" formControlName="nombres" label="NOMBRES" type="text" [formValid]="ok">
+            </app-input>
           </div>
         </div>
         <!--end col-->
@@ -32,8 +30,8 @@
         <!--end col-->
         <div class="col-xxl-3 col-md-6">
           <div>
-            <app-input inputClass="form-control" formControlName="email" label="CORREO" type="text"
-              [formValid]="ok"></app-input>
+            <app-input inputClass="form-control" formControlName="email" label="CORREO" type="text" [formValid]="ok">
+            </app-input>
           </div>
         </div>
         <!--end col-->

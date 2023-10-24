@@ -1,3 +1,7 @@
-<p>
-  plan-cuentas works!
-</p>
+<p *ngIf="(loading$ | async)">Loading....</p>
+
+<ul>
+  <li *ngFor="let i of (items$ | async)">
+    name: {{i.name}} price: ${{i.price}}
+  </li>
+</ul>

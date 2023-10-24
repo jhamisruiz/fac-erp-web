@@ -10,6 +10,7 @@ import { AppToolModule } from './components/app-tools/app-tool.module';
 import { AppClickOutsideDirective } from './directives/app';
 import { AppUbigeoModule } from './components/app-ubigeo/app-ubigeo.module';
 import { AppInputFileModule } from './forms/app-input-file/app-input-file.module';
+import { UnspscModule } from './components/unspsc/unspsc.module';
 
 @NgModule({
   imports: [
@@ -28,6 +29,7 @@ import { AppInputFileModule } from './forms/app-input-file/app-input-file.module
     AppTableModule,
     AppToolModule,
     AppUbigeoModule,
+    UnspscModule,
     //
     AppClickOutsideDirective,
   ],

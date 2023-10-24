@@ -1,0 +1,98 @@
+<div class="row gy-4">
+  <div class="col-xxl-4 col-md-6">
+    <div class="form-group">
+      <span class="mb-0 pb-0">SEGMENTO</span>
+      <div class="cal-icon">
+        <p-dropdown appendTo="body" (onChange)="getSegmentoToFamilia()" [options]="segmentos"
+          styleClass="p-0 w-100 {{layoutMode==='dark'?'form-control':''}}" [style]="{'width':'100%','min-width':'100%'}"
+          [(ngModel)]="segmento" optionLabel="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true"
+          placeholder="Select Segmento">
+          <ng-template pTemplate="selectedItem">
+            <div class="seg-item seg-item-value d-flex" *ngIf="segmento">
+              <div>{{twoWords(segmento?.codigo, 2)}}</div>
+              <div>{{segmento?.descripcion}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-seg pTemplate="item">
+            <div class="seg-item d-flex">
+              <div>{{twoWords(seg?.codigo, 2)}}</div>
+              <div>{{seg?.descripcion}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+  </div>
+  <div class="col-xxl-4 col-md-6">
+    <div class="form-group">
+      <span class="mb-0 pb-0">FAMILIA</span>
+      <div class="cal-icon">
+        <p-dropdown appendTo="body" (onChange)="getFamiliaToClase()" [options]="familias"
+          styleClass="p-0 w-100 {{layoutMode==='dark'?'form-control':''}}" [style]="{'width':'100%','min-width':'100%'}"
+          [(ngModel)]="familia" optionLabel="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true"
+          placeholder="Select a Familia">
+          <ng-template pTemplate="selectedItem">
+            <div class="fam-item fam-item-value d-flex" *ngIf="familia">
+              <div>{{twoWords(familia?.codigo, 4)}}</div>
+              <div>{{familia?.descripcion}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-fam pTemplate="item">
+            <div class="fam-item d-flex">
+              <div>{{twoWords(fam?.codigo, 4)}}</div>
+              <div>{{fam?.descripcion}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+  </div>
+  <div class="col-xxl-4 col-md-6">
+    <div class="form-group">
+      <span class="mb-0 pb-0">CLASE</span>
+      <div class="cal-icon">
+        <p-dropdown appendTo="body" (onChange)="getClaseToProd()" (onClear)="getClaseToProd()" [options]="clases"
+          styleClass="p-0 w-100 {{layoutMode==='dark'?'form-control':''}}" [style]="{'width':'100%','min-width':'100%'}"
+          [(ngModel)]="clase" optionLabel="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true"
+          placeholder="Select. Clase">
+          <ng-template pTemplate="selectedItem">
+            <div class="fam-item fam-item-value d-flex" *ngIf="clase">
+              <div>{{twoWords(clase?.codigo, 6)}}</div>
+              <div>{{clase?.descripcion}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-cl pTemplate="item">
+            <div class="cl-item d-flex">
+              <div>{{twoWords(cl?.codigo, 6)}}</div>
+              <div>{{cl?.descripcion}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+  </div>
+  <div class="col-xxl-12 col-md-6">
+    <div class="form-group">
+      <span class="mb-0 pb-0">PRODUCTO</span>
+      <div class="cal-icon">
+        <p-dropdown appendTo="body" (onChange)="getProducto()" (onClear)="getProducto()" [options]="productos"
+          styleClass="p-0 w-100 {{layoutMode==='dark'?'form-control':''}}" [style]="{'width':'100%','min-width':'100%'}"
+          [(ngModel)]="producto" optionLabel="descripcion" [filter]="true" filterBy="descripcion" [showClear]="true"
+          placeholder="Select. Producto">
+          <ng-template pTemplate="selectedItem">
+            <div class="pr-item pr-item-value d-flex" *ngIf="producto">
+              <div>{{twoWords(producto?.codigo, 8)}}</div>
+              <div>{{producto?.descripcion}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-pr pTemplate="item">
+            <div class="pr-item d-flex">
+              <div>{{twoWords(pr?.codigo, 8)}}</div>
+              <div>{{pr?.descripcion}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+  </div>
+</div>

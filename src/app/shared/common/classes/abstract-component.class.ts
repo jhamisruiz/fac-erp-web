@@ -22,19 +22,9 @@ import { takeUntil } from 'rxjs/operators';
 import { v4 } from 'uuid';
 import { ENABLED_FIELD, ID_FIELD } from '../constants';
 import { ComponentSyncStatus } from '../enums/component-sync-status.enum';
-import { WTab } from '../interfaces';
-import { AppStore } from '../interfaces/store';
+import { ComponentMode, ComponentModeType, WTab } from '../interfaces';
 import { WintabOptions } from './wintabs.class';
-
-export enum ComponentMode {
-  CREATE = 'CREATE',
-  EDIT = 'EDIT',
-  VIEW = 'VIEW',
-  DELETE = 'DELETE',
-  PREVIEW = 'PREVIEW',
-}
-
-export type ComponentModeType = keyof typeof ComponentMode;
+import { AppState } from '../../../store/state/app.state';
 
 export enum ComponentStatus {
   NONE = 0,
@@ -103,7 +93,7 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   }
 
   /** Indica que el componente se encuentra en modo de lectura */
-  public isViewMode: boolean = false;
+  public isViewMode!: boolean;
 
   public isPreViewMode: boolean = false;
 
@@ -163,6 +153,8 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   /** Defaut http client */
   protected httpClient: HttpClient;
 
+  protected store: Store<AppState>;
+
   /** Custom logger service */
   //protected logger: NGXLogger;
 
@@ -177,7 +169,7 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   constructor(injector: Injector) {
     this.elRef = injector.get(ElementRef);
     this.element = this.elRef.nativeElement;
-    //this.store = injector.get<Store<AppStore>>(Store);
+    this.store = injector.get(Store<AppState>);
     this.persistence = injector.get(LocalStoreService);
     this.render = injector.get(Renderer2);
     this.httpClient = injector.get(HttpClient);

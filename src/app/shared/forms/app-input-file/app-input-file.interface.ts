@@ -4,4 +4,5 @@ export interface DataFile {
   data?: string | null;
   nombre?: string | null;
   tipo?: string | null;
+  create?: boolean;
 }

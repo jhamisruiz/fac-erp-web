@@ -1,6 +1,6 @@
 import { WinTabDir } from '../enums';
 import { DocumentLayout } from '../decorators/document.decorator';
-import type { ComponentModeType } from '../classes';
+import { ComponentModeType } from './company-module.interface';
 
 export type tabId = string | number;
 

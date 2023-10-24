@@ -18,6 +18,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
+    "useDefineForClassFields": false,
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -30,9 +31,6 @@
       "@app/*": [
         "./src/app/*"
       ],
-      "dev-edic": [
-        "dist/dev-edic"
-      ]
     }
   },
   "angularCompilerOptions": {

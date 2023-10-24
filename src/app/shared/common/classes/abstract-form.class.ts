@@ -1,3 +1,4 @@
+import { loadCompAction } from './../../../store/actions/app.actions';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { APP_KEY } from './../constants/app.constants';
 import { AfterViewInit, Directive, Inject, Injector, Optional } from '@angular/core';
@@ -9,9 +10,10 @@ import { takeUntil, tap } from 'rxjs/operators';
 import { v4 } from 'uuid';
 import { DOCUMENT_VERSION, ID_FIELD, TRANSACTION_UID_FIELD } from '../constants';
 import { GetElements } from '../utils/dom/get-elements.util';
-import { AbstractComponent, ComponentMode } from './abstract-component.class';
+import { AbstractComponent } from './abstract-component.class';
 import { HttpClient } from '@angular/common/http';
 import { FormService } from '@app/shared/services/util-services/form.service';
+import { selectLoadingCompForm } from '../../../store/selectors/app.selectors';
 declare const alertify: any;
 
 /**
@@ -81,11 +83,20 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       this.form?.valueChanges.subscribe(x => {
-        if (this.form.touched) {
+        if (this.form?.touched) {
           this.isValidated = false;
         }
       });
     }, 0);
+
+    this.store.select(selectLoadingCompForm).subscribe((r) => {
+      if (r.mode) {
+        this.changeMode(r.mode)
+        if (r[ID_FIELD]) {
+          this.formId = r[ID_FIELD];
+        }
+      }
+    });
   }
 
   /** Establece el id de la transacción del formulario actual */
@@ -125,7 +136,10 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   validateForm(): void { }
 
   onSubmit(): void {
-    if (this.form.valid) {
+    if (this.isViewMode) {
+      return;
+    }
+    if (this.form?.valid) {
       return this.saveForm();
     }
     if (this.form?.valid === undefined) {
@@ -134,10 +148,10 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     alertify.set('notifier', 'position', 'top-center');
 
     let inputInvalid = '';
-    for (const name in this.form.controls) {
-      if (this.form.get(name)?.invalid) {
+    for (const name in this.form?.controls) {
+      if (this.form?.get(name)?.invalid) {
         inputInvalid = `${inputInvalid} <li align="left"> <b> ${name} </b></li> `;
-        //this.form.get(name)?.markAsDirty();
+        //this.form?.get(name)?.markAsDirty();
       }
     }
 
@@ -162,7 +176,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
     alertify.alert('Formulario no es valido.', templateHtml);
 
-    console.log('Formulario no es valido.', this.form, { aca: this.form.getRawValue() }, this.form.errors);
+    console.log('Formulario no es valido.', this.form, { aca: this.form?.getRawValue() }, this.form?.errors);
     // this.testFormValidate();
   }
 
@@ -170,9 +184,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
    * Limpiar data vacía en los arreglos en el formulario cuando se crea un nuevo
    */
   arrayCleaner(): void {
-    Object.keys(this.form.controls).forEach((e: string) => {
-      if (this.form.controls[e] instanceof UntypedFormArray) {
-        const formArray = this.form.controls[e] as UntypedFormArray;
+    Object.keys(this.form?.controls).forEach((e: string) => {
+      if (this.form?.controls[e] instanceof UntypedFormArray) {
+        const formArray = this.form?.controls[e] as UntypedFormArray;
         formArray.clear();
       }
     });
@@ -200,8 +214,15 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
   getForm(d: any): void {
     if (undefined === this.formId && d[ID_FIELD]) {
+      this.store.dispatch(loadCompAction({ mode: 'EDIT', id: d[ID_FIELD] }));
+      console.log('this.store.dispatch', d);
+    }
+  }
+
+  newGetForm(id: number | string): void {
+    if (id) {
+      this.fs.setControllerId(this.formControllerId ?? this.fullPath);
       this.changeMode('PREVIEW')
-      this.formId = d[ID_FIELD];
       this.saveForm();
     }
   }
@@ -217,7 +238,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   saveForm(): void {
     this.auto = false;
     // Guardar formulario.
-    if (this.form.value?.fecha_update === null || this.form.value?.fecha_update === undefined || this.form.value?.fecha_update) {
+    if (this.form?.value?.fecha_update === null || this.form?.value?.fecha_update === undefined || this.form?.value?.fecha_update) {
       const currentDate = new Date();
 
       // Obtener los componentes de fecha y hora
@@ -230,9 +251,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
       // Formatear la fecha y hora en el formato deseado
       const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-      this.form.patchValue({ fecha_update: formattedDateTime });
+      this.form?.patchValue({ fecha_update: formattedDateTime });
     }
-    const value = this.form.getRawValue();
+    const value = this.form?.getRawValue();
 
     // Validación extra para sacar el valor de ID del cuerpo
     if (undefined === this.formId && value[ID_FIELD]) {
@@ -240,7 +261,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     }
     const formMethod = this.isCreateMode ? this.createForm : (this.isEditMode ? this.replaceForm : (this.isDeleteMode ? this.deleteForm : this.resForm));
 
-    console.log('saveForm...', { value, patch: this.getPatchValue(this.form.controls, value) });
+    console.log('saveForm...', { value, patch: this.getPatchValue(this.form?.controls, value) });
 
     formMethod.call(this, (this.isPreViewMode || this.isDeleteMode) && !this.isCreateMode ? this.formId : value)
       .pipe(
@@ -280,10 +301,16 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
                 data.fecha_update = formattedDateTime;
               }
 
-              this.form.patchValue(data);
+              this.form?.patchValue(data);
+              this.getForm(data);
               this.changeMode('EDIT')
             }
 
+            if (this.isEditMode) {
+              if (data?.data?.id) {
+                this.form?.patchValue(data?.data);
+              }
+            }
 
             if (this.isDeleteMode) {
               this.changeMode('VIEW')
@@ -295,7 +322,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
         },
         error: err => {
           console.log('error.. al guardar', err);
-          this.changeMode('VIEW');
+          //this.changeMode('VIEW');
           this.formId = undefined;
         },
         complete: () => {
@@ -305,9 +332,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   }
   reset(): void {
     if (this.resetForm) {
-      this.form.reset();
+      this.form?.reset();
       const form: any = { ...this.originalForm };
-      this.form.patchValue(form);
+      this.form?.patchValue(form);
       //this.OnbtnNew();//NOTE: para el boton nuevo desde el header
     }
   }
@@ -321,12 +348,12 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   }
 
   ngAfterViewInit(): void {
-    this.originalForm = { ...this.form.value };
+    this.originalForm = { ...this.form?.value };
     this.fs.setControllerId(this.formControllerId ?? this.fullPath);
   }
 
   public get hasFormChanged(): boolean {
-    const changes = this.getPatchValue(this.form.controls, this.form.getRawValue());
+    const changes = this.getPatchValue(this.form?.controls, this.form?.getRawValue());
     return !!changes;
   }
 

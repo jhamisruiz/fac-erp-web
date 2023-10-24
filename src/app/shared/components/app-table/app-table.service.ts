@@ -8,6 +8,9 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 })
 export class AppTableService {
 
+  private changeState = new BehaviorSubject<boolean>(false);
+  changeState$ = this.changeState.asObservable();
+
   private isRefresh = new BehaviorSubject<boolean>(false);
   isRefresh$ = this.isRefresh.asObservable();
 
@@ -34,6 +37,10 @@ export class AppTableService {
 
   setRefresh(enabled: boolean): void {
     this.isRefresh.next(enabled);
+  }
+
+  setChangeState(e: boolean): void {
+    this.changeState.next(e);
   }
 
   select(u: string): Observable<any> {

@@ -4,13 +4,13 @@ export interface AppTable {
   label: string;
   id?: string;
   type?: string;
-  minDecimal?: number;
   required?: boolean;
   readonly?: boolean;
   disabled?: boolean;
   placeholder?: string;
   value?: any;
   data?: any;
+  unique?: boolean;
   visible?: boolean;
   isObject?: boolean;
   idObject?: boolean;
@@ -28,7 +28,7 @@ export interface AppTable {
   optionValue?: string;
   dataKey?: string;
   class?: string;
-  joinLabel?: string;
+  errStyle?: string;
   money?: string;
   estado?: boolean;
   estadoDocs?: any[];
@@ -60,4 +60,8 @@ export interface AppTable {
   min?: number;
   minFractionDigits?: number;
   max?: number;
+  isTemplete?: boolean;
+  Labels?: Array<string>;
+  separador?: string;
+  toUpperCase?: boolean;
 }

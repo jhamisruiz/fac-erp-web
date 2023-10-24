@@ -10,12 +10,11 @@ import { UntypedFormArray, UntypedFormGroup, FormGroupDirective } from '@angular
 
 import { FormService } from '@app/shared/services/util-services/form.service';
 import { cloneDeep } from 'lodash-es';
-import { Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { NsMetadata } from '../decorators';
 import { NsDocumentOptions } from '../decorators/document.decorator';
-import { tabId, WTab } from '../interfaces';
-import { ComponentMode, ComponentModeType, ComponentStatus } from './abstract-component.class';
+import { ComponentMode, ComponentModeType, tabId, WTab } from '../interfaces';
+import { ComponentStatus } from './abstract-component.class';
 import { AbstractForm } from './abstract-form.class';
 import { WintabOptions } from './wintabs.class';
 import { GetMetaOptions } from '../utils/get-meta.util';
@@ -116,7 +115,6 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     this.tableComponentId = this.options.tableComponentId ?? '';
     this.componentId = this.options.viewComponentId ?? '';
     this.isPartialUpdate = !!this.options.partialUpdate;
-    this.changeMode('VIEW');
 
     this.documentId = this.options?.id ?? ''; // String(tab?.id ?? '');
   }
@@ -124,7 +122,6 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
   ngOnInit(): void {
     // llamar obligatoriamente al metodo del padre.
     super.ngOnInit();
-
     //this.isViewMode = true;
     // Escucha los estados de sincronización del componente.
     this.fetching$
@@ -154,6 +151,14 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
 
       });
     }
+
+    if (this.isEditMode && this.formId) {
+      this.newGetForm(this.formId);
+    }
+    if (this.isViewMode === undefined) {
+      this.changeMode('VIEW');
+    }
+
   }
 
   updateToolbar(): void {
@@ -184,6 +189,17 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     return 0;
   }
 
+  public get isBtnNew(): boolean {
+    return (this.isViewMode ? true : (this.form.valid ? true : false)) || this.isEditMode;
+  }
+  public get isBtnSave(): boolean {
+    return (this.isCreateMode ? true : (this.form.valid ? true : false)) || this.isEditMode;
+  }
+
+  public get isBtnBack(): boolean {
+    return this.isCreateMode || this.isEditMode;
+  }
+
   public get tableSection(): boolean {
     return !this.isWindowTab;
   }
@@ -193,6 +209,7 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
   }
 
   changeMode(mode: ComponentModeType): void {
+    //
     if (mode === 'CREATE') {
       this.reset();
     }

@@ -13,20 +13,20 @@
     <ng-template let-select pTemplate="selectedItem" *ngIf="isTemplete">
       <div class="select-item select-item-value" *ngIf="descriptionValue">
         <div>
-          {{select[optionValue ?? '']}}
-          {{select[optionValue1??''] ? ' - '+ select[optionValue1??'']: ''}}
-          {{select[optionValue2??''] ? ' - '+ select[optionValue2??'']: ''}}
-          {{select[optionValue3??''] ? ' - '+ select[optionValue3??'']: ''}}
+          {{select[Labels[0]]}}
+          {{select[Labels[1]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[1]]: ''}}
+          {{select[Labels[2]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
+          {{select[Labels[3]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
         </div>
       </div>
     </ng-template>
     <ng-template let-select pTemplate="item" *ngIf="isTemplete">
       <div class="select-item">
         <div>
-          <!-- {{select[optionValue ?? '']}} -->
-          {{select[optionValue1??''] ? select[optionValue1??'']: ''}}
-          {{select[optionValue2??''] ? ' - '+ select[optionValue2??'']: ''}}
-          {{select[optionValue3??''] ? ' - '+ select[optionValue3??'']: ''}}
+          {{(select[Labels[0]])+(separador ? ' '+separador+' ': ' ')}}
+          {{select[Labels[1]] ? (separador ? ' '+separador+' ': ' ')+select[Labels[1]]: ''}}
+          {{select[Labels[2]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
+          {{select[Labels[3]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
         </div>
       </div>
     </ng-template>

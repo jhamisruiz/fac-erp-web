@@ -6,7 +6,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { HttpConfig } from './shared/interceptors/http.interceptor';
 import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 import { ViewsModule } from '@views/views.module';
-
 @NgModule({
   declarations: [],
   imports: [

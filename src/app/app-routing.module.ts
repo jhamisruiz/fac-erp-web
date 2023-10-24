@@ -17,7 +17,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: (): any => import('./views/views-routing.module').then(m => m.ViewsRoutingModule),
+    loadChildren: (): any => import('./views/views-routing.module')
+      .then(m => m.ViewsRoutingModule),
   },
   {
     path: '**',

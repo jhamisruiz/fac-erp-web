@@ -2,6 +2,9 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AppConfigService } from './../../services/config.service';
 import { Component, OnInit } from '@angular/core';
 import { filter } from 'rxjs';
+import { loadCompAction } from '../../../store/actions/app.actions';
+import { Store } from '@ngrx/store';
+import { AppState } from '@app/store/state/app.state';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,6 +20,7 @@ export class AppSidebarComponent implements OnInit {
   constructor(
     private sv: AppConfigService,
     private router: Router,
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit(): void {
@@ -34,6 +38,7 @@ export class AppSidebarComponent implements OnInit {
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe((e: any) => {
         const arr = e.url.split('/');
+        this.store.dispatch(loadCompAction({ mode: 'VIEW', id: null }));
         console.log(n, ' arr', arr);
         if (arr[2] === murl) {
           this.menuUrl = murl;

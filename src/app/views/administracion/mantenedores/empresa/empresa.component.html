@@ -1,6 +1,6 @@
-<app-tools (OnClickNew)="changeMode('CREATE')" (OnClickSave)="onSubmit()"
-  [isBtnNew]="(isViewMode? true:(form.valid?true:false)) || isEditMode" [isBtnSave]="isCreateMode || isEditMode"
-  (OnClickBack)="changeMode('VIEW')"></app-tools>
+<app-tools (OnClickNew)="changeMode($event)" (OnClickSave)="onSubmit()" [isBtnNew]="isBtnNew" [isBtnSave]="isBtnSave"
+  [isBtnBack]="isBtnBack" (OnClickBack)="changeMode($event)">
+</app-tools>
 
 <ng-container *ngIf="isViewMode || isDeleteMode">
   <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
@@ -8,9 +8,7 @@
     [btnEdit]="true" [crud]="false" [btnDelete]="true" [refresh]="auto">
   </app-table>
 </ng-container>
-isCreateMode:{{isCreateMode}}<br>
-isEditMode:{{isEditMode}}<br>
-isViewMode:{{isViewMode}}<br>
+
 <ng-container *ngIf="isCreateMode || isEditMode">
   <div class="card-body">
     <form [formGroup]="form">

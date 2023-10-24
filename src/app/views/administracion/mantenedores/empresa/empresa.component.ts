@@ -1,6 +1,6 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { UntypedFormGroup, Validators } from '@angular/forms';
-import { AbstractDocument } from '@app/shared/common/classes';
+import { AbstractDocument, ProviderFunc } from '@app/shared/common/classes';
 import { AppTable } from '@app/shared/components/app-table/app-table.interface';
 import { AppServicesService } from '@app/shared/services/app-services/app-services.service';
 import { UniqueDoc } from '@app/shared/validators/unique-document';
@@ -9,11 +9,12 @@ import { UniqueDoc } from '@app/shared/validators/unique-document';
   selector: 'app-empresa',
   templateUrl: './empresa.component.html',
   styleUrls: ['./empresa.component.scss'],
+  providers: [
+    ProviderFunc(EmpresaComponent),
+  ],
 })
 export class EmpresaComponent extends AbstractDocument implements OnInit {
-
   fullPath = '/empresa';
-  prueba = true;
   data: any[] = [];
   headers: AppTable[] = [
     {
@@ -77,28 +78,21 @@ export class EmpresaComponent extends AbstractDocument implements OnInit {
       habilitado: [true],
     },
   );
+
   counter = 0;
   constructor(
     injector: Injector,
     private sv: AppServicesService,
   ) {
     super(injector);
-    console.log(this.isViewMode, 'this.isEditMode', this.isEditMode);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
   }
 
-
-  pruebas(): void {
-    this.form = this.fbgroup();
-
-    console.log(this.form);
-  }
-
-  fbgroup(): any {
-    return this.fb;
+  fbgroup(f: any): any {
+    return this.fb.group(f);
   }
 
   getUbigeo(e: any): void {

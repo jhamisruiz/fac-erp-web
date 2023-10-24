@@ -1,7 +1,6 @@
-import { WindowsTab, tabId, WTab } from '../interfaces';
+import { WindowsTab, tabId, WTab, ComponentModeType, ComponentMode } from '../interfaces';
 import { WinTabDir } from '../enums';
 import { DocumentLayout } from '../decorators/document.decorator';
-import { ComponentMode, ComponentModeType } from './abstract-component.class';
 //import { SweetAlertService } from '@app/shared/services/util-services/sweet-alert.service';
 
 export interface WintabOptions {

@@ -9,12 +9,18 @@ import { HomeAdministracionComponent } from './home-administracion/home-administ
 import { UsuarioComponent } from './mantenedores/usuario/usuario.component';
 import { SharedModule } from '@app/shared/shared.module';
 import { EmpresaComponent } from './mantenedores/empresa/empresa.component';
+import { SucursalComponent } from './mantenedores/sucursal/sucursal.component';
+import { CategoriaComponent } from './mantenedores/categoria/categoria.component';
+import { ProductoComponent } from './mantenedores/producto/producto.component';
 
 @NgModule({
   declarations: [AdministracionComponent,
     HomeAdministracionComponent,
     UsuarioComponent,
     EmpresaComponent,
+    SucursalComponent,
+    CategoriaComponent,
+    ProductoComponent,
   ],
   imports: [
     CommonModule,
@@ -29,6 +35,9 @@ import { EmpresaComponent } from './mantenedores/empresa/empresa.component';
     HomeAdministracionComponent,
     UsuarioComponent,
     EmpresaComponent,
+    SucursalComponent,
+    CategoriaComponent,
+    ProductoComponent,
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'es' }],
 })

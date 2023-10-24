@@ -23,3 +23,13 @@ export interface CompanyModule {
   // FIXME: Indica si es home module, borrar.
   home?: boolean;
 }
+
+export enum ComponentMode {
+  CREATE = 'CREATE',
+  EDIT = 'EDIT',
+  VIEW = 'VIEW',
+  DELETE = 'DELETE',
+  PREVIEW = 'PREVIEW',
+}
+
+export type ComponentModeType = keyof typeof ComponentMode;
