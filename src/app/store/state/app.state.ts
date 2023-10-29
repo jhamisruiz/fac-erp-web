@@ -1,18 +1,21 @@
 import { ActionReducerMap } from '@ngrx/store';
-import { AppCompFormState, AppTableState, ItemsState } from 'src/app/shared/intrefaces/app.interface';
+import { AppCompFormState, AppTableState, AppUnspscState, ItemsState } from 'src/app/shared/intrefaces/app.interface';
 import { itemsReducer } from '../reducers/items.reducers';
 import { appTableReducer } from '../reducers/app-table.reducers';
 import { appCompFormReducer } from '../reducers/app.reducer';
+import { appUnspscReducer } from '../reducers/app.unspsc';
 
 export interface AppState {
   items: ItemsState;
   dataTable: AppTableState;
-  mode: AppCompFormState;
+  formMode: AppCompFormState;
+  unspsc: AppUnspscState;
 }
 
 export const ROOT_REDUCERS: ActionReducerMap<AppState> = {
   items: itemsReducer,
   dataTable: appTableReducer,
-  mode: appCompFormReducer,
+  formMode: appCompFormReducer,
+  unspsc: appUnspscReducer,
 }
 

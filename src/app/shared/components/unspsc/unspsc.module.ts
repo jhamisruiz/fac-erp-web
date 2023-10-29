@@ -5,26 +5,24 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { AppInterceptor } from '../../interceptors/app.interceptor';
+import { DialogModule } from 'primeng/dialog';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { BadgeModule } from 'primeng/badge';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [UnspscComponent],
   imports: [
-    HttpClientModule,
     CommonModule,
     FormsModule,
     ButtonModule,
     MultiSelectModule,
     DropdownModule,
+    DialogModule,
+    AutoCompleteModule,
+    BadgeModule,
+    ProgressSpinnerModule,
   ],
   exports: [UnspscComponent],
-  providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AppInterceptor,
-      multi: true,
-    },
-  ],
 })
 export class UnspscModule { }

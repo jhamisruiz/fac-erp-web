@@ -102,7 +102,7 @@ export class HttpConfig implements HttpInterceptor {
             error(`${(customError['message']) ?? 'Error de servidor'}`);
 
           const exp = localStorage.getItem(STOREKEY.USER_EXPIRE) ?? '0';
-          if (this.user.fechaexpire > Number(exp)) {
+          if (this.user.fechaexpire > Number(exp) || customError['code'] === 403) {
             this.user.clearUserSession();
           }
           return throwError(customError);

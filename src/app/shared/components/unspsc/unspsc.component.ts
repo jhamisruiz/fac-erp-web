@@ -1,9 +1,18 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { UnspscService } from './unspsc.service';
+import { Observable } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from '@app/store/state/app.state';
+import { selectLoadingUnspsc } from '@app/store/selectors/app.selectors';
+import { loadedUnspscAction } from '@app/store/actions/app.actions';
 
 export interface UNSPSC {
-  codigo: string;
-  descripcion: string;
+  codigo: string | null;
+  descripcion: string | null;
+}
+interface AutoCompleteCompleteEvent {
+  originalEvent: Event;
+  query: string;
 }
 @Component({
   selector: 'app-unspsc',
@@ -12,8 +21,18 @@ export interface UNSPSC {
 })
 export class UnspscComponent implements OnInit {
 
+  @Input() set InputCodigo(c: string | null) {
+    if (c) {
+      this.codigo = c;
+    }
+  }
+  @Output() NgModelResponse = new EventEmitter<UNSPSC>();
+
+  loading$: Observable<any> = new Observable();
+  visible: boolean = true;
   layoutMode!: string | null;
 
+  codigo: string | null | undefined;
   data: UNSPSC[] = [];
   segmentos: UNSPSC[] = [];
   segmento: any;
@@ -28,55 +47,110 @@ export class UnspscComponent implements OnInit {
   producto: any;
 
   searchTerm = '';
-  constructor(private http: HttpClient) { }
+  constructor(private store: Store<AppState>, private sv: UnspscService) { }
 
   ngOnInit(): void {
     this.layoutMode = document.documentElement.getAttribute('data-layout-mode');
-    this.getCategorias();
+    this.getSegmentos();
   }
 
-  twoWords(s: string, n: number): string {
+  twoWords(s: string | null | undefined, n: number): string {
     if (s) {
-      return (s).substring(0, n) + '-';
+      return (s).substring(0, n);
     }
     return '';
   }
 
-  getCategorias(): void {
-    const jsonFile = './assets/json/app.json';
-    this.http.get(jsonFile).subscribe((r: any) => {
-      this.data = r.data;
-      this.segmentos = this.data.filter(i => i.codigo.endsWith('000000'));
+  getSegmentos(): void {
+    this.sv.getSegmentos().subscribe((r: UNSPSC[] | null) => {
+      if (r) {
+        this.segmentos = r;
+        this.setSegmentos();
+      }
     });
+  }
+  setSegmentos(): void {
+    if (this.codigo) {
+      this.loading$ = this.store.select(selectLoadingUnspsc);
+      const d = (this.codigo).substring(0, 2) + '000000';
+      this.segmento = this.segmentos.find(vd => vd.codigo === d);
+      this.getSegmentoToFamilia();
+    }
   }
 
   getSegmentoToFamilia(): void {
     if (this.segmento?.codigo) {
-      const f = (this.segmento.codigo).substring(0, 2);
-      this.familias = this.data.filter(i => i.codigo.startsWith(f) && i.codigo.endsWith('0000') && parseInt(i.codigo) > this.segmento.codigo);
+      this.sv.getFamilias(this.segmento?.codigo).subscribe((r: UNSPSC[] | null) => {
+        if (r) {
+          this.familias = r;
+          this.setFamilia();
+        }
+      });
     }
   }
+  setFamilia() {
+    if (this.codigo) {
+      const d = (this.codigo).substring(0, 4) + '0000';
+      this.familia = this.familias.find(vd => vd.codigo === d);
+      this.getFamiliaToClase();
+    }
+  }
+
   getFamiliaToClase(): void {
     if (this.familia?.codigo) {
-      const f = (this.familia.codigo).substring(0, 4);
-      this.clases = this.data.filter(i => i.codigo.startsWith(f) && i.codigo.endsWith('00') && parseInt(i.codigo) > this.familia.codigo);
+      this.sv.getClases(this.familia?.codigo).subscribe((r: UNSPSC[] | null) => {
+        if (r) {
+          this.clases = r;
+          this.setClase();
+        }
+      });
+    }
+  }
+
+  setClase() {
+    if (this.codigo) {
+      const d = (this.codigo).substring(0, 6) + '00';
+      this.clase = this.clases.find(vd => vd.codigo === d);
+      this.getClaseToProd();
     }
   }
 
   getClaseToProd(): void {
     if (this.clase?.codigo) {
-      const f = (this.clase.codigo).substring(0, 6);
-      this.productos = this.data.filter(i => i.codigo.startsWith(f) && parseInt(i.codigo) > this.clase.codigo);
+      this.sv.getProductos(this.clase?.codigo, null).subscribe((r: UNSPSC[] | null) => {
+        if (r) {
+          this.productos = r;
+          this.setProducto();
+        }
+      });
     }
   }
 
+  setProducto() {
+    if (this.codigo) {
+      this.producto = this.productos.find(vd => vd.codigo === this.codigo);
+      this.store.dispatch(loadedUnspscAction({ state: false }));
+    }
+  }
   getProducto(): void {
-
+    this.NgModelResponse.emit(this.producto);
   }
 
-  filterData(): void {
-    const filteredData = this.data.filter(item => {
-      return item.descripcion.toLowerCase().includes(this.searchTerm.toLowerCase());
-    });
+  suggestProds(e: AutoCompleteCompleteEvent): void {
+    if (!this.clase?.codigo) {
+      this.sv.getProductos('', e?.query).subscribe((r: UNSPSC[] | null) => {
+        if (r) {
+          this.productos = r;
+        }
+      });
+    }
   }
+
+  getSuggstProducto(e: any, a: any): void {
+    if (e?.codigo) {
+      this.codigo = e?.codigo;
+      this.setSegmentos()
+    }
+  }
+
 }

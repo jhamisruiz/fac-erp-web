@@ -14,5 +14,9 @@ export interface AppTableState {
 }
 
 export interface AppCompFormState {
-  loading: boolean, mode: Readonly<ComponentModeType | null>, id: Readonly<number | null>
+  loading: boolean, formMode: Readonly<ComponentModeType | null>, id: Readonly<number | null>
+}
+
+export interface AppUnspscState {
+  loading: boolean, state: boolean,
 }
