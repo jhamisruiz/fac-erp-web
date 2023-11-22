@@ -3,6 +3,7 @@ import { loadCompAction } from '../../../store/actions/app.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/state/app.state';
 import { AppTableService } from '../app-table/app-table.service';
+import { Modetype } from '@app/shared/common/interfaces';
 
 @Component({
   selector: 'app-tools',
@@ -11,17 +12,22 @@ import { AppTableService } from '../app-table/app-table.service';
 })
 export class AppToolComponent implements OnInit {
 
-  @Input() isBtnNew = false;
-  @Input() isBtnSave = false;
-  @Input() isBtnBack = false;
+  @Input() isBtnNew = true;
+
+  @Input() isBtnSave = true;
+  @Input() saveDisabled = false;
+
+  @Input() isBtnBack = true;
+  @Input() ViewMode!: Modetype;
 
   @Output() OnClickNew = new EventEmitter<any>();
   @Output() OnClickSave = new EventEmitter<any>();
   @Output() OnClickBack = new EventEmitter<any>();
 
+  btnSave = false;
   constructor(private store: Store<AppState>, private ts: AppTableService) {
     this.ts.changeState$.subscribe((r: boolean) => {
-      this.isBtnSave = r ? false : true;
+      this.btnSave = r ? false : true;
     });
   }
 
@@ -30,7 +36,7 @@ export class AppToolComponent implements OnInit {
   }
 
   onClickNew(): void {
-    this.store.dispatch(loadCompAction({ mode: 'CREATE', id: null }));
+    this.store.dispatch(loadCompAction({ formMode: 'CREATE', id: null }));
     this.OnClickNew.emit('CREATE');
   }
 
@@ -39,7 +45,7 @@ export class AppToolComponent implements OnInit {
   }
 
   onClickBack(): void {
-    this.store.dispatch(loadCompAction({ mode: 'VIEW', id: null }));
+    this.store.dispatch(loadCompAction({ formMode: 'VIEW', id: null }));
     this.OnClickBack.emit('VIEW');
   }
 

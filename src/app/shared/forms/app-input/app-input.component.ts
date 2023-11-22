@@ -6,7 +6,8 @@ import { nanoid } from 'nanoid';
 import * as moment from 'moment';
 import 'src/resources/js/plugins/forms/tags/tokenfield.min.js';
 import { INPUT_ERROR_MESSAGES, NsCustomFormControl } from '../../common/classes/form-controls.class';
-
+import * as _ from 'lodash';
+import { delay, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-input',
@@ -68,7 +69,6 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   @Input() textPreIcon?: string;
   @Input() stylePreIcon?: string;
 
-
   @Input() styleClass: string | undefined;
   @Input() class: string | undefined;
   @Input() style: string | undefined | any;
@@ -100,12 +100,44 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   @Input() minFractionDigits?: number;
   @Input() inputStyleClass?: string;
 
+  @Input() set MinDate(n: number) {
+    if (n || n >= 0) {
+      const hoy = new Date();
+      const minimaFecha = new Date();
+      if (n === 0) {
+        minimaFecha.setDate(hoy.getDate());
+      } else {
+        minimaFecha.setDate(hoy.getDate() - n);
+      }
+      this.mindate = minimaFecha;
+    }
+  }
+  @Input() set MaxDate(n: number) {
+    if (n || n >= 0) {
+      const hoy = new Date();
+      const maximaFecha = new Date();
+      if (n === 0) {
+        maximaFecha.setDate(hoy.getDate());
+      } else {
+        maximaFecha.setDate(hoy.getDate() + n);
+      }
+      this.maxdate = maximaFecha;
+    }
+  }
+  maxdate: any;
+  mindate: any;
   ////textarea
   @Input() rows?: number;
   @Input() cols?: number;
 
   /** Formato por defecto de la fecha para el input control */
-  @Input() dateFormat = 'yyyy-MM-DD';
+  @Input() set format(f: string) {
+    this.dateFormat = f;
+  }
+  dateFormat = 'yy-mm-dd';
+
+  @Input() dateNow = false;
+  defaultDate?: Date;
 
   //INFO: para deshabilitar
   @Input() locked = false;
@@ -115,6 +147,7 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   @Input() set watchDis(dis: any) {
     this.locked = dis;
   }
+
   public isDateType?: boolean;
 
   @Input() get type(): string {
@@ -133,7 +166,6 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   public ADDON_PREPEND = 0;
   public ADDON_APPEND = 1;
   public element?: HTMLElement;
-
 
   private control?: AbstractControl;
   private inType = 'text';
@@ -162,6 +194,9 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   public onTouched = (_: any): void => { };
 
   ngOnInit(): void {
+    if (this.dateNow) {
+      this.defaultDate = new Date();
+    }
     this.getInputValid();
   }
 
@@ -185,26 +220,26 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
       this.getError();
     }
   }
+
   ngAfterViewInit(): void {
-    if (undefined !== this.tags) {
-      // $(`#${this.id}`).tokenfield({
-      //   trimValue: true,
-      //   minWidth: this.tagsMinWidth,
-      //   delimiter: this.tagsDelimiter,
-      //   createTokensOnBlur: this.createTagOnBlur
-      // }).on('change', () => {
-      //   this.onChangeValue($(`#${this.id}`).tokenfield('getTokensList'));
-      // });
-
-      // $(`#${this.id}-tokenfield`).on('blur', (event: any) => {
-      //   this.nsBlur.emit(event);
-      //   this.onTouched(event);
-      // });
+    if (this.inputType === 'calendar' && this.dateNow) {
+      const now = new Date();
+      this.onCalendarSelect(now.toISOString());
     }
-
-    // if (!this.mask) {
-    //   this.render.setProperty(this.inputRef.nativeElement, 'value', this.value);
-    // }
+  }
+  selectDate(e: any): Observable<string> {
+    const format = _.cloneDeep(this.dateFormat);
+    const fechaOriginal = new Date(e);
+    // Obtén los componentes de la fecha
+    const year = fechaOriginal.getFullYear().toString(); // Obtén los últimos dos dígitos del año
+    const month = ('0' + (fechaOriginal.getMonth() + 1)).slice(-2); // Añade cero al mes si es necesario
+    const day = ('0' + fechaOriginal.getDate()).slice(-2); // Añade cero al día si es necesario
+    // Construye la cadena de fecha en el formato deseado
+    const fechaFormateada = format
+      .replace('yy', year)
+      .replace('mm', month)
+      .replace('dd', day);
+    return of(fechaFormateada).pipe(delay(1));
   }
 
   get currentControl(): AbstractControl | undefined {
@@ -266,9 +301,6 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
       this.borderRequired2 = false;
     }
   }
-  // addAddon(addon: NsAddonControlComponent): void {
-  //   this.addons[+!!addon.append].push(addon);
-  // }
 
   clearInput(): void {
     this.value = null;
@@ -291,6 +323,15 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
 
   get dateMaxLength(): number {
     return this.dateFormat.length;
+  }
+
+  onCalendarSelect(e: any): void {
+    this.selectDate(e).subscribe((r) => {
+      this.value = r;
+      this.OnInput.emit(r);
+      this.propagateChange(r);
+    });
+
   }
 
   onInpt(elm: any): void {
@@ -324,7 +365,6 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
         this.borderRequired = false;
       }
     }
-
     const realValue = 'number' === this.type ? element.valueAsNumber : this.value;
     this.OnInput.emit(realValue);
     this.propagateChange(realValue);

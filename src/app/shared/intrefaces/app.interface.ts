@@ -18,5 +18,5 @@ export interface AppCompFormState {
 }
 
 export interface AppUnspscState {
-  loading: boolean, state: boolean,
+  loading: boolean, codigo: Readonly<string | null>,
 }

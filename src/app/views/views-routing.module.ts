@@ -24,6 +24,13 @@ const routes: Routes = [
         canActivate: [UserGuard],
       },
       {
+        path: 'facturacion',
+        loadChildren: (): Promise<any> =>
+          import('./facturacion/facturacion.module')
+            .then(m => m.FacturacionModule),
+        canActivate: [UserGuard],
+      },
+      {
         path: 'planillas',
         loadChildren: (): Promise<any> =>
           import('./planillas/planillas.module')

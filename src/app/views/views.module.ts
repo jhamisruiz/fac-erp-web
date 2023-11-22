@@ -9,6 +9,7 @@ import { ViewsComponent } from './views.component';
 import { PlanillasModule } from './planillas/planillas.module';
 import { CajaModule } from './caja/caja.module';
 import { AdministracionModule } from './administracion/administracion.module';
+import { FacturacionModule } from './facturacion/facturacion.module';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { AdministracionModule } from './administracion/administracion.module';
     InicioModule,
     AdministracionModule,
     PlanillasModule,
+    FacturacionModule,
     CajaModule,
     ReactiveFormsModule,
     FormsModule,
@@ -29,6 +31,7 @@ import { AdministracionModule } from './administracion/administracion.module';
   exports: [
     InicioModule,
     AdministracionModule,
+    FacturacionModule,
     PlanillasModule,
     CajaModule,
   ],

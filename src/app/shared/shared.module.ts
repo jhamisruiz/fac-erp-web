@@ -11,6 +11,9 @@ import { AppClickOutsideDirective } from './directives/app';
 import { AppUbigeoModule } from './components/app-ubigeo/app-ubigeo.module';
 import { AppInputFileModule } from './forms/app-input-file/app-input-file.module';
 import { UnspscModule } from './components/unspsc/unspsc.module';
+import { AppFinderModule } from './forms/app-finder/app-finder.module';
+import { AppHomeModule } from './components/app-home/app-home.module';
+import { AppTotalModule } from './components/app-total/app-total.module';
 
 @NgModule({
   imports: [
@@ -26,10 +29,13 @@ import { UnspscModule } from './components/unspsc/unspsc.module';
     AppHeaderModule,
     AppSidebarModule,
     AppSelectModule,
+    AppFinderModule,
     AppTableModule,
+    AppTotalModule,
     AppToolModule,
     AppUbigeoModule,
     UnspscModule,
+    AppHomeModule,
     //
     AppClickOutsideDirective,
   ],

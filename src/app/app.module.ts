@@ -10,6 +10,9 @@ import { environment } from 'src/environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ROOT_REDUCERS } from './store/state/app.state';
 import { EffectsModule } from '@ngrx/effects';
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+registerLocaleData(localeEs, 'es');
 @NgModule({
   declarations: [
     AppComponent,

@@ -17,11 +17,11 @@ export const selectLoadingCompForm = createSelector(
 
 
 export const selectUnspscForm = createSelector(
-  selectFormFeature,
-  (state: AppUnspscState) => state,
+  selectUnspscFeature,
+  (state: AppUnspscState) => state.codigo,
 );
 
 export const selectLoadingUnspsc = createSelector(
-  selectFormFeature,
-  (state: AppUnspscState): AppUnspscState => state,
+  selectUnspscFeature,
+  (state: AppUnspscState): boolean => state.loading,
 );

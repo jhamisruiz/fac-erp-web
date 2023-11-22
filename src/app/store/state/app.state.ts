@@ -3,7 +3,7 @@ import { AppCompFormState, AppTableState, AppUnspscState, ItemsState } from 'src
 import { itemsReducer } from '../reducers/items.reducers';
 import { appTableReducer } from '../reducers/app-table.reducers';
 import { appCompFormReducer } from '../reducers/app.reducer';
-import { appUnspscReducer } from '../reducers/app.unspsc';
+import { appUnspscReducer } from '../reducers/unspsc.reducers';
 
 export interface AppState {
   items: ItemsState;
@@ -17,5 +17,5 @@ export const ROOT_REDUCERS: ActionReducerMap<AppState> = {
   dataTable: appTableReducer,
   formMode: appCompFormReducer,
   unspsc: appUnspscReducer,
-}
+};
 

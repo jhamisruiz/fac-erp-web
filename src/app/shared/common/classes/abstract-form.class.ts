@@ -14,6 +14,7 @@ import { AbstractComponent } from './abstract-component.class';
 import { HttpClient } from '@angular/common/http';
 import { FormService } from '@app/shared/services/util-services/form.service';
 import { selectLoadingCompForm } from '../../../store/selectors/app.selectors';
+import { ComponentModeType } from '../interfaces';
 declare const alertify: any;
 
 /**
@@ -65,6 +66,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
   protected hashValues: any[] = [];
 
+  private modDisable!: ComponentModeType;
+  private postDisable = false;
+
   constructor(
     injector: Injector,
   ) {
@@ -90,8 +94,8 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     }, 0);
 
     this.store.select(selectLoadingCompForm).subscribe((r) => {
-      if (r.mode) {
-        this.changeMode(r.mode)
+      if (r.formMode) {
+        this.changeMode(r.formMode);
         if (r[ID_FIELD]) {
           this.formId = r[ID_FIELD];
         }
@@ -134,9 +138,27 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   }
 
   validateForm(): void { }
+  onDisable(mode: ComponentModeType): void {
+    this.modDisable = mode;
+  }
+
+  getSubmitDisabled(): void {
+    if (this.isEditMode && this.modDisable === 'EDIT') {
+      this.postDisable = true;
+
+      Object.keys(this.form.controls).forEach(key => {
+        const control = this.form.get(key);
+        if (control) {
+          control.disable(); // Esto desactivará todos los controles del FormGroup
+        }
+      });
+    }
+  }
 
   onSubmit(): void {
-    if (this.isViewMode) {
+    this.getSubmitDisabled();
+
+    if (this.isViewMode || this.postDisable) {
       return;
     }
     if (this.form?.valid) {
@@ -214,22 +236,21 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
   getForm(d: any): void {
     if (undefined === this.formId && d[ID_FIELD]) {
-      this.store.dispatch(loadCompAction({ mode: 'EDIT', id: d[ID_FIELD] }));
-      console.log('this.store.dispatch', d);
+      this.store.dispatch(loadCompAction({ formMode: 'EDIT', id: d[ID_FIELD] }));
     }
   }
 
   newGetForm(id: number | string): void {
     if (id) {
       this.fs.setControllerId(this.formControllerId ?? this.fullPath);
-      this.changeMode('PREVIEW')
+      this.changeMode('PREVIEW');
       this.saveForm();
     }
   }
 
   delForm(d: any): void {
     if (undefined === this.formId && d[ID_FIELD]) {
-      this.changeMode('DELETE')
+      this.changeMode('DELETE');
       this.formId = d[ID_FIELD];
       this.saveForm();
     }
@@ -303,7 +324,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
               this.form?.patchValue(data);
               this.getForm(data);
-              this.changeMode('EDIT')
+              this.changeMode('EDIT');
             }
 
             if (this.isEditMode) {
@@ -313,7 +334,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
             }
 
             if (this.isDeleteMode) {
-              this.changeMode('VIEW')
+              this.changeMode('VIEW');
               this.reset();
             }
             this.auto = true;
@@ -330,6 +351,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
         },
       });
   }
+
   reset(): void {
     if (this.resetForm) {
       this.form?.reset();
@@ -362,7 +384,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     if (this.hashValues?.length) {
       this.hashValues.forEach((v) => {
         data[v] = APP_KEY + `${btoa(d[v])}`;
-      })
+      });
     }
     return data;
   }

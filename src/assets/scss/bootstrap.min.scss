@@ -744,7 +744,7 @@ progress {
   flex-shrink: 0;
   width: 100%;
   max-width: 100%;
-  padding-right: calc(var(--vz-gutter-x) * .5);
+  //padding-right: calc(var(--vz-gutter-x) * .5);
   padding-left: calc(var(--vz-gutter-x) * .5);
   margin-top: var(--vz-gutter-y)
 }

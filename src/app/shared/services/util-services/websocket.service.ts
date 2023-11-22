@@ -1,4 +1,5 @@
-import { Injectable, isDevMode, OnDestroy } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Injectable, OnDestroy } from '@angular/core';
 import { WSCLIENT, WSSERVER } from '@app/config';
 import { NGXLogger } from 'ngx-logger';
 import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';

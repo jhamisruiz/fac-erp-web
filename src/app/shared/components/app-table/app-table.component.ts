@@ -4,7 +4,7 @@ import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { Message } from 'primeng/api';
 import { PrimeNGConfig } from 'primeng/api';
 import * as moment from 'moment';
-import { AppTable } from './app-table.interface';
+import { AppTable, ParentVal } from './app-table.interface';
 import { AppTableService } from './app-table.service';
 import { Table } from 'primeng/table';
 import * as _ from 'lodash';
@@ -14,6 +14,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/state/app.state';
 import { selectLoadingDataTable } from '../../../store/selectors/app-table.selectors';
 import { loadTAbleAction, loadedTAbleAction } from '../../../store/actions/app-table.actions';
+import { Facturacion } from '@app/shared/common/classes';
 
 export class Items {
   edit?: boolean;
@@ -29,18 +30,11 @@ export class Items {
 })
 
 
-export class AppTableComponent implements OnInit, OnDestroy {
+export class AppTableComponent extends Facturacion implements OnInit, OnDestroy {
   numeroNombres: string[] = NUMEROS_NOMBRES;
 
   @ViewChild('dt') tb!: Table;
   @Input() newRow: any;
-
-  @Input() set headers(hds: AppTable[]) {
-    this.headerstab = hds;
-
-    this.selectSG();
-  }
-
   @Input() csv?: boolean;
   @Input() exel?: boolean;
   @Input() isFProd = false;
@@ -75,12 +69,27 @@ export class AppTableComponent implements OnInit, OnDestroy {
   @Input() tableName?: string;
   @Input() path?: string;
 
+  //modal
+  @Input() modalFormName?: string;
+  @Input() isFacturacion: boolean = false;
+
   ////////
   @Input() menuContext = true;//?: boolean;
   items: MenuItem[] = [];
   menuItem: Items = {};
 
+  @Input() set headers(hds: AppTable[]) {
+    hds.forEach((v, i) => {
+      if (v?.type === 'suggest') {
+        if (!v?.fieldname) {
+          hds[i].fieldname = `obj_${v.field}`;
+        }
+      }
+    });
 
+    this.headerstab = hds;
+    this.selectSG();
+  }
   @Input() set dataSourse(d: any[]) {
     this.isediting = false;
     this.getIsEditRow(false);
@@ -91,7 +100,6 @@ export class AppTableComponent implements OnInit, OnDestroy {
     if (d === null) {
       this.data = [];
     }
-    this.getSelects();
   }
 
   @Input() set currentPath(url: string) {
@@ -132,6 +140,8 @@ export class AppTableComponent implements OnInit, OnDestroy {
   @Input() set edit(d: boolean) {
     this.getIsEditRow(d);
   }
+  @Input() modalForm = false;
+  @Input() locked = false;
 
   @Input() isDelete = true;
   @Input() idsuggest!: number;
@@ -162,9 +172,18 @@ export class AppTableComponent implements OnInit, OnDestroy {
   currentSPath?: string;
   filterGlobal = '';
   data: any[] = [];
-  displayModal = false;
-  nombrecuadro = 'Imagenes';
   headerstab: AppTable[] = [];
+
+  //modal
+  modal: any;
+  dataModal: any;
+  copyModal: any;
+  displayModal = false;
+  isModalEdit = false;
+  isModalNew = false;
+  isModalView = false;
+
+  nombrecuadro = 'Imagenes';
   images: any[] = [];
   exportColumns: any[] = [];
   host = '';
@@ -180,7 +199,6 @@ export class AppTableComponent implements OnInit, OnDestroy {
   cloneRow: any = {};
   currentEdit: any = [];
   dataDeleted: any[] = [];
-
   filterSelect: any[] = [];
   rowSelect = false;
   rowDisabledSelect = false;
@@ -204,6 +222,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
     private primengConfig: PrimeNGConfig,
     private sv: AppTableService,
   ) {
+    super();
     this.sv.refreshData.subscribe((r) => {
     });
     this.sv.isRefresh$.subscribe(r => {
@@ -244,8 +263,13 @@ export class AppTableComponent implements OnInit, OnDestroy {
         command: (e): void => this.deleteR(this.rowData, this.tableName ?? '', this.headerstab),
       },
     ];
+    this.getSelects();
   }
-
+  modelMode(m: 'EDIT' | 'NEW' | 'VIEW'): void {
+    this.isModalEdit = m === 'EDIT' ? true : false;
+    this.isModalNew = m === 'NEW' ? true : false;
+    this.isModalView = m === 'VIEW' ? true : false;
+  }
   getIsEditRow(e: boolean): void {
     this.editing = e;
     this.sv.setChangeState(e);
@@ -259,7 +283,6 @@ export class AppTableComponent implements OnInit, OnDestroy {
     this.contextDisabled = false;
     if (e?.idEstado === 2) {
       this.contextDisabled = true;
-
     }
   }
 
@@ -288,7 +311,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
     return 'IdSucursal';
   }
   onRowSelect(e: any): void {
-    this.OnRowSelect.emit(e?.data ?? {})
+    this.OnRowSelect.emit(e?.data ?? {});
     this.rowSelect = true;
     this.rowDisabledSelect = false;
     if (!this.editing) {
@@ -309,54 +332,64 @@ export class AppTableComponent implements OnInit, OnDestroy {
   }
 
   selectSG(): any {
+    const modal: any = {};
     this.headerstab.forEach((v, i) => {
-      this.headerstab[i].data = v?.data ? v?.data : [];
+      if (this.headerstab[i].type === 'suggest') {
+        this.headerstab[i].data = v?.data ? v?.data : [];
+      }
       if ((v?.type === 'select' && v?.url && v?.useUrl === undefined) || (v?.type === 'simpleSelect' && v?.url && v?.useUrl === undefined)) {
-        const url = `${v.url}?start=0&length=10&search=&order=asc`;// + d[pnt.queryParent[0]];
+        const url = `${v.url}?start=0&length=62&search=&order=asc`;// + d[pnt.queryParent[0]];
         this.sv.select(url).subscribe((r: any) => {
           const data: any[] = r ?? [];
           v.data = data;
         });
       }
-
       if (v?.type === 'multiple' && v?.url) {
         this.sv.select(v?.url).subscribe((r: any) => {
           const data: any[] = r ?? [];
           v.data = data;
         });
       }
-
       if (v?.type === 'suggest') {
-        this.getSugget(v, v?.url, v?.fake ?? false);
+        this.getSugget(null, v, v?.url, v?.fake ?? false);
       }
+      //para el modal
+      if (v.fieldname) {
+        modal[v.fieldname] = null;
+      }
+      modal[v.field] = v?.value ?? null;
     });
+
+    modal.index = 0;
+    this.modal = modal;
+    this.copyModal = _.cloneDeep(modal);
   }
 
-  changeData(): void {
-    this.OnChangeData.emit(this.data);
+  filterData(e: any, h: any, url: any, fake: boolean): void {
+    this.getSugget(e.query ?? null, h, url, fake);
   }
 
-  filterData(event: any, h: any, u: any, f: boolean): void {
-    this.getSugget(h, u, f);
-  }
-
-  getSugget(h: any, u: any, f: boolean): void {
-    this.sv.suggest(u, f).subscribe((r: any) => {
+  getSugget(data: any, h: any, url: any, fake: boolean): void {
+    this.sv.suggest(data, url, fake).subscribe((r: any) => {
       //const data: any[] = r ?? [];
       this.filterSelect = r?.length ? r : (r?.length ? r : []);
       h.data = r?.length ? r : (r?.length ? r : []);
     });
   }
 
-  change(e: any, d: any, f: any, p: any[]): void {
+  change(e: any, d: any, f: any, p: Array<ParentVal>): void {
     if (!e.target.value) {
       d[f] = null;
       if (p?.length) {
         p.forEach((v, i) => {
-          d[v] = null;
+          d[v.parentField] = null;
         });
       }
     }
+  }
+  changeData(): void {
+    this.OnChangeData.emit(this.data);
+    this.calculaFactura(this.modal, this.locked ? !this.locked : this.isFacturacion);
   }
 
   getSelects(): void {
@@ -387,79 +420,96 @@ export class AppTableComponent implements OnInit, OnDestroy {
 
   }
 
-  selected(e: any, d: any, f: any, p: any[], h: any): void {
+  selected(e: any, d: any, f: any, p: Array<ParentVal>, h: any): void {
 
-    //urlparent
-    if (h?.useUrl === undefined) {
-      const pnt = this.headerstab.find((hr: any) => (hr.field) === p[0]);
-
-      if (pnt && pnt.keyData) {
-        if (e.value === null) {
-          d[pnt.keyData].length = 0;
-          d[pnt.keyData] = [];
-        }
-        if (d[pnt.queryParent[0]]) {
-          const url = `${pnt.url}?start=0&length=10&search=&order=asc`;// + d[pnt.queryParent[0]];
-          this.sv.select(url).subscribe((r: any) => {
-            const data: any[] = r ?? [];
-            const k = pnt?.keyData ?? 'data';
-            d[k] = data;
+    //select
+    const id = e?.value > 0 ? e?.value : 0;
+    const data: any[] = h?.data ?? [];
+    if (data?.length) {
+      const doc = data.find((n) => n.id === id);
+      if (doc) {
+        if (p?.length) {
+          p.forEach((v, i) => {
+            d[v.parentField] = doc[v.field];
+            const obj = this.headerstab.find((vh: any) => vh?.field === v.parentField);
+            if (obj) {
+              this.errorStyle(d, obj, d[obj?.field], obj?.required ?? false, obj?.parentsVals ?? []);
+            }
           });
         }
       }
     }
-
-    if (e?.id) {
-      d[f] = e?.id;
-      if (p?.length) {
-        p.forEach((v, i) => {
-          d[v] = e[v];
-        });
-      }
-    }
   }
 
-  selectedItem(e: any, d: any, f: any, ov: string, p: any[]): void {
-    //id de la tabla
+  selectedItemSgst(e: any, d: any, field: any, oVal: any, p: Array<ParentVal>): void {
     //parents
-
-    if (e?.id || e[ov]) {
-      d[f] = e[ov];
+    if (e?.id || e[oVal]) {
+      d[field] = e[oVal];
       if (p?.length) {
         p.forEach((v, i) => {
-          if (!v.p) {
-            d[v] = e[v];
-
-            const obj = this.headerstab.find((vh: any) => vh?.field === v);
-            if (obj?.type === 'suggest' || obj?.type === 'select') {
-              const fln = obj?.fieldname ?? '';
-
-              const data: any[] = obj?.data;
-              const dobj = data.find((vh: any) => vh?.[obj?.optionValue ?? ''] === e[v]);
-              d[fln] = dobj;
+          if (v.field) {
+            d[v.parentField] = e[v.field];
+            const obj = this.headerstab.find((vh: any) => vh?.field === v.parentField);
+            if (obj) {
+              if (obj?.type === 'select') {
+                if (obj?.parentsVals?.length) {
+                  //this.selectedItemSgst({ id: d[obj?.field] }, d, obj?.field, null, obj?.parentsVals);
+                  this.selected({ value: d[obj?.field] }, d, null, obj?.parentsVals, obj);
+                }
+              }
+              if (obj?.type === 'suggest') {
+                if (obj?.parentsVals?.length) {
+                  //this.selectedItemSgst({ id: d[obj?.field] }, d, obj?.field, null, obj?.parentsVals);
+                }
+              }
+              this.errorStyle(d, obj, d[obj?.field], obj?.required ?? false, obj?.parentsVals ?? []);
             }
           }
 
-          if (v.p) {
-            d[v.h] = e[v.p];
-            //const obj = this.headerstab.find((vh: any) => vh?.field === v.h);
-            // if (obj?.type === 'suggest' || obj?.type === 'select') {
-            //   const fln = obj?.fieldname ?? '';
-
-            //   const data: any[] = obj?.data;
-            //   const dobj = data.find((vh: any) => vh?.[obj?.optionValue ?? ''] === e[v.h]);
-            //   d[fln] = dobj;
-            // }
-          }
-
         });
       }
     }
 
   }
+  onClearSuggt(e: any, d: any, f: any, p: Array<ParentVal>): void {
+    d[f] = null;
+    if (p?.length) {
+      p.forEach((v, i) => {
+        d[v.parentField] = null;
+      });
+    }
+  }
+  errorStyle(d: any, h: any, val: any, req: boolean, p: Array<ParentVal>): void {
+    h.errStyle = undefined;
+    if (h?.unique && this.data?.length > 1) {
+      let conteo = 0;
+      this.data.forEach((v, i) => {
+        if (val && v?.[h.field] === val) {
+          conteo++;
+          if (conteo > 1) {
+            h.errStyle = 'danger';
+            const row = d;
+            row[h.field] = null;
+            if (p?.length) {
+              p.forEach((v, i) => {
+                d[v.parentField] = null;
+              });
+            }
+            this.tb.initRowEdit(row);
+            this.messageService.add({ severity: 'warning', summary: 'Warning', detail: 'El dato ' + h.label + ' ya existe!' });
+          }
+        }
+
+      });
+    }
+    if (req) {
+      if (val === null || val === undefined || val === '') {
+        h.errStyle = 'danger';
+      }
+    }
+  }
   addRow(): void {
     this.isaddrow = true;
-
     const h: any[] = this.headerstab;
     const ob: any = {};
 
@@ -481,6 +531,74 @@ export class AppTableComponent implements OnInit, OnDestroy {
     this.getIsEditRow(true);
     this.rowData = ob ?? {};
   }
+  modalErrStyle(d: any): void {
+    const h: any[] = this.headerstab;
+    this.required = false;
+    h.forEach((v, i) => {
+      if (v?.required) {
+        h[i].errStyle = undefined;
+        if (d[v.field] === null || d[v.field] === undefined || d[v.field] === '') {
+          this.required = true;
+          h[i].errStyle = 'danger';
+        }
+      }
+
+      if (v?.toUpperCase && d[v.field]) {
+        d[v.field] = (d[v.field]).toUpperCase();
+      }
+    });
+  }
+  modalStyle(): void {
+    const h: any[] = this.headerstab;
+    h.forEach((v, i) => {
+      if (v?.required) {
+        h[i].errStyle = undefined;
+      }
+    });
+  }
+  addModalRow(): void {
+    if (!this.locked) {
+      this.modalStyle();
+      this.modal = _.cloneDeep(this.copyModal);
+      this.displayModal = true;
+      this.modelMode('NEW');
+      const m = this.modal;
+      m.index = this.data.length;
+    }
+
+  }
+
+  onRowEditModalInit(d: any): void {
+
+    this.modalStyle();
+    this.modelMode('EDIT');
+    this.dataModal = _.cloneDeep(d);
+    this.displayModal = true;
+    this.modal = d;
+    this.calculaFactura(this.modal, this.locked ? !this.locked : this.isFacturacion);
+  }
+  onRowEditModalSave(): void {
+    if (!this.locked) {
+      if (this.isModalNew) {
+        this.modalErrStyle(this.modal);
+        if (!this.required) {
+          this.data.push(this.modal);
+        }
+      }
+      this.dataResponse.emit(this.data);
+      this.OnRowSave.emit(this.modal);
+      this.displayModal = false;
+    }
+  }
+  onRowEditModalCancel(): void {
+    this.displayModal = false;
+    if (this.isModalEdit) {
+      const r = this.modal;
+      this.data[r.index] = this.dataModal;
+    }
+    this.dataModal = _.cloneDeep(this.copyModal);
+    this.modelMode('VIEW');
+  }
 
   onRowEditInit(d: any): void {
     this.isediting = true;
@@ -493,27 +611,16 @@ export class AppTableComponent implements OnInit, OnDestroy {
     this.rowSelect = false;
   }
 
-  errorStyle(d: any, h: any, val: any, req: boolean): void {
-    h.errStyle = undefined;
-    if (h?.unique && this.data?.length > 1) {
-      let conteo = 0;
-      this.data.forEach((v, i) => {
-        if (val && v?.[h.field] === val) {
-          conteo++;
-          if (conteo > 1) {
-            h.errStyle = 'danger';
-            const row = d;
-            row[h.field] = null;
-            this.tb.initRowEdit(row);
-            this.messageService.add({ severity: 'warning', summary: 'Warning', detail: 'El dato ' + h.label + ' ya existe!' });
-          }
-        }
 
-      });
-    }
-    if (req) {
-      if (val === null || val === undefined || val === '') {
-        h.errStyle = 'danger';
+  onCloseModal(d: any): void {
+    if (!this.isModalView) {
+      this.modalErrStyle(d);
+      if (!this.required) {
+
+        this.modelMode('VIEW');
+      } else {
+        this.displayModal = true;
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Completa los campos requeridos' });
       }
     }
   }
@@ -531,7 +638,7 @@ export class AppTableComponent implements OnInit, OnDestroy {
         }
       }
 
-      if (v?.toUpperCase) {
+      if (v?.toUpperCase && d[v.field]) {
         d[v.field] = (d[v.field]).toUpperCase();
       }
     });
@@ -835,20 +942,27 @@ export class AppTableComponent implements OnInit, OnDestroy {
       return res;
     }
   }
+
   outputSugLabs(d: any, f: any, ov: any, lbl: Array<string>, sep: string | undefined): any {
-
     const dr: any[] = d ? d : [];
-
     const c = dr.find((v) => v[ov] === f);
     if (c) {
       let res = '';
       if (lbl?.length) {
         lbl.forEach((v, i) => {
-          const spd = (sep && i > 0) ? ` ${sep} ` : ' '
-          res += spd + c[v];
+          if (i > 0) {
+            const spd = (sep && i > 1) ? ` ${sep} ` : ' ';
+            res += spd + c[v];
+          }
         });
       }
-      return res;
+
+      if (lbl?.length === 1) {
+        res = c[lbl[0]];
+      }
+      return `${lbl?.length > 1 ? '<div class="p-1 pt-0 pb-0  m-0 badge-info">' + (c[lbl[0]]) + '</div>' : ''}
+              <div class="pl-1">${res}
+              </div>`;
     }
   }
 
@@ -861,6 +975,14 @@ export class AppTableComponent implements OnInit, OnDestroy {
     d = (d.replace(/[^\dA-Z]/g, '').replace(/(.{4})/g, '$1 ').trim()).toString();
     const v = e.target;
     v.value = d;
+  }
+  convertirDecimales(numero: number, minFractionDigits: number): string {
+    // Redondea el número a la cantidad específica de decimales
+    const factor = Math.pow(10, minFractionDigits);
+    const numeroRedondeado = Math.round(numero * factor) / factor;
+    // Convierte el número redondeado a una cadena con la cantidad deseada de decimales
+    const numeroConDecimales = numeroRedondeado.toFixed(minFractionDigits);
+    return numeroConDecimales;
   }
 
   ngOnDestroy(): void {

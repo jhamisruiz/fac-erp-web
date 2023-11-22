@@ -13,7 +13,7 @@ import { cloneDeep } from 'lodash-es';
 import { takeUntil } from 'rxjs/operators';
 import { NsMetadata } from '../decorators';
 import { NsDocumentOptions } from '../decorators/document.decorator';
-import { ComponentMode, ComponentModeType, tabId, WTab } from '../interfaces';
+import { ComponentMode, ComponentModeType, Modetype, tabId, WTab } from '../interfaces';
 import { ComponentStatus } from './abstract-component.class';
 import { AbstractForm } from './abstract-form.class';
 import { WintabOptions } from './wintabs.class';
@@ -97,6 +97,35 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
       sexo: 'OTR',
     },
   ];
+
+  public moneda: any[] = [
+    {
+      codigo: 'PEN',
+      nombre: '(S/) Nuevo Sol o Sol',
+    }, {
+      codigo: 'USD',
+      nombre: '($) US Dollar',
+    }];
+
+  public tipoAfectacion: any[] = [
+    { codigo: 10, descripcion: 'Gravado - Operación Onerosa' },
+    { codigo: 11, descripcion: 'Gravado – Retiro por premio' },
+    { codigo: 12, descripcion: 'Gravado – Retiro por donación' },
+    { codigo: 13, descripcion: 'Gravado – Retiro' },
+    { codigo: 14, descripcion: 'Gravado – Retiro por publicidad' },
+    { codigo: 15, descripcion: 'Gravado – Bonificaciones' },
+    { codigo: 16, descripcion: 'Gravado – Retiro por entrega a trabajadores' },
+    { codigo: 17, descripcion: 'Gravado – IVAP' },
+    { codigo: 20, descripcion: 'Exonerado - Operación Onerosa' },
+    { codigo: 21, descripcion: 'Exonerado – Transferencia Gratuita' },
+    { codigo: 30, descripcion: 'Inafecto - Operación Onerosa' },
+    { codigo: 31, descripcion: 'Inafecto – Retiro por Bonificación' },
+    { codigo: 32, descripcion: 'Inafecto – Retiro' },
+    { codigo: 33, descripcion: 'Inafecto – Retiro por Muestras Médicas' },
+    { codigo: 34, descripcion: 'Inafecto - Retiro por Convenio Colectivo' },
+    { codigo: 35, descripcion: 'Inafecto – Retiro por premio' },
+    { codigo: 36, descripcion: 'Inafecto - Retiro por publicidad' },
+    { codigo: 40, descripcion: 'Exportación de bienes o servicios' }];
 
   constructor(injector: Injector) {
     super(injector);
@@ -189,15 +218,15 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     return 0;
   }
 
-  public get isBtnNew(): boolean {
-    return (this.isViewMode ? true : (this.form.valid ? true : false)) || this.isEditMode;
-  }
-  public get isBtnSave(): boolean {
-    return (this.isCreateMode ? true : (this.form.valid ? true : false)) || this.isEditMode;
-  }
-
-  public get isBtnBack(): boolean {
-    return this.isCreateMode || this.isEditMode;
+  public get modeType(): Modetype {
+    return {
+      isViewMode: this.isViewMode,
+      isPreViewMode: this.isPreViewMode,
+      isEditMode: this.isEditMode,
+      isCreateMode: this.isCreateMode,
+      isDeleteMode: this.isDeleteMode,
+      formValid: this.form?.valid,
+    };
   }
 
   public get tableSection(): boolean {

@@ -20,12 +20,26 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
       visible: false,
     },
     {
+      field: 'id_empresa',
+      label: 'empresa',
+      optionLabel: 'razon_social',
+      optionValue: 'id',
+      type: 'select',
+      placeholder: 'Select. empresa.',
+      url: '/empresa-buscar',
+      isTemplete: true,
+      Labels: ['razon_social'],
+      separador: ' - ',
+      required: true,
+      unique: true,
+    },
+    {
       field: 'codigo',
-      label: 'codigo',
+      label: 'codigo sucursal',
     },
     {
       field: 'nombre',
-      label: 'nombre',
+      label: 'nombre sucursal',
     },
     {
       field: 'direccion',
@@ -42,7 +56,7 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
     {
       id: [],
       id_empresa: ['', [Validators.required]],
-      codigo: [{ value: null, disabled: this.isEditMode }, [Validators.required],
+      codigo: [{ value: null, disabled: this.isEditMode }, [Validators.required, Validators.minLength(4), Validators.maxLength(4)],
       Validators.composeAsync([UniqueDoc(this.codeValidator.bind(this))])],
       nombre: ['', [Validators.required]],
       ubigeo: ['', [Validators.required]],
@@ -73,23 +87,30 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
       optionValue: 'id',
       type: 'select',
       placeholder: 'Select. documento.',
-      url: '/facturacion-documento-buscar',
+      url: '/documento-tipo-buscar',
       isTemplete: true,
       Labels: ['codigo', 'nombre'],
       separador: ' - ',
       required: true,
       unique: true,
+      parentsVals: [{
+        field: 'serie',
+        parentField: 'serie',
+      }],
     },
     {
       field: 'serie',
       label: 'serie',
       toUpperCase: true,
+      required: true,
     },
     {
       field: 'correlativo',
       label: 'correlativo',
       type: 'number',
       minFractionDigits: 0,
+      required: true,
+      value: 1,
     },
     {
       field: 'fecha_creacion',
@@ -121,7 +142,6 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
   }
 
   updateDataResponse(e: any[]): void {
-
     const fieldName = 'detalle';
     if (e !== null) {
       const f = this.form.get([fieldName]) as UntypedFormArray;

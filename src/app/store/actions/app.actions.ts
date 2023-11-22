@@ -17,10 +17,9 @@ export const loadedCompAction = createAction(
 );
 
 export const loadUnspscAction = createAction(
-  loadComponte,
-  props<{ state: boolean }>(),
+  loadUnspsc,
 );
 export const loadedUnspscAction = createAction(
-  loadedComponte,
-  props<{ state: boolean }>(),
+  loadedUnspsc,
+  props<{ codigo: string | null }>(),
 );

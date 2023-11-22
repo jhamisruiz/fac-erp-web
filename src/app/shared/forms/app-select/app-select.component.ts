@@ -54,6 +54,7 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   @Input() filter = true;
   @Input() required = false;
   @Input() disabled = false;
+  @Input() locked = false;
   @Input() readonly = false;
   @Input() isTemplete = false;
 
@@ -68,6 +69,8 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   @Input() separador: string | undefined;
   @Input() Labels: Array<string> = [];
 
+  @Input() queryStrParams: string | undefined;
+
   @Input() showClear = false;
 
   @Input() set dataSourse(d: any[]) {
@@ -75,7 +78,10 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   }
   @Input() set currentPath(url: string) {
     if (url) {
-      this.getData(url);
+      const arr = url.split('?');
+      this.pathCurrent = arr[0] ?? url;
+      this.queryStrParams = arr[1] ?? this.queryStrParams;
+      this.getData(this.pathCurrent, this.queryStrParams);
     }
   }
   //
@@ -88,7 +94,7 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   @Output() OnClear = new EventEmitter<any>();
 
   data: any[] = [];
-
+  pathCurrent: any;
   ///
   filterSelect: any[] = [];
   //params = new QueryParamsDetail();
@@ -131,7 +137,8 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   ngOnInit(): void {
     this.layoutMode = document.documentElement.getAttribute('data-layout-mode');
     if (this.path) {
-      this.getData(this.path);
+
+      this.getData(this.path, this.queryStrParams);
     }
     this.getInputValid();
   }
@@ -205,9 +212,9 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
     this.onTouched = fn;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  filterData(event: any): void {
-
+  filterData(e: any): void {
+    const qsp = `start=0&length=10&search=${e?.filter ?? ''}&order=asc`;
+    this.getData(this.pathCurrent, qsp);
     // this.suggest(p).subscribe((r: any[]) => {
     //   this.filterSelect = r?.length ? r : [];
     // });
@@ -236,10 +243,9 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
 
   onChange(e: any): void {
     this.selectChange.emit(e?.value ?? e);
-    const id = this.formControlName ?? this.optionValue;
-    const sel = this.data.find((v) => Number(v?.[id]) === Number(e?.value ?? 0));
+    const id = this.optionValue ?? this.formControlName;
+    const sel = this.data.find((v) => v?.[id] === Number(e?.value ?? 0));
     this.OnChange.emit(sel);
-
     this.propagateChange(e.value);
     this.required2 = true;
     if (e?.value && this.required === true) {
@@ -327,9 +333,9 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
     }
   }
   /* //// */
-  getData(path: string | null): void {
+  getData(path: string | null, qsp: any): void {
     if (path) {
-      const p = path + '?start=0&length=10&search=&order=asc';
+      const p = path + `?${qsp ?? 'start=0&length=10&search=&order=asc'}`;
       this.sv.getDatasourse(p).subscribe((r: any) => {
         if (r) {
           const d: any[] = r ?? [];

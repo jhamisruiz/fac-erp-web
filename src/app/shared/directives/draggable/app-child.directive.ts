@@ -1,6 +1,6 @@
 import {
   Directive, ElementRef, HostBinding,
-  HostListener, Input, QueryList, Renderer2, ViewChild,
+  HostListener, Input, Renderer2, ViewChild,
 } from '@angular/core';
 import { AppDraggableDirective } from './app-draggable.directive';
 import { Position } from './app-draggable';
@@ -42,7 +42,7 @@ export class AppChildDirective extends AppDraggableDirective {
     this.startPosition = {
       x: event.clientX - this.position.x,
       y: event.clientY - this.position.y,
-    }
+    };
   }
 
   @HostListener('dragMove', ['$event'])

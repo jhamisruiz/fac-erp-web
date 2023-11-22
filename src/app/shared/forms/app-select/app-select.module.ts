@@ -6,6 +6,7 @@ import { CascadeSelectModule } from 'primeng/cascadeselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BadgeModule } from 'primeng/badge';
 
 
 
@@ -21,6 +22,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     CascadeSelectModule,
     DropdownModule,
     MultiSelectModule,
+    BadgeModule,
   ],
   exports: [AppSelectComponent],
 })

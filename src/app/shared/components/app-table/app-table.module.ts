@@ -26,6 +26,7 @@ import { MessagesModule } from 'primeng/messages';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BadgeModule } from 'primeng/badge';
 import { ChipModule } from 'primeng/chip';
+import { RadioButtonModule } from 'primeng/radiobutton';
 
 
 
@@ -58,6 +59,7 @@ import { ChipModule } from 'primeng/chip';
     MessagesModule,
     BadgeModule,
     ChipModule,
+    RadioButtonModule,
   ],
   exports: [AppTableComponent],
 })

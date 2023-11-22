@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
 
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -51,12 +51,21 @@ export class AppTableService {
     return this.http.get<any>(`${u}`);
   }
 
-  suggest(u: any, f: boolean): Observable<any> {
+  suggest(data: any, u: any, f: boolean): Observable<any> {
 
     if (f) {
       return of(this.dataProds());
     }
-    return this.http.get<any>(`${u}`);
+    const start = 0;
+    const length = 10;
+    const search = data ?? '';
+    const order = 'asc';
+    const params = new HttpParams()
+      .set('start', start.toString())
+      .set('length', length.toString())
+      .set('search', search)
+      .set('order', order);
+    return this.http.get<any>(`${u}`, { params: params });
   }
 
   dataProds(): any[] {

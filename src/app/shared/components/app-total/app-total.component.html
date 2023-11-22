@@ -1,0 +1,63 @@
+<div class="p-0 mt-1 m-0 row d-flex justify-content-end ">
+  <div class="p-0 m-0 col-xl-4 col-lg-6 col-md-8 col-sm-12 bodys">
+    <table class="table" width="100%">
+      <tbody>
+        <tr>
+          <th class="font-weight-bold px-sm-3" style="width: 60%;">Sub. Total</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_sub_total | number: "1.2-3")}}
+          </th>
+        </tr>
+        <tr class="p-0">
+          <th class="m-0  px-sm-3 font-weight-bold">Dscto</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_descuento | number: "1.2-3")}}
+          </th>
+        </tr>
+        <tr>
+          <th class="font-weight-bold px-sm-3">Sub. Total Dscto</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_subtotal_con_dscto | number: "1.2-3")}}
+          </th>
+        </tr>
+        <tr>
+          <th class="font-weight-bold px-sm-3">Igv(18%)</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_igv | number: "1.2-3")}}
+          </th>
+        </tr>
+        <tr>
+          <th class="font-weight-bold px-sm-3">O. Exoneradas</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_op_exoneradas | number: "1.2-3")}}
+          </th>
+        </tr>
+        <tr>
+          <th class="font-weight-bold px-sm-3">O. Inafectas</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_op_inafectas | number: "1.2-3")}}
+          </th>
+        </tr>
+        <tr>
+          <th class="font-weight-bold px-sm-3">I. Icbper</th>
+          <th class="text-right px-sm-3">
+            {{formatMoney(g_total.g_icbper | number: "1.2-3")}}
+          </th>
+        </tr>
+      </tbody>
+    </table>
+    <div class="table-active row total">
+      <div class="w-50 p-0 px-sm-3">
+        <div class="ml-4" style="color: '#fff'">
+          Total
+        </div>
+
+      </div>
+      <div class="w-50 px-sm-3">
+        <div style="justify-content:  end; display: flex; color:'#8D8D8D'" class="mr-3">
+          {{formatMoney(g_total.g_total | number: "1.2-3")}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

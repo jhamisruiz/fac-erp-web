@@ -3,6 +3,8 @@ import { AppConfigService } from '../shared/services/config.service';
 import { AppState } from '../store/state/app.state';
 import { Store } from '@ngrx/store';
 import { selectLoadingCompForm } from '../store/selectors/app.selectors';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-views',
@@ -11,10 +13,18 @@ import { selectLoadingCompForm } from '../store/selectors/app.selectors';
 })
 export class ViewsComponent implements OnInit {
 
+  url: any;
   updateComponent = true;
-  constructor(private store: Store<AppState>, private sv: AppConfigService) {
+
+  viewMode = 'VIEW';
+  constructor(
+    private store: Store<AppState>,
+    private sv: AppConfigService,
+    private router: Router,
+  ) {
     this.store.select(selectLoadingCompForm).subscribe((r) => {
-      if (r?.mode) {
+      if (r?.formMode) {
+        this.viewMode = r?.formMode;
         this.update();
       }
     });
@@ -22,8 +32,17 @@ export class ViewsComponent implements OnInit {
 
   ngOnInit(): void {
     if (1) { }
+    const url = this.router.url;
+    this.url = url.split('/');
+    this.routerLink();
   }
-
+  routerLink(): any {
+    this.router.events
+      .pipe(filter((e) => e instanceof NavigationEnd))
+      .subscribe((e: any) => {
+        this.url = e.url.split('/');
+      });
+  }
   update(): void {
     this.updateComponent = false;
 

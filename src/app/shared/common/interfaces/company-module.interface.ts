@@ -23,6 +23,14 @@ export interface CompanyModule {
   // FIXME: Indica si es home module, borrar.
   home?: boolean;
 }
+export class Modetype {
+  isViewMode?: boolean;
+  isPreViewMode?: boolean;
+  isEditMode?: boolean;
+  isCreateMode?: boolean;
+  isDeleteMode?: boolean;
+  formValid?: boolean;
+}
 
 export enum ComponentMode {
   CREATE = 'CREATE',

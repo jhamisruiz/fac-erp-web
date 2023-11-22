@@ -1,21 +1,23 @@
-<div class="row mb-1 mt-2 d-flex justify-content-between">
-  <div class="col-xxl-2 col-md-4 m-1" *ngIf="isBtnBack">
+<div class="row mb-1 d-flex justify-content-between">
+  <div class="col-xxl-2 col-md-4 m-1" *ngIf="this.ViewMode?.isCreateMode || this.ViewMode?.isEditMode">
     <div>
-      <button type="button" class="w-100 btn btn-danger p-0" (click)="onClickBack()">
+      <button *ngIf="isBtnBack" type="button" class="w-100 btn btn-danger p-0" (click)="onClickBack()">
         <i class="mdi mdi-keyboard-return m-0" style="font-size: 24px"></i>
       </button>
     </div>
   </div>
-  <div class="col-xxl-2 col-md-4 m-1" *ngIf="isBtnNew">
+  <div class="col-xxl-2 col-md-4 m-1"
+    *ngIf="(this.ViewMode?.isViewMode ? true : (this.ViewMode?.formValid ? true : false))|| this.ViewMode?.isEditMode">
     <div>
-      <button type="button" class="w-100 btn btn-primary" (click)="onClickNew()">Agregar
+      <button *ngIf="isBtnNew" type="button" class="w-100 btn btn-primary" (click)="onClickNew()">Agregar
         Nuevo</button>
     </div>
   </div>
 
-  <div class="col-xxl-2 col-md-4 m-1">
-    <div *ngIf="isBtnSave">
-      <button type="button" class="w-100 btn btn-success" (click)="onClickSave()">GUARDAR</button>
+  <div class="col-xxl-2 col-md-4 m-1" *ngIf="isBtnSave">
+    <div *ngIf="!(ViewMode?.isViewMode)">
+      <button *ngIf="btnSave" type="button" class="w-100 btn btn-success" [disabled]="saveDisabled"
+        (click)="onClickSave()">GUARDAR</button>
     </div>
   </div>
 </div>

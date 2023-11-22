@@ -196,7 +196,7 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
     if (this.isFetchable) {
       if (!this.fetchPath) {
         console.error('[AbstractComponent] Component is syncable, but path to sync not found ');
-        return
+        return;
       }
 
       // Fetch...

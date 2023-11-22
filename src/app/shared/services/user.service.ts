@@ -67,7 +67,7 @@ export class UserService implements OnDestroy {
       fechaActual.getMinutes(),
       fechaActual.getSeconds(),
     );
-    const time = (newDate.getTime()).toString()
+    const time = (newDate.getTime()).toString();
     return Number(time.slice(0, -3));
   }
 

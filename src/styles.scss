@@ -1,6 +1,16 @@
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 @import url('//fonts.googleapis.com/earlyaccess/notosanstc.css');
 
+:root {
+  --tb-contraste-menu: rgb(236, 236, 236);
+  // opciones fondo y hover
+  --tb-bg-child: rgba(255, 255, 255, 0.979);
+  --tb-bg-child-active: rgb(236, 236, 236);
+  // // main button and childs
+  --btn-main: #7f94f3;
+  --btn-main-text: #ffffff;
+}
+
 .mat-white {
   filter: invert(0) sepia(5%) saturate(4590%) hue-rotate(358deg) brightness(101%) contrast(112%);
 }
@@ -49,6 +59,12 @@
 
 .shadow-class {
   box-shadow: 0 0 7px rgb(127, 148, 243);
+}
+
+[data-layout-mode=dark] .p-sidebar {
+  background: #4e555c !important;
+  box-shadow: 0 0 7px rgb(165, 180, 245);
+  color: white;
 }
 
 [data-layout-mode=dark] .p-dialog .p-dialog-content {
@@ -124,4 +140,38 @@
 
 .p-button.p-button-rounded {
   border-radius: 2rem;
+}
+
+p-autocomplete.p-autocomplete-clearable .p-autocomplete-clear-icon {
+  color: #EF4444;
+}
+
+.p-dropdown-panel .p-dropdown-header {
+  padding: 0.35rem .5rem;
+}
+
+.p-divider .p-divider-content {
+  background-color: transparent;
+}
+
+.p-divider.p-divider-horizontal {
+  margin: 0;
+}
+
+.p-tag {
+  font-size: 1rem;
+}
+
+@media only screen and (max-width: 780px) {
+
+  .p-dialog-top .p-dialog,
+  .p-dialog-bottom .p-dialog,
+  .p-dialog-left .p-dialog,
+  .p-dialog-right .p-dialog,
+  .p-dialog-top-left .p-dialog,
+  .p-dialog-top-right .p-dialog,
+  .p-dialog-bottom-left .p-dialog,
+  .p-dialog-bottom-right .p-dialog {
+    margin: 0 !important;
+  }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AppInputComponent } from './app-input.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CalendarModule } from 'primeng/calendar';
 
 
 
@@ -15,6 +16,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
     FormsModule,
     ReactiveFormsModule,
     InputNumberModule,
+    CalendarModule,
   ],
   exports: [AppInputComponent],
 })

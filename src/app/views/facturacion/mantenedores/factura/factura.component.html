@@ -1,0 +1,152 @@
+<app-tools (OnClickNew)="changeMode($event)" (OnClickSave)="onSubmit()" [ViewMode]="modeType"
+  (OnClickBack)="changeMode($event)" [saveDisabled]="isEditMode">
+</app-tools>
+<ng-container *ngIf="isViewMode || isDeleteMode">
+  <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
+    [path]="fullPath+'?start=0&length=10&search=&order=asc'" [tableName]="'Factura'" [headers]="headers"
+    [btnEdit]="true" [crud]="false" [btnDelete]="true" [refresh]="auto">
+  </app-table>
+</ng-container>
+<ng-container *ngIf="isCreateMode || isEditMode">
+  <div class="card-body">
+    <form [formGroup]="form" class="row gy-2 pb-2 border border-primary rounded">
+      <div class="row  pt-2">
+        <div class="col-xxl-3 col-md-6 m-0">
+          <div>
+            <h4>FACTURA ELECTR&Oacute;NICA:</h4>
+          </div>
+        </div>
+        <div class="col-xxl-1 col-md-3 m-0">
+          <div>
+            <h4 class="text-center border p-1 border-success rounded">{{form.value?.serie ?? '0000'}}</h4>
+          </div>
+        </div>
+        <div class="col-xxl-2 col-md-3 m-0">
+          <div>
+            <h4 class="text-center border p-1 border-success rounded">{{form.value?.correlativo ?? '0'}}</h4>
+          </div>
+        </div>
+      </div>
+      <p-divider align="left">
+        <a href="#collapsEemisor" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapsEemisor"
+          (click)="(activeEmpresa =activeEmpresa?false:true)">
+          <h4 class="p-tag mb-0 text-white">
+            <i class="{{activeEmpresa? 'pi pi-plus' : 'pi pi-minus'}} mr-2"></i>
+            Datos deEmpresa
+          </h4>
+        </a>
+      </p-divider>
+      <div class="row collapse show" id="collapsEemisor" formGroupName="emisor">
+        <div class="col-xxl-3 col-md-6 m-0">
+          <div>
+            <app-select [currentPath]="'/empresa-buscar'" (OnChange)="OnChange($event)"
+              (selectChange)="selectChange($event)" formControlName="id_empresa" [showClear]="true" [filter]="false"
+              optionValue="id" optionLabel="nombre_comercial" styleClass="p-0 w-100" placeholder="-Seleccionar-"
+              label="EMPRESA" [isTemplete]="true" [Labels]="['nombre_comercial']" [formValid]="ok"
+              [locked]="isEditMode"></app-select>
+          </div>
+        </div>
+        <div class="col-xxl-3 col-md-6 m-0">
+          <div>
+            <app-select [currentPath]="pathSucursal" (OnChange)="OnChangeSucursal($event)" formControlName="id_sucursal"
+              [showClear]="true" [filter]="false" optionValue="id" optionLabel="codigo" styleClass="p-0 w-100"
+              placeholder="-Seleccionar-" label="SUCURSAL" [isTemplete]="true" [Labels]="['codigo','nombre']"
+              [formValid]="ok" [locked]="isEditMode"></app-select>
+          </div>
+        </div>
+        <div class="col-xxl-2 col-md-6 m-0">
+          <div>
+            <app-input inputClass="form-control" formControlName="numero_documento" label="RUC" type="text"
+              [formValid]="ok">
+            </app-input>
+          </div>
+        </div>
+        <div class="col-xxl-3 col-md-6 m-0">
+          <div>
+            <app-input inputClass="form-control" formControlName="razon_social" label="RAZON SOCIAL" type="text"
+              [formValid]="ok">
+            </app-input>
+          </div>
+        </div>
+        <div class="col-xxl-6 col-md-6 m-0">
+          <div>
+            <app-input inputClass="form-control" formControlName="direccion" label="DIRECCION" type="text"
+              [formValid]="ok" [locked]="isEditMode">
+            </app-input>
+          </div>
+        </div>
+      </div>
+      <p-divider align="left">
+        <a href="#collapsCliente" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapsCliente"
+          (click)="(activeCliente =activeCliente?false:true)">
+          <h4 class="p-tag mb-0 text-white">
+            <i class="{{activeCliente? 'pi pi-plus' : 'pi pi-minus'}} mr-2"></i>
+            Datos de Cliente
+          </h4>
+        </a>
+      </p-divider>
+      <div class="collapse show" id="collapsCliente">
+        <div class="row" formGroupName="cliente">
+          <div class="col-xxl-3 col-md-6">
+            <div>
+              <app-input inputClass="form-control" (OnInput)="onInput($event)" formControlName="numero_documento"
+                label="RUC CLIENTE" type="text" [formValid]="ok" [locked]="isEditMode"></app-input>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-md-6">
+            <div>
+              <app-input inputClass="form-control" formControlName="razon_social" label="RAZON SOCIAL CLIENTE"
+                type="text" [formValid]="ok" [locked]="isEditMode"></app-input>
+            </div>
+          </div>
+          <div class="col-xxl-6 col-md-12 col-sm-12">
+            <div>
+              <app-input inputClass="form-control" formControlName="direccion" label="DIRECCION CLIENTE" type="text"
+                [formValid]="ok" [locked]="isEditMode"></app-input>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xxl-3 col-md-6">
+            <div>
+              <app-input inputClass="form-control" formControlName="fecha_emision" [dateNow]="true" [MinDate]="3"
+                [MaxDate]="0" label="F. DE EMISION" type="calendar" [formValid]="ok" [locked]="isEditMode"></app-input>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-md-6">
+            <div>
+              <app-input inputClass="form-control" formControlName="fecha_vencimiento" dateFormat="yy-mm-dd"
+                [MinDate]="0" label="F. DE VENCIMIENTO" type="calendar" [formValid]="ok"
+                [locked]="isEditMode"></app-input>
+            </div>
+          </div>
+          <div class="col-xxl-3 col-md-6">
+            <div>
+              <app-select [dataSourse]="moneda" formControlName="codigo_moneda" [showClear]="true" [filter]="false"
+                optionValue="codigo" optionLabel="nombre" styleClass="p-0 w-100" placeholder="-Seleccionar-"
+                label="MONEDA" [formValid]="ok" [locked]="isEditMode"></app-select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p-divider align="left" [style]="{'bottom': '-0.7rem'}">
+        <a href="#collapsProductos" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapsProductos"
+          (click)="(activeDetalle =activeDetalle?false:true)">
+          <h4 class="p-tag mb-0 text-white">
+            <i class="{{activeDetalle? 'pi pi-plus' : 'pi pi-minus'}} mr-2"></i>
+            Lista de Productos
+          </h4>
+        </a>
+      </p-divider>
+      <div class="row collapse show" id="collapsProductos">
+        <app-table [dataSourse]="form.value.detalle" [paginator]="false" modalFormName="Factura" [isFacturacion]="true"
+          [headers]="headers_detalle" [modalForm]="true" [crud]="true" (dataResponse)="updateDataResponse($event)"
+          [menuContext]="false" [locked]="isEditMode">
+        </app-table>
+      </div>
+      <div class="row">
+        <app-total [dataSourse]="form.value" [locked]="isEditMode"></app-total>
+      </div>
+    </form>
+  </div>
+</ng-container>

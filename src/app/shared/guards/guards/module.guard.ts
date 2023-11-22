@@ -1,19 +1,16 @@
 import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
 import {
-  ActivatedRouteSnapshot, CanActivate,
-  CanLoad, Route, Router, RouterStateSnapshot,
-  UrlSegment
+  ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot,
 } from '@angular/router';
 import { STOREKEY } from '@app/config/keys.config';
 import { AppService } from '@app/shared/services/app.service';
 import { LocalStoreService } from '@app/shared/services/local-store.service';
 import { UserService } from '@app/shared/services/user.service';
-import { Observable, of } from 'rxjs';
-import { delayWhen, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 
 export class ModuleGuard implements CanActivate {

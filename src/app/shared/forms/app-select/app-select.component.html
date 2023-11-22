@@ -3,17 +3,20 @@
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>
-  <p-dropdown appendTo="body" [options]="data" (onChange)="onChange($event)" [(ngModel)]="descriptionValue"
-    [filter]="filter" filterBy="{{optionLabel}}" class="custom-dropdown"
+  <p-dropdown appendTo="body" [options]="data" (onChange)="onChange($event)" (onFilter)="filterData($event)"
+    [(ngModel)]="descriptionValue" [filter]="filter" filterBy="{{optionLabel}}" class="custom-dropdown"
     styleClass="{{styleClass ?? class}} {{layoutMode==='dark'?'form-control':''}} {{(hasError && (currentControl?.touched || currentControl?.dirty)) || borderRequired2?'border-danger':''}}"
-    placeholder="{{placeholder}}" optionLabel="{{optionLabel}}" [disabled]="disabled" [required]="required"
-    optionValue="{{optionValue}}" [showClear]="(!!descriptionValue) && showClear" (onClear)="onClear($event)"
-    (onHide)="onHide($event)" panelStyleClass="custom-dd" (keydown.arrowdown)="keyArrowDown.emit()"
-    (keydown.arrowup)="keyArrowUp.emit()" (keydown.tab)="keyTab.emit()" (keydown.enter)="keyEnter.emit()">
+    placeholder="{{placeholder}}" optionLabel="{{optionLabel}}" [disabled]="locked ? locked: disabled"
+    [required]="required" optionValue="{{optionValue}}" [showClear]="(!!descriptionValue) && showClear"
+    (onClear)="onClear($event)" (onHide)="onHide($event)" panelStyleClass="custom-dd"
+    (keydown.arrowdown)="keyArrowDown.emit()" (keydown.arrowup)="keyArrowUp.emit()" (keydown.tab)="keyTab.emit()"
+    (keydown.enter)="keyEnter.emit()">
     <ng-template let-select pTemplate="selectedItem" *ngIf="isTemplete">
       <div class="select-item select-item-value" *ngIf="descriptionValue">
         <div>
-          {{select[Labels[0]]}}
+          <p-badge *ngIf="(Labels.length>1) && (select[Labels[0]])" [value]="(select[Labels[0]])" severity="info"
+            styleClass="m-0 mr-1"></p-badge>
+          {{Labels.length===1?select[Labels[0]]:''}}
           {{select[Labels[1]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[1]]: ''}}
           {{select[Labels[2]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
           {{select[Labels[3]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
@@ -23,7 +26,9 @@
     <ng-template let-select pTemplate="item" *ngIf="isTemplete">
       <div class="select-item">
         <div>
-          {{(select[Labels[0]])+(separador ? ' '+separador+' ': ' ')}}
+          <p-badge *ngIf="(Labels.length>1) && (select[Labels[0]])" [value]="(select[Labels[0]])" severity="info"
+            styleClass="m-0 mr-1"></p-badge>
+          {{Labels.length===1?select[Labels[0]]:''}}
           {{select[Labels[1]] ? (separador ? ' '+separador+' ': ' ')+select[Labels[1]]: ''}}
           {{select[Labels[2]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
           {{select[Labels[3]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
@@ -38,7 +43,6 @@
     </small>
   </div>
 </div>
-
 <div class="field d-flex flex-column" *ngIf="multiselect">
   <label for="" class="block text-capitalize {{labelClass}}">
     {{label??'label text'}}

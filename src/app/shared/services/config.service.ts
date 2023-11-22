@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, delay, of } from 'rxjs';
+import { BehaviorSubject, Observable, delay, of } from 'rxjs';
 import { ItemModel } from '../intrefaces/app.interface';
 
 @Injectable({
@@ -8,8 +8,17 @@ import { ItemModel } from '../intrefaces/app.interface';
 })
 export class AppConfigService {
 
-  constructor(private http: HttpClient) { }
+  private getComponents = new BehaviorSubject<any[] | null>(null);
+  getComponents$ = this.getComponents.asObservable();
 
+  constructor(private http: HttpClient) { }
+  setComponents(data: any[]): void {
+    this.getComponents.next(data);
+  }
+
+  getMenu(): Observable<any> {
+    return this.http.get(`menu/1`);
+  }
 
   getUpdate(): Observable<boolean> {
     const d = true;

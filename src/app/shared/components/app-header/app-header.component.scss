@@ -1,9 +1,65 @@
-header {
+#page-topbar {
   top: 0;
-  background: var(--vz-topbar-user-bg-dark);
   position: fixed;
+  background: var(--vz-topbar-user-bg-dark);
   left: 0;
   right: 0;
   z-index: 100;
+}
+
+[data-topbar=light] :host ::ng-deep #page-topbar {
+  background-color: #fff;
+  border-color: var(--vz-header-bg-dark);
+}
+
+@media (min-width: 768px) {
+  [data-layout=vertical][data-sidebar-size=md] :host ::ng-deep #page-topbar {
+    left: 180px;
+  }
+}
+
+[data-layout=horizontal] :host ::ng-deep #page-topbar {
   width: 100%;
+}
+
+
+@media (min-width:768px) {
+  [data-layout=vertical] :host ::ng-deep #page-topbar {
+    left: 250px;
+  }
+}
+
+@media (min-width: 1024.1px) {
+  [data-layout=vertical][data-layout-style=detached] :host ::ng-deep #page-topbar {
+    left: 0 !important;
+    -webkit-box-shadow: 0 1px 2px rgba(56, 65, 74, .15);
+    box-shadow: 0 1px 2px rgba(56, 65, 74, .15);
+  }
+}
+
+@media (min-width:768px) {
+  [data-sidebar-size=sm] :host ::ng-deep #page-topbar {
+    left: 70px !important
+  }
+}
+
+[data-layout=semibox] :host ::ng-deep #page-topbar {
+  left: 250px;
+}
+
+@media (min-width: 1440px) {
+  [data-layout=semibox] :host ::ng-deep #page-topbar {
+    left: calc(250px + 50px + 1.5rem + 25px);
+    right: calc(110px + 1.5rem);
+    top: 25px;
+    border-radius: .25rem;
+    -webkit-transition: all .5s ease;
+    transition: all .5s ease;
+  }
+}
+
+@media (max-width:768px) {
+  [data-layout=semibox] :host ::ng-deep #page-topbar {
+    left: 0 !important
+  }
 }

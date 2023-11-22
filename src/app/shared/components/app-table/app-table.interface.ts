@@ -1,7 +1,10 @@
 export interface AppTable {
   field: string;
-  fieldname?: string;
   label: string;
+  thStyle?: string;
+  //suggest
+  fieldname?: string;
+  labelClass?: string;
   id?: string;
   type?: string;
   required?: boolean;
@@ -34,6 +37,8 @@ export interface AppTable {
   estadoDocs?: any[];
   linkDownload?: string;
   button?: any;
+  icon?: string;
+  btnClass?: string;
   center?: true;
   celClick?: any;
   minWidth?: string;
@@ -42,10 +47,11 @@ export interface AppTable {
   textBreak?: boolean;
   title?: string;
   Print?: string;
-  parents?: any[];
+  parentsVals?: Array<ParentVal>;
   inners?: any[];
   binary?: any[];
   showClear?: boolean;
+  filter?: boolean;
   keyData?: string;
   urlParent?: string;
   useUrl?: boolean;
@@ -57,11 +63,23 @@ export interface AppTable {
   querySPEnable?: any;
   query?: any;
   fake?: boolean;
-  min?: number;
-  minFractionDigits?: number;
-  max?: number;
   isTemplete?: boolean;
   Labels?: Array<string>;
   separador?: string;
   toUpperCase?: boolean;
+  //INPUT NUMBER
+  min?: number;
+  minFractionDigits?: number;
+  max?: number;
+  step?: number;
+  prefix?: 'S/' | '$' | string;
+  toModalVisible?: boolean;
+  showButtons?: boolean;
+  //form
+  colClass?: string;
+}
+
+export interface ParentVal {
+  field: string;
+  parentField: string;
 }

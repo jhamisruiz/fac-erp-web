@@ -32,6 +32,7 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CalendarModule } from 'primeng/calendar';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { DividerModule } from 'primeng/divider';
 @NgModule({
   declarations: [],
   imports: [CommonModule],
@@ -68,6 +69,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     ProgressSpinnerModule,
     CalendarModule,
     InputSwitchModule,
+    DividerModule,
   ],
   providers: [MessageService, { provide: LOCALE_ID, useValue: 'es' }],
 })

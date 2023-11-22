@@ -248,12 +248,12 @@ export const COUNTRY_LIST = [
   { value: 'EH', name: 'Western Sahara' },
   { value: 'YE', name: 'Yemen' },
   { value: 'ZM', name: 'Zambia' },
-  { value: 'ZW', name: 'Zimbabwe' }
+  { value: 'ZW', name: 'Zimbabwe' },
 ];
 
 
 
-export const TIMEZONE_LIST =  [
+export const TIMEZONE_LIST = [
   { value: '1', name: 'International Date Line West (GMT-12:00)' },
   { value: '2', name: 'Midway Island, Samoa (GMT-11:00)' },
   { value: '3', name: 'Hawaii (GMT-10:00)' },
@@ -335,11 +335,11 @@ export const TIMEZONE_LIST =  [
   { value: '79', name: 'Magadan, Solomon Is., New Caledonia (GMT+11:00)' },
   { value: '80', name: 'Auckland, Wellington (GMT+12:00)' },
   { value: '81', name: 'Fiji, Kamchatka, Marshall Is. (GMT+12:00)' },
-  { value: '82', name: 'Nuku\'alofa (GMT+ 13: 00)' }
+  { value: '82', name: 'Nuku\'alofa (GMT+ 13: 00)' },
 ];
 
 
-export const CURRENCY_LIST =  [
+export const CURRENCY_LIST = [
   { value: 'USD', name: 'America (United States) Dollars' },
   { value: 'AFN', name: 'Afghanistan Afghanis' },
   { value: 'ALL', name: 'Albania Leke' },

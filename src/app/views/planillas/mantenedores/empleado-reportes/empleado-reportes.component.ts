@@ -22,7 +22,7 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
     today: 'Hoy',
     clear: 'Borrar',
     weekHeader: 'SM',
-  }
+  };
 
   fullPath = '/empleado-asistencia';//asistencia
   newPhat = '';
@@ -80,7 +80,7 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
   ngOnInit(): void {
     super.ngOnInit();
     //const mont = new Date(this.form.value.fecha_creacion)
-    this.config.setTranslation(this.es)
+    this.config.setTranslation(this.es);
     //this.dateString = mont;
     this.getinfoMont(undefined);
     this.getcurrentDay(undefined);
@@ -185,7 +185,7 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
       const obj = as.find(item => item.nombre === nm);
       if (obj) {
         //update
-        this.changeMode('EDIT')
+        this.changeMode('EDIT');
         this.form.patchValue({
           id: obj.id,
           id_empleado: obj.id_empleado,
@@ -198,7 +198,7 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
         }
       } else {
         //inert
-        this.changeMode('CREATE')
+        this.changeMode('CREATE');
         this.form.patchValue({
           id_empleado: e.id,
           nombre: nm,
@@ -211,7 +211,7 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
       console.log('OnRowSelect', obj);
     } else {
       //debe registrar
-      this.changeMode('CREATE')
+      this.changeMode('CREATE');
       this.form.patchValue({
         id_empleado: e.id,
         nombre: nm,
@@ -227,6 +227,6 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
 
   getPhat(): void {
     this.newPhat
-      = this.fullPath + `?start=0&length=10&search=${this.currentYearNumber}-${this.currentMontNumber <= 9 ? 0 : ''}${this.currentMontNumber}&order=asc`
+      = this.fullPath + `?start=0&length=10&search=${this.currentYearNumber}-${this.currentMontNumber <= 9 ? 0 : ''}${this.currentMontNumber}&order=asc`;
   }
 }
