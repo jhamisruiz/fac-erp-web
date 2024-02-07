@@ -20,6 +20,7 @@ RUN npm run build:prod
 # #copiar del stage anterior
 # COPY package.json package-lock.json ./
 # RUN npm install --prod --frozen-lockfile
+# dckr_pat_8b_CDh3wc6ucMQVp2TgKCP2v1Rg
 
 ### STAGE: 4
 FROM nginx:1.23.3 as nginx
