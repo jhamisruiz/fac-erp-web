@@ -1,6 +1,6 @@
 <div class="p-0 mt-1 m-0 row d-flex justify-content-end ">
-  <div class="p-0 m-0 col-xl-4 col-lg-6 col-md-8 col-sm-12 bodys">
-    <table class="table" width="100%">
+  <div class="p-0 p-md-3 pb-4 m-0 col-xl-4 col-lg-6 col-md-8 col-sm-12 bodys">
+    <table class="table mb-0" width="100%">
       <tbody>
         <tr>
           <th class="font-weight-bold px-sm-3" style="width: 60%;">Sub. Total</th>
@@ -44,6 +44,16 @@
             {{formatMoney(g_total.g_icbper | number: "1.2-3")}}
           </th>
         </tr>
+        <tr class="p-0">
+          <th class="m-0 p-0 font-weight-bold py-xl-1 px-sm-3">Dscto Global</th>
+          <th class="text-right m-0 p-0">
+            <p-inputNumber inputStyleClass="text-right" [(ngModel)]="g_desc_global"
+              (onInput)="totalFactura(detalle,!locked);OnCalc.emit(g_desc_global)"
+              [inputStyle]="{'padding': '0!important'}" styleClass="input-styling" mode="decimal"
+              [minFractionDigits]="2" [maxFractionDigits]="2" [min]="0" [disabled]="false" locale="en-US"
+              placeholder="0.00" [disabled]="locked"></p-inputNumber>
+          </th>
+        </tr>
       </tbody>
     </table>
     <div class="table-active row total">
@@ -57,6 +67,9 @@
         <div style="justify-content:  end; display: flex; color:'#8D8D8D'" class="mr-3">
           {{formatMoney(g_total.g_total | number: "1.2-3")}}
         </div>
+      </div>
+      <div class="w-100 text-end fs-12 px-sm-3">
+        SON {{texto ? texto:'CERO CON 0/100 '+code_moneda}}
       </div>
     </div>
   </div>

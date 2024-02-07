@@ -1,4 +1,4 @@
-<p-toast [position]="'top-right'" *ngIf="displayModal" [baseZIndex]="500000">
+<p-toast [position]="'top-right'" *ngIf="!displayModal" [baseZIndex]="500000">
 </p-toast>
 <p-contextMenu #cm [model]="(menuContext ?items : [])" appendTo="body"
   styleClass="{{menuContext?'':'d-none'}} {{contextDisabled?'d-none':''}} border border-info">
@@ -13,7 +13,7 @@
   styleClass="{{!daysEachMont?'p-datatable-gridlines':''}}"
   currentPageReportTemplate="Mostrando {first} de {last} de {totalRecords} Filas" [rowsPerPageOptions]="[5,10,25,50]"
   [loading]="loading || (loading$ | async)">
-  <ng-template pTemplate="caption">
+  <ng-template pTemplate="caption" *ngIf="caption">
     <div class="d-flex justify-content-between flex-wrap bg-success">
       <div class="col-lg-3" *ngIf="isFProd">
         <div class="nav-link pt-0 pb-0 d-flex align-self-center w-100">
@@ -126,8 +126,16 @@
           {{mnt.id}}
         </div>
       </th>
-      <th ngClass="th-dark">
+      <th ngClass="th-dark" *ngIf="caption">
         Acciones
+      </th>
+      <th ngClass="th-dark p-0" *ngIf="!caption">
+        <div class="w-100 text-center" *ngIf="crud">
+          <button *ngIf="!isediting && isAdd" (click)="addRow()" type="button"
+            class="btn p-button-success pl-3 pr-3 mr-1" [disabled]="locked">
+            <i class="pi pi-plus"></i>
+          </button>
+        </div>
       </th>
     </tr>
     <tr *ngIf="sort">
@@ -231,11 +239,17 @@
             </div>
 
             <div class="ml-1" *ngIf="h?.type==='date'">
-              <input pInputText type="date" style="min-height: 32px;" [ngStyle]="{width: h?.minWidth ?? '100%'}"
-                class="form-control border {{h?.disabled?'':'border-'+(h?.errStyle? h?.errStyle:'info')}}"
-                [placeholder]="h?.placeholder??''" [readonly]="h?.readonly" [disabled]="h?.disabled"
-                (focus)="errorStyle(d,h, d[h.field], h?.required, h?.parentsVals ?? [])"
-                (keyup)="errorStyle(d,h, d[h.field],h?.required, h?.parentsVals ?? [])" [(ngModel)]="d[h.field]">
+              <p-calendar appendTo="body" [(ngModel)]="d[h.field]" [showIcon]="true"
+                [dateFormat]="h?.dateFormat ?? 'yy-mm-dd'" [minDate]="h?.mindate" [maxDate]="h?.maxdate"
+                (onSelect)="onCalendarSelect($event, d,h.field, h?.dateFormat?? 'yy-mm-dd');errorStyle(d,h,d[h.field],h?.required, h?.parentsVals ?? []);OnFocus.emit($event);"
+                [disabled]="h?.disabled" [inputStyle]="{'width':'100%','min-width':'100%'}" class="w-100"
+                inputStyleClass="form-control border border-{{(h?.errStyle? h?.errStyle:'info')}}  rounded rounded-3"
+                (focus)="errorStyle(d,h,d[h.field],h?.required, h?.parentsVals ?? []);OnFocus.emit($event);"
+                (focusout)="OnFocusOut.emit($event);errorStyle(d,h,d[h.field],h?.required, h?.parentsVals ?? []);OnFocus.emit($event)"
+                (keydown.arrowdown)="keyArrowDown.emit()" (keydown)="OnKeyDown.emit($event)"
+                (keyup)="OnKeyUp.emit($event)" (keydown.arrowup)="keyArrowUp.emit()" (keydown.tab)="keyTab.emit()"
+                (keydown.enter)="keyEnter.emit()">
+              </p-calendar>
             </div>
             <div class="" *ngIf="h?.type==='inputMask'">
               <!-- // DAR ESPACIO A PALABARAS esto es para nro de tarjetas de credito -->
@@ -254,6 +268,8 @@
             <div class="number ml-1 w-100 d-flex justify-content-center" *ngIf="h?.type==='number'">
               <p-inputNumber [(ngModel)]="d[h.field]" mode="decimal" (focusout)="changeData()"
                 [inputStyle]="{'width':h?.minWidth ?? '100%','min-width':'100%'}" class="w-100"
+                [showButtons]="(h?.disabled ? false: (h?.showButtons ?? false))"
+                (onInput)="errorStyle(d,h,d[h.field],h?.required ?? false, h?.parentsVals ?? []);"
                 inputStyleClass="form-control border {{h?.disabled?'':'border-'+(h?.errStyle? h?.errStyle:'info')}} rounded rounded-3"
                 [min]="h?.min" [max]="(h?.max?h?.max:(d[h?.lmax]))"
                 [minFractionDigits]="(h?.minFractionDigits || h?.minFractionDigits===0 ? h?.minFractionDigits : 2)"
@@ -338,12 +354,15 @@
               {{d[h.field]}}
             </div>
             <div class="w-100 d-flex justify-content-center align-items-center" *ngIf="h?.type==='date'">
-              {{ d[h.field] | date: 'dd/MM/yyyy' }}
+              {{ d[h.field] | date: 'dd-MM-yyyy' }}
             </div>
 
             <div class="w-100 d-flex" *ngIf="h?.type==='button'">
-              <button type="button" class="btn p-button-{{h?.btnClass ?? 'success'}}">
-                <i *ngIf="h?.icon" class="bx {{h?.icon}}" style="font-size: 1.6rem;"></i>
+              <button type="button"
+                class="btn p-button-{{h?.btnBool?(d[h.field]===true ?h?.btnClass: h?.btnBoolClass):h?.btnClass ?? 'success'}}">
+                <i *ngIf="h?.icon" class="bx {{(h?.btnBool? (d[h.field]===true ?h?.icon: h?.btnBoolIcon): h?.icon)}}"
+                  style="font-size: 1.6rem;"></i>
+
                 <i *ngIf="!h?.icon" class="text-white">{{h?.label}}</i>
               </button>
             </div>
@@ -401,7 +420,7 @@
           </div>
           <div *ngIf="!isediting && !modalForm" class="p-0 mr-1">
             <button *ngIf="!isediting" (click)="onRowEditInit(d)" pButton pRipple icon="pi pi-pencil m-0 p-0"
-              class="btn p-button-success  mr-1" styleClass="p-button-sm">
+              class="btn p-button-success  mr-1" styleClass="p-button-sm" [disabled]="locked">
             </button>
           </div>
           <div *ngIf="!!isDelete" class="p-0 mr-1">
@@ -659,7 +678,6 @@
     </button>
   </ng-template>
 </p-dialog>
-
 
 <p-confirmDialog #cd [style]="{width: 'auto'}" [baseZIndex]="10000">
   <p-footer>

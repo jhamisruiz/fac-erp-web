@@ -93,6 +93,8 @@ export class UserService implements OnDestroy {
 
       if (!renew) {
         this.persistence.set(STOREKEY.USER_ID, data.id);
+        this.persistence.set(STOREKEY.ID_EMPRESA, data.id_empresa ?? 0);
+        this.persistence.set(STOREKEY.ID_SUCURSAL, data.id_sucursal ?? 0);
         this.persistence.set('userData', {
           id: data.id,
           names: data.names,
@@ -142,7 +144,7 @@ export class UserService implements OnDestroy {
 
     this.status$.next(USER_STATUS.LOGOUT);
 
-    this.router.navigate(['/', 'admin', 'login']);
+    this.router.navigate(['/', 'login']);
     this.ngOnDestroy();
 
   }

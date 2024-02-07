@@ -97,6 +97,7 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   //input number
   @Input() min?: number;
   @Input() max?: number;
+  @Input() showButtons = false;
   @Input() minFractionDigits?: number;
   @Input() inputStyleClass?: string;
 
@@ -331,7 +332,6 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
       this.OnInput.emit(r);
       this.propagateChange(r);
     });
-
   }
 
   onInpt(elm: any): void {
@@ -342,6 +342,7 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
     this.OnInput.emit(realValue);
     this.propagateChange(realValue);
   }
+
   getReqError(): void {
     this.getError();
     //this.t

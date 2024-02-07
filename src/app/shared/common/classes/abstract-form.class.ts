@@ -15,6 +15,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormService } from '@app/shared/services/util-services/form.service';
 import { selectLoadingCompForm } from '../../../store/selectors/app.selectors';
 import { ComponentModeType } from '../interfaces';
+import { STOREKEY } from '@app/config/keys.config';
 declare const alertify: any;
 
 /**
@@ -68,6 +69,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
   private modDisable!: ComponentModeType;
   private postDisable = false;
+  protected idempresa: 0;
+  protected idsucursal: 0;
+  protected paramsUniqueCode?: any;
 
   constructor(
     injector: Injector,
@@ -77,7 +81,8 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     this.httpClient = injector.get(HttpClient);
     this.fs = new FormService(this.httpClient);
     //this.fs = injector.get(FormService);
-
+    this.idempresa = this.persistence.get(STOREKEY.ID_EMPRESA);
+    this.idsucursal = this.persistence.get(STOREKEY.ID_SUCURSAL);
     setTimeout(() => {
       if (!this.transactionId && this.isCreateMode) {
         this.transactionId = v4().toUpperCase();
@@ -144,6 +149,16 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
   getSubmitDisabled(): void {
     if (this.isEditMode && this.modDisable === 'EDIT') {
+      this.postDisable = true;
+
+      Object.keys(this.form.controls).forEach(key => {
+        const control = this.form.get(key);
+        if (control) {
+          control.disable(); // Esto desactivará todos los controles del FormGroup
+        }
+      });
+    }
+    if (this.isCreateMode && this.modDisable === 'CREATE') {
       this.postDisable = true;
 
       Object.keys(this.form.controls).forEach(key => {
@@ -362,10 +377,12 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   }
 
   codeValidator(value: string): Observable<any> {
+    let params = { code: value };
+    if (this.paramsUniqueCode) {
+      params = { ...params, ...this.paramsUniqueCode };
+    }
     return this.httpClient.get(`/${this.fullPath}-codigo`, {
-      params: {
-        code: value,
-      },
+      params: params,
     });
   }
 

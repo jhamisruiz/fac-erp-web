@@ -7,6 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class BoletaComponent implements OnInit {
 
+  data: any[] = [];
+  activeEmpresa = false;
+  activeCliente = false;
+  activeDetalle = false;
   constructor() { }
 
   ngOnInit(): void {

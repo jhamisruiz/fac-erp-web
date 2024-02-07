@@ -67,6 +67,7 @@ export class ProductoComponent extends AbstractDocument implements OnInit {
       id_categoria: [, [Validators.required]],
       idunidad_medida: [, [Validators.required]],
       cantidad: [, [Validators.required]],
+      id_sucursal: [{ value: this.idsucursal, disabled: true }, [Validators.required]],
       id_marca: [],
       fecha_creacion: [new Date().toISOString().slice(0, 10)],
       habilitado: [true],

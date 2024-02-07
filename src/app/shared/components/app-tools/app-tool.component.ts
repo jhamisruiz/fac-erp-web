@@ -4,11 +4,13 @@ import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/state/app.state';
 import { AppTableService } from '../app-table/app-table.service';
 import { Modetype } from '@app/shared/common/interfaces';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-tools',
   templateUrl: './app-tool.component.html',
   styleUrls: ['./app-tool.component.scss'],
+  providers: [ConfirmationService, MessageService],
 })
 export class AppToolComponent implements OnInit {
 
@@ -19,13 +21,19 @@ export class AppToolComponent implements OnInit {
 
   @Input() isBtnBack = true;
   @Input() ViewMode!: Modetype;
+  @Input() set setMessage(sms: any) {
+    if (sms) {
+      this.message(sms);
+    }
+  }
 
   @Output() OnClickNew = new EventEmitter<any>();
   @Output() OnClickSave = new EventEmitter<any>();
   @Output() OnClickBack = new EventEmitter<any>();
 
+
   btnSave = false;
-  constructor(private store: Store<AppState>, private ts: AppTableService) {
+  constructor(private store: Store<AppState>, private messageService: MessageService, private ts: AppTableService) {
     this.ts.changeState$.subscribe((r: boolean) => {
       this.btnSave = r ? false : true;
     });
@@ -49,4 +57,7 @@ export class AppToolComponent implements OnInit {
     this.OnClickBack.emit('VIEW');
   }
 
+  message(s: string): void {
+    this.messageService.add({ severity: 'warning', summary: 'Warning', detail: s });
+  }
 }

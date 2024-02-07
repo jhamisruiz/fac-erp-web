@@ -63,8 +63,8 @@ export class EmpresaComponent extends AbstractDocument implements OnInit {
       tipo_documento: ['6', [Validators.required]],
       numero_documento: [{ value: null, disabled: this.isEditMode }, [Validators.required, Validators.pattern(/^[a-zA-Z0-9]{11}$/)],
       Validators.composeAsync([UniqueDoc(this.codeValidator.bind(this))])],
-      razon_social: ['', [Validators.required]],
-      nombre_comercial: ['', [Validators.required]],
+      razon_social: ['', [Validators.required, Validators.minLength(3)]],
+      nombre_comercial: ['', [Validators.required, Validators.minLength(3)]],
       departamento: ['', [Validators.required]],
       provincia: ['', [Validators.required]],
       distrito: ['', [Validators.required]],
@@ -105,7 +105,6 @@ export class EmpresaComponent extends AbstractDocument implements OnInit {
   }
 
   getFile(e: any): void {
-    if (e === null || (e?.nombre && e?.data)) { }
     this.form.patchValue({
       certificado: e,
     });
@@ -119,6 +118,9 @@ export class EmpresaComponent extends AbstractDocument implements OnInit {
           this.form.patchValue({
             razon_social: r?.nombre,
             nombre_comercial: r?.viaNombre,
+            departamento: r?.departamento,
+            provincia: r?.provincia,
+            distrito: r?.distrito,
             ubigeo: r?.ubigeo,
             direccion: r?.direccion,
           });

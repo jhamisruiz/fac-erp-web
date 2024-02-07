@@ -11,6 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '@app/shared/shared.module';
+import { KarmafactComponent } from './mantenedores/karmafact/karmafact.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { SharedModule } from '@app/shared/shared.module';
     FacturaComponent,
     NotaCreditoComponent,
     NotaDebitoComponent,
+    KarmafactComponent,
   ],
   imports: [
     CommonModule,
@@ -36,6 +38,7 @@ import { SharedModule } from '@app/shared/shared.module';
     FacturaComponent,
     NotaCreditoComponent,
     NotaDebitoComponent,
+    KarmafactComponent,
   ],
 })
 export class FacturacionModule { }

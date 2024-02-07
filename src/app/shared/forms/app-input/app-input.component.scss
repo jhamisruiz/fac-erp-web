@@ -12,7 +12,22 @@
   width: 100%;
 }
 
-:host ::ng-deep.p-button.p-button-icon-only {
-  margin-left: -3rem;
+:host ::ng-deep .p-button.p-button-icon-only {
+  margin-left: -2.7rem;
   padding: 0;
+}
+
+:host ::ng-deep.p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-down {
+  height: 10px;
+}
+
+:host ::ng-deep .p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-up {
+  height: 10px;
+}
+
+
+:host ::ng-deep .p-button.p-button-icon-only {
+  width: auto;
+  padding: 0.2rem 0.8rem;
+  margin-right: 1px;
 }

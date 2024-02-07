@@ -6,9 +6,15 @@
     "types": []
   },
   "files": [
-    "src/main.ts"
+    "src/main.ts",
+    "src/polyfills.ts",
+    "src/typings.d.ts"
   ],
   "include": [
     "src/**/*.d.ts"
-  ]
+  ],
+  "paths": {
+    "lodash": ["node_modules/lodash/lodash.js"],
+    "moment": ["node_modules/moment/moment.js"]
+  }
 }

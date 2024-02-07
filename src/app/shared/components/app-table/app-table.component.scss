@@ -1,3 +1,11 @@
+:host ::ng-deep .p-calendar {
+  width: 100%;
+
+  .p-button.p-button-icon-only {
+    margin-left: -2.5rem;
+  }
+}
+
 [data-layout-mode=dark] :host ::ng-deep .th-dark {
   background-color: var(--vz-header-bg-dark);
   color: var(--vz-body-color);
@@ -18,9 +26,6 @@
   color: var(--vz-body-color);
 }
 
-/* [data-layout-mode=dark] :host :host ::ng-deep .p-datatable .p-datatable-header {
-  background-color: #1a1d21;
-} */
 
 [data-layout-mode=dark] :host ::ng-deep .p-datatable .p-datatable-tbody>tr {
   background-color: var(--vz-input-bg);
@@ -258,15 +263,3 @@ tr:nth-child(even) {
   color: #afafaf;
   text-transform: none !important;
 }
-
-
-/* // TODO: update date input border & move
-p-inputNumber {
-  border: transparent !important;
-  box-shadow: none !important;
-  outline: auto;
-  outline-color: rgb(233, 233, 233);
-  height: 31.34px;
-  width: auto;
-  border: 1px solid #cfcdcd !important;
-} */

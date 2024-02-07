@@ -38,8 +38,8 @@
       <div class="row gy-4">
         <div class="col-xxl-3 col-md-12">
           <div>
-            <app-input-file [setDataFile]="form.value?.certificado" (NgModelResponse)="getFile($event);"
-              [accept]="'.pfx'" label="CERTIFICADO DIGITAL">
+            <app-input-file [setDataFile]="form.value?.certificado" [base64]="true" (NgModelResponse)="getFile($event);"
+              [accept]="'.pfx,.txt'" label="CERTIFICADO DIGITAL">
             </app-input-file>
           </div>
         </div>

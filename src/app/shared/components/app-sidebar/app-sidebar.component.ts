@@ -27,41 +27,6 @@ export class AppSidebarComponent implements OnInit {
     private renderer: Renderer2,
   ) { }
 
-  onClick(e: Event): void {
-    const el = e.target as HTMLElement;
-    const ariaExpanded = el.getAttribute('aria-expanded');
-
-    if (ariaExpanded !== null) {
-      el.setAttribute('aria-expanded', (ariaExpanded === 'true' ? 'false' : 'true'));
-      const next = el.nextElementSibling as HTMLElement;
-
-      if (ariaExpanded === 'false') {
-        this.renderer.addClass(next, 'show');
-      } else {
-        this.renderer.removeClass(next, 'show');
-      }
-    } else {
-      const parent = el.parentElement;
-
-      if (parent) {
-        const parentAriaExpanded = parent.getAttribute('aria-expanded');
-
-        if (parentAriaExpanded !== null) {
-          parent.setAttribute('aria-expanded', (parentAriaExpanded === 'true' ? 'false' : 'true'));
-          const next = parent.nextElementSibling as HTMLElement;
-
-          if (parentAriaExpanded === 'false') {
-            this.renderer.addClass(next, 'show');
-          } else {
-            this.renderer.removeClass(next, 'show');
-          }
-        }
-      }
-    }
-  }
-
-
-
   ngOnInit(): void {
     const url = this.router.url;
     const arr = url.split('/');
@@ -73,6 +38,51 @@ export class AppSidebarComponent implements OnInit {
     });
   }
 
+  onDoubleClick(e: Event, r: string): void {
+    this.router.navigate([r]);
+    this.routerLink(r);
+    const dl = document.documentElement.getAttribute('data-layout');
+    if (dl !== 'horizontal') {
+      this.onClick(e);
+    }
+  }
+  onClick(e: Event): void {
+    const dl = document.documentElement.getAttribute('data-layout');
+
+    if (dl !== 'horizontal') {
+      const el = e.target as HTMLElement;
+      const ariaExpanded = el.getAttribute('aria-expanded');
+
+      if (ariaExpanded !== null) {
+        el.setAttribute('aria-expanded', (ariaExpanded === 'true' ? 'false' : 'true'));
+        const next = el.nextElementSibling as HTMLElement;
+
+        if (ariaExpanded === 'false') {
+          this.renderer.addClass(next, 'show');
+        } else {
+          this.renderer.removeClass(next, 'show');
+        }
+      } else {
+        const parent = el.parentElement;
+
+        if (parent) {
+          const parentAriaExpanded = parent.getAttribute('aria-expanded');
+
+          if (parentAriaExpanded !== null) {
+            parent.setAttribute('aria-expanded', (parentAriaExpanded === 'true' ? 'false' : 'true'));
+            const next = parent.nextElementSibling as HTMLElement;
+
+            if (parentAriaExpanded === 'false') {
+              this.renderer.addClass(next, 'show');
+            } else {
+              this.renderer.removeClass(next, 'show');
+            }
+          }
+        }
+      }
+    }
+  }
+
   routerLink(murl: string): any {
 
     this.newURL = murl;
@@ -82,8 +92,10 @@ export class AppSidebarComponent implements OnInit {
         const arr = e.url.split('/');
         this.store.dispatch(loadCompAction({ formMode: 'VIEW', id: null }));
         //this.sv.setComponents(this.menuSider);
-        if (arr[2] === murl) {
+        console.log(murl, 'urla', arr);
+        if (arr[1] === murl) {
           this.menuUrl = murl;
+          console.log('this.menuUrl', this.menuUrl);
         }
       });
   }

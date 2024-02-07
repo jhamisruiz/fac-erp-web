@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Facturacion } from '@app/shared/common/classes';
 
@@ -9,6 +9,13 @@ import { Facturacion } from '@app/shared/common/classes';
 })
 export class AppTotalComponent extends Facturacion implements OnInit {
   @Input() locked = false;
+  @Input() set currency(m: string) {
+    if (m === 'PEN') {
+      this.code_moneda = 'SOLES';
+    } else {
+      this.code_moneda = 'DOLARES';
+    }
+  }
   @Input() set dataSourse(d: any) {
     this.data = d;
     this.detalle = d?.detalle ?? [];
@@ -17,6 +24,9 @@ export class AppTotalComponent extends Facturacion implements OnInit {
     }
     this.totalFactura(this.detalle, this.locked ? !this.locked : true);
   }
+
+  @Output() OnCalc = new EventEmitter<any>();
+
   data: any;
   detalle: any[] = [];
 
@@ -45,7 +55,10 @@ export class AppTotalComponent extends Facturacion implements OnInit {
   }
 
   ngOnInit(): void {
-    if (1) { }
+    if (this.g_total.g_total) {
+      this.texto = this.CantidadEnLetra(this.g_total.g_total);
+    }
   }
+
 
 }

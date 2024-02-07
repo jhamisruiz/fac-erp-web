@@ -1,0 +1,6 @@
+.git
+.gitignore
+.editorconfig
+/dist
+/node_modules
+*.md

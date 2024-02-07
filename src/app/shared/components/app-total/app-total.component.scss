@@ -46,6 +46,7 @@ tr:nth-child(even) {
   padding-top: 5px;
   border-radius: 10px;
   padding-bottom: 15px;
+  height: 100%;
 }
 
 .title-tt {
@@ -65,4 +66,22 @@ tr:nth-child(even) {
   font-weight: 400;
   color: #afafaf;
   text-transform: none !important;
+}
+
+:host ::ng-deep .form-control {
+  padding-top: 0;
+  padding-bottom: 0;
+  background-color: var(--vz-topbar-user-bg);
+  color: var(--vz-body-color);
+  border: 1px solid var(--vz-input-border);
+}
+
+:host ::ng-deep .p-inputtext {
+  width: 100%;
+  padding: 3px 9px 3px;
+  padding-left: 0.7rem !important;
+}
+
+:host ::ng-deep .p-inputnumber {
+  width: 100%;
 }

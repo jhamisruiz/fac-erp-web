@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AppUbigeoService } from './app-ubigeo.service';
 import { Ubigeo } from './app-ubigeo.interface';
 
@@ -12,9 +12,10 @@ export class AppUbigeoComponent implements OnInit {
   @Input() set setUbigeo(u: string | null | undefined) {
     if (u) {
       this.id_ubigeo = u;
-      if (!(this.ubigeo?.ubigeo)) {
+      setTimeout(() => {
         this.setDepartamentos();
-      }
+        this.cdRef.detectChanges();
+      }, 10);
     }
   }
 
@@ -34,7 +35,7 @@ export class AppUbigeoComponent implements OnInit {
   ubigeo: Ubigeo | undefined;
 
   constructor(
-    private sv: AppUbigeoService,
+    private sv: AppUbigeoService, private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -61,7 +62,12 @@ export class AppUbigeoComponent implements OnInit {
 
   getDepartamentoToProvincia(): void {
     if (this.ubigeo !== undefined) {
-      this.resetUbigeo();
+      this.ubigeo = {
+        departamento: null,
+        provincia: null,
+        distrito: null,
+        ubigeo: null,
+      };
     }
     this.provincia = null;
     this.provincias = [];
@@ -84,7 +90,12 @@ export class AppUbigeoComponent implements OnInit {
   }
 
   getProvinciaToDistrito(): void {
-    this.resetUbigeo();
+    this.ubigeo = {
+      departamento: null,
+      provincia: null,
+      distrito: null,
+      ubigeo: null,
+    };
     if (this.provincia?.id_ubigeo) {
       this.distritos = [];
       this.distrito = null;
@@ -101,12 +112,17 @@ export class AppUbigeoComponent implements OnInit {
   setDistrito(): void {
     if (this.id_ubigeo) {
       this.distrito = this.distritos.find(vd => vd.id_ubigeo === this.id_ubigeo);
-      this.dataUbigeo();
+      //this.dataUbigeo();
     }
   }
 
   getUbigeo(): void {
-    this.resetUbigeo();
+    this.ubigeo = {
+      departamento: null,
+      provincia: null,
+      distrito: null,
+      ubigeo: null,
+    };
     if (this.distrito?.id_ubigeo) {
       this.id_ubigeo = null;
       this.dataUbigeo();

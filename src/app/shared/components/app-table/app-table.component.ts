@@ -8,7 +8,7 @@ import { AppTable, ParentVal } from './app-table.interface';
 import { AppTableService } from './app-table.service';
 import { Table } from 'primeng/table';
 import * as _ from 'lodash';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, delay, of } from 'rxjs';
 import { NUMEROS_NOMBRES } from '@app/shared/common/constants';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../../store/state/app.state';
@@ -42,6 +42,7 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
   @Input() crud = false;
   @Input() paginator = true;
   @Input() rowIndex = true;
+  @Input() caption = true;
 
   @Input() isViewTab = true;
   @Input() selectionMode = 'single';
@@ -71,7 +72,7 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
 
   //modal
   @Input() modalFormName?: string;
-  @Input() isFacturacion: boolean = false;
+  @Input() isFacturacion = false;
 
   ////////
   @Input() menuContext = true;//?: boolean;
@@ -140,10 +141,27 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
   @Input() set edit(d: boolean) {
     this.getIsEditRow(d);
   }
+  @Input() set totalRows(n: number) {
+    this.numberRows = n ?? 0;
+    if (this.execTotals) {
+      this.addTotalRows();
+    }
+  }
+  numberRows = 0;
+  execTotals = false;
+  @Input() set addDias(n: number) {
+    this.numberDias = n ?? 0;
+    if (this.execTotals) {
+      this.addTotalRows();
+    }
+  }
+  numberDias = 0;
+
   @Input() modalForm = false;
   @Input() locked = false;
 
   @Input() isDelete = true;
+  @Input() isAdd = true;
   @Input() idsuggest!: number;
 
   @Output() OnSelectFiltro = new EventEmitter<any>();
@@ -159,6 +177,15 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
   @Output() OnDelete = new EventEmitter<any>();
   @Output() OnConfig = new EventEmitter<any>();
   @Output() OnRowSave = new EventEmitter<any>();
+
+  @Output() OnFocus = new EventEmitter<any>();
+  @Output() OnFocusOut = new EventEmitter<any>();
+  @Output() keyArrowDown = new EventEmitter<any>();
+  @Output() keyArrowUp = new EventEmitter<any>();
+  @Output() OnKeyDown = new EventEmitter<any>();
+  @Output() OnKeyUp = new EventEmitter<any>();
+  @Output() keyTab = new EventEmitter<any>();
+  @Output() keyEnter = new EventEmitter<any>();
 
   @Output() inEdition = new EventEmitter<any>();
   @Output() delResponse = new EventEmitter<any>();
@@ -264,7 +291,61 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
       },
     ];
     this.getSelects();
+    this.execTotals = true;
+    if (this.numberRows > 0) {
+      this.addTotalRows();
+
+    }
   }
+
+  addTotalRows(): void {
+    if (!this.locked) {
+      const nuevoObjeto: any = {}; // Puedes personalizar el objeto como desees
+      this.data.length = 0;
+      for (let i = 0; i < this.numberRows; i++) {
+        this.headerstab.forEach(v => {
+          const field = v.field;
+          nuevoObjeto[field] = v?.value ?? null;
+          if (v.type === 'date') {
+            const now = new Date();
+            nuevoObjeto[field] = this.formatDate(this.fechaDespuesSumarDias(now, (this.numberDias * i)), v?.dateFormat ?? 'yy-mm-dd');
+          }
+        });
+        nuevoObjeto.index = i;
+        const obj = _.cloneDeep(nuevoObjeto);
+        this.data.push(obj);
+      }
+    }
+  }
+
+  onCalendarSelect(e: any, d: any, f: string, df: string): void {
+    this.selectDate(e, df).subscribe((r) => {
+      d[f] = r;
+    });
+  }
+  selectDate(e: any, df: string): Observable<string> {
+    return of(this.formatDate(e, df)).pipe(delay(1));
+  }
+  formatDate(e: any, df: string): string {
+    const format = _.cloneDeep(df);
+    const fechaOriginal = new Date(e);
+    // Obtén los componentes de la fecha
+    const year = fechaOriginal.getFullYear().toString(); // Obtén los últimos dos dígitos del año
+    const month = ('0' + (fechaOriginal.getMonth() + 1)).slice(-2); // Añade cero al mes si es necesario
+    const day = ('0' + fechaOriginal.getDate()).slice(-2); // Añade cero al día si es necesario
+    // Construye la cadena de fecha en el formato deseado
+    const fechaFormateada = format
+      .replace('yy', year)
+      .replace('mm', month)
+      .replace('dd', day);
+    return fechaFormateada;
+  }
+  fechaDespuesSumarDias(e: any, d: number): Date {
+    const nuevaFecha = new Date();
+    nuevaFecha.setDate(nuevaFecha.getDate() + d);
+    return nuevaFecha;
+  }
+
   modelMode(m: 'EDIT' | 'NEW' | 'VIEW'): void {
     this.isModalEdit = m === 'EDIT' ? true : false;
     this.isModalNew = m === 'NEW' ? true : false;
@@ -299,7 +380,6 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
     }
     return false;
   }
-
 
   selectCheckbox(): void {
     this.OnChangeData.emit(this.selectedIndex ?? []);
@@ -407,12 +487,14 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
         });
       }
 
-      if (d?.length && h?.type === 'suggest') {
+      if (d?.length && h?.type === 'suggest' || h?.type === 'select') {
         //AGREGA UN PBJETO DEL FINDER AL FILDNAME DE LA ROW
         d.forEach((v, i) => {
-          const obj = h?.data.find((vh: any) => vh?.[h?.optionValue ?? ''] === v[h?.field]);
-          if (obj) {
-            d[i][h?.fieldname ?? ''] = obj;
+          if (h?.data?.length) {
+            const obj = h?.data.find((vh: any) => vh?.[h?.optionValue ?? ''] === v[h?.field]);
+            if (obj) {
+              d[i][h?.fieldname ?? ''] = obj;
+            }
           }
         });
       }
@@ -421,13 +503,16 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
   }
 
   selected(e: any, d: any, f: any, p: Array<ParentVal>, h: any): void {
-
     //select
     const id = e?.value > 0 ? e?.value : 0;
     const data: any[] = h?.data ?? [];
     if (data?.length) {
       const doc = data.find((n) => n.id === id);
       if (doc) {
+        if (h?.fieldname && h?.type === 'select') {
+          //AGREGA UN PBJETO DEL FINDER AL FILDNAME DE LA ROW
+          d[h?.fieldname] = doc;
+        }
         if (p?.length) {
           p.forEach((v, i) => {
             d[v.parentField] = doc[v.field];
@@ -451,7 +536,14 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
             d[v.parentField] = e[v.field];
             const obj = this.headerstab.find((vh: any) => vh?.field === v.parentField);
             if (obj) {
+
               if (obj?.type === 'select') {
+                const sdata = obj?.data ?? [];
+                if (obj?.fieldname && sdata?.length) {
+                  const obj_Value = obj?.obj_Value ?? 'id';
+                  const sobj = sdata.find((sv: any) => sv[obj_Value] === e[v.field]);
+                  d[obj.fieldname] = sobj ?? null;
+                }
                 if (obj?.parentsVals?.length) {
                   //this.selectedItemSgst({ id: d[obj?.field] }, d, obj?.field, null, obj?.parentsVals);
                   this.selected({ value: d[obj?.field] }, d, null, obj?.parentsVals, obj);
@@ -602,6 +694,7 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
 
   onRowEditInit(d: any): void {
     this.isediting = true;
+    this.isaddrow = false;
     this.OnTable.emit(this.isediting);
     this.cloneRow = _.cloneDeep(d);
     this.getIsEditRow(true);
@@ -609,8 +702,18 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
     this.tb.initRowEdit(d);
     this.rowData = {};
     this.rowSelect = false;
-  }
 
+    const h: any[] = this.headerstab;
+    h.forEach((v, i) => {
+      if (v?.required) {
+        h[i].errStyle = undefined;
+        if (d[v.field] === null || d[v.field] === undefined || d[v.field] === '') {
+          this.required = true;
+          h[i].errStyle = 'danger';
+        }
+      }
+    });
+  }
 
   onCloseModal(d: any): void {
     if (!this.isModalView) {
@@ -658,7 +761,7 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
     else {
       const index = this.data.length - 1;
       //delete this.data[index];
-      this.isaddrow = false;
+      this.isaddrow = this.isaddrow ? this.isaddrow : false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Completa los campos requeridos' });
       this.isediting = true;
       this.OnTable.emit(this.isediting);
@@ -673,7 +776,6 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
     this.isediting = false;
     this.OnTable.emit(this.isediting);
     this.data[index] = this.cloneRow;
-
     if (this.isaddrow) {
       this.cloneRow = {};
       this.data.splice(index, 1);
@@ -701,7 +803,7 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
         //---fix
         if (rowData?.[id]) {
           delete this.cloneRow[rowData?.[id]];
-          this.cloneRow = {};
+          this.cloneRow = null;
           this.dataDeleted.push({
             id: rowData?.[id],
           });

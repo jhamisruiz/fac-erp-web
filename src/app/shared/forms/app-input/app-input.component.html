@@ -1,5 +1,5 @@
 <div *ngIf="(inputType==='text' || inputType==='date' || inputType==='time')" class="d-flex flex-column">
-  <label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
+  <label *ngIf="!(label===false || label==='false')" for="miImput" class="mb-0 block text-capitalize {{labelClass}}">
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>
@@ -22,7 +22,7 @@
 </div>
 <!-- input calendar -->
 <div *ngIf="(inputType==='calendar')" class="d-flex flex-column">
-  <label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
+  <label *ngIf="!(label===false || label==='false')" for="miImput" class="mb-0 block text-capitalize {{labelClass}}">
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>
@@ -47,13 +47,14 @@
 </div>
 <!-- input number -->
 <div *ngIf="(inputType==='number')" class="d-flex flex-column">
-  <label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
+  <label *ngIf="!(label===false || label==='false')" for="miImput" class="mb-0 block text-capitalize {{labelClass}}">
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>
-  <p-inputNumber #input locale="en-US" [(ngModel)]="value" [min]="(min ?? -99999999)" [max]="(max ?? 99999999)"
-    mode="decimal" [placeholder]="(placeholder ?? '')" [minFractionDigits]="(minFractionDigits??0)" [style]="style"
-    styleClass="w-100 {{class}} " [disabled]="(disabled)" [readonly]="(readonly)" [required]="required"
+  <p-inputNumber #input locale="en-US" [(ngModel)]="value" [showButtons]="showButtons" [min]="(min ?? -99999999)"
+    [max]="(max ?? 99999999)" mode="decimal" [placeholder]="(placeholder ?? '')"
+    [minFractionDigits]="(minFractionDigits??0)" [style]="style" styleClass="w-100 {{class}} "
+    [disabled]="locked ? locked: disabled" [readonly]="(readonly)" [required]="required"
     inputStyleClass="style-disable {{inputClass}} {{inputStyleClass}} {{((hasError && (currentControl?.touched || currentControl?.dirty)) || borderRequired)||(borderRequired2)?'border-danger':''}}"
     (onInput)="!nsNumber ? onChangeValueIN($event) : onInpt($event)" (attr.onFocusOut)="OnFocusOut.emit($event)"
     (onFocus)="getReqError();OnFocus.emit($event);" (onBlur)="nsBlur.emit($event);onTouched($event)"
@@ -71,7 +72,7 @@
 </div>
 
 <div *ngIf="(inputType==='textarea')" class="d-flex flex-column">
-  <label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
+  <label *ngIf="!(label===false || label==='false')" for="miImput" class="mb-0 block text-capitalize {{labelClass}}">
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>

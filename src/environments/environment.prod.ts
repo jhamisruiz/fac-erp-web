@@ -4,7 +4,8 @@ export const environment = {
   wsHost: 'prueba/ws',
   wsSSL: true,
 
-  apiHost: 'localhost:9020',
+  apiHost: 'localhost:9080',
   apiVersion: 'v1',
-  apiSSL: true,
+  // apiSSL: true,
+  apiSSL: false,
 };

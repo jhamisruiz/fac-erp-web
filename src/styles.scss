@@ -31,6 +31,11 @@
     url(https://example.com/MaterialIcons-Regular.ttf) format('truetype');
 }
 
+.p-disabled,
+.p-component:disabled {
+  opacity: 0.8;
+}
+
 .material-icons {
   font-family: 'Material Icons';
   font-weight: normal;

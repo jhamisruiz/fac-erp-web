@@ -16,6 +16,7 @@ export class AppInputFileComponent implements OnInit {
       this.dataFile = d;
     }
   }
+  @Input() base64 = false;
 
   @Input() styleClass: string | undefined;
   @Input() class: string | undefined;
@@ -34,6 +35,8 @@ export class AppInputFileComponent implements OnInit {
 
   initRequired = false;
   dataFile!: DataFile | null;
+  files: any[] = [];
+  file: any;
   constructor() { }
 
   ngOnInit(): void {
@@ -45,25 +48,40 @@ export class AppInputFileComponent implements OnInit {
       const files: any[] = e.target.files;
       Array.from(e.target.files).forEach((v, i) => {
         const f = files[i];
-        const reader = new FileReader();
-        reader.readAsDataURL(files[i]);
-        reader.onload = (): void => {
-          let result = '';
-          result = reader.result as string;
-          this.dataFile = {
-            id: i,
-            data: result,
-            nombre: f.name,
-            create: true,
+        this.files.push(files[i]);
+        if (this.base64) {
+          const reader = new FileReader();
+          reader.readAsDataURL(files[i]);
+          reader.onload = (): void => {
+            let result = '';
+            result = reader.result as string;
+            this.dataFile = {
+              id: i,
+              data: result,
+              nombre: f.name,
+              create: true,
+            };
+            this.NgModelResponse.emit(this.dataFile);
           };
-          this.NgModelResponse.emit(this.dataFile);
-        };
+        }
       });
+      if (!this.base64) {
+        this.dataFile = {
+          id: -1,
+          data: this.files,
+          nombre: 'multiple',
+          create: true,
+        };
+        this.NgModelResponse.emit(this.dataFile);
+      }
     }
   }
 
   deleteFile(): void {
-    this.dataFile = null;
-    this.NgModelResponse.emit(this.dataFile);
+    if (this.base64) {
+      const nm = this.dataFile?.nombre;
+      this.dataFile = { nombre: nm, delete: true };
+      this.NgModelResponse.emit(this.dataFile);
+    }
   }
 }

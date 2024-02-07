@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "dev-erp-web": {
+    "fac-erp-web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -25,12 +25,10 @@
               "lodash",
               "moment"
             ],
-            "outputPath": "dist/dev-erp-web",
+            "outputPath": "dist/fac-erp-web",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -48,7 +46,8 @@
               "./src/assets/scss/icons.min.scss",
               "src/styles.scss"
             ],
-            "scripts": [{
+            "scripts": [
+              {
                 "input": "node_modules/jquery/dist/jquery.min.js",
                 "bundleName": "jquery",
                 "inject": true
@@ -67,34 +66,43 @@
               "./src/assets/libs/simplebar/simplebar.min.js",
               "./src/assets/libs/node-waves/waves.min.js",
               "./src/assets/libs/feather-icons/feather.min.js"
-            ]
+            ],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
-              "budgets": [{
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "4mb",
+                  "maximumError": "20mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "250kb",
+                  "maximumError": "500kb"
                 }
               ],
-              "fileReplacements": [{
-                "replace": "src/environments/environment.ts",
-                "with": "src/environments/environment.prod.ts"
-              }],
-              "outputHashing": "all"
-            },
-            "development": {
-              "buildOptimizer": false,
-              "optimization": false,
-              "vendorChunk": true,
-              "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "serviceWorker": true,
+              "ngswConfigPath": "ngsw-config.json"
             }
           },
           "defaultConfiguration": "production"
@@ -102,15 +110,14 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "dev-erp-web:build",
-            "port": 3200
+            "browserTarget": "fac-erp-web:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "dev-erp-web:build:production"
+              "browserTarget": "fac-erp-web:build:production"
             },
             "development": {
-              "browserTarget": "dev-erp-web:build:development"
+              "browserTarget": "fac-erp-web:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -118,17 +125,16 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "dev-erp-web:build"
+            "browserTarget": "fac-erp-web:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "main": "src/test.ts",
+            "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
+            "karmaConfig": "karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
@@ -146,48 +152,6 @@
             "lintFilePatterns": [
               "src/**/*.ts",
               "src/**/*.html"
-            ]
-          }
-        }
-      }
-    },
-    "dev-edic": {
-      "projectType": "library",
-      "root": "projects/dev-edic",
-      "sourceRoot": "projects/dev-edic/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "projects/dev-edic/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/dev-edic/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/dev-edic/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "tsConfig": "projects/dev-edic/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "projects/dev-edic/**/*.ts",
-              "projects/dev-edic/**/*.html"
             ]
           }
         }

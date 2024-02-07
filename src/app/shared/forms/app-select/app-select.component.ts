@@ -92,6 +92,7 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
   @Output() OnPanelHide = new EventEmitter<any[] | null>();
 
   @Output() OnClear = new EventEmitter<any>();
+  @Output() OnSuggest = new EventEmitter<any>();
 
   data: any[] = [];
   pathCurrent: any;
@@ -341,6 +342,11 @@ export class AppSelectComponent implements NsCustomFormControl, OnInit, ControlV
           const d: any[] = r ?? [];
           this.data = d;
 
+          if (this.descriptionValue) {
+            const ids = this.optionValue ?? this.inputValue ?? 'id';
+            const obj = d.find((v) => v?.[ids] === Number(this.descriptionValue));
+            this.OnSuggest.emit(obj ?? null);
+          }
           if (this.inputValue && this.optionValue) {//fixme:
             const id = this.optionValue;
             const sel = d.find((v) => v?.[id] === Number(this.inputValue));

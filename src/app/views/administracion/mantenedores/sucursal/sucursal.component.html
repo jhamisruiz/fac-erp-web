@@ -15,10 +15,10 @@
         <!--end col-->
         <div class="col-xxl-3 col-md-6">
           <div>
-            <app-select [currentPath]="'/empresa-buscar'" formControlName="id_empresa" [showClear]="true"
-              [filter]="false" optionValue="id" optionLabel="razon_social" styleClass="p-0 w-100"
-              placeholder="-Seleccionar-" label="GRUPO EMPLEADO" [isTemplete]="true" [Labels]="['razon_social']"
-              [formValid]="ok"></app-select>
+            <app-select [currentPath]="'/empresa-buscar'" (OnChange)="selectChange($event)" formControlName="id_empresa"
+              [showClear]="true" [filter]="false" optionValue="id" optionLabel="razon_social" styleClass="p-0 w-100"
+              placeholder="-Seleccionar-" label="EMPRESA" [isTemplete]="true"
+              [Labels]="['razon_social','nombre_comercial']" [formValid]="ok"></app-select>
           </div>
         </div>
         <div class="col-xxl-3 col-md-6">
@@ -75,5 +75,3 @@
   </div>
 
 </ng-container>
-
-<!-- {{form.value?.detalle| json}} -->

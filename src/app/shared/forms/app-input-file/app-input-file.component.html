@@ -1,4 +1,4 @@
-<label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
+<label *ngIf="!(label===false || label==='false')" for="miImput" class="mb-0 block text-capitalize {{labelClass}}">
   {{label??'label text'}}
   <i *ngIf="(initRequired || required)" class="text-danger">*</i>
 </label>
@@ -7,15 +7,12 @@
     <i class="pi pi-upload text-success" style="font-size: 1.5rem; margin-right: 5px;"></i>
     <p class="font-poppins font-semibold text-sm mb-1 mt-1">Selec. archivo</p>
   </label>
-  <input (change)="onFileChange($event)" [disabled]="(dataFile?.nombre)" type="file" name="inputFile" id="inputFile"
-    hidden [multiple]="multiple" accept="{{accept}}" />
+  <input (change)="onFileChange($event)" [disabled]="(dataFile?.nombre && !dataFile?.delete)" type="file"
+    name="inputFile" id="inputFile" hidden [multiple]="multiple" accept="{{accept}}" />
 
-  <div class="d-flex mb-3" *ngIf="dataFile?.nombre;">
+  <div class="d-flex mb-3" *ngIf="dataFile?.nombre && !dataFile?.delete">
     <span class="ml-3" style="margin-right: 5px;">{{dataFile?.nombre}}</span>
     <i [attr.aria-hidden]="true" (click)="deleteFile()" class="pi pi-trash text-danger"
       style="font-size: 1.5rem;cursor: pointer;"></i>
   </div>
 </div>
-
-
-<!--   (click)="deleteFile()" -->

@@ -4,8 +4,8 @@ import { ConfiguracionComponent } from './configuracion.component';
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
   ],
-  declarations: [ConfiguracionComponent]
+  declarations: [ConfiguracionComponent],
 })
 export class ConfiguracionModule { }

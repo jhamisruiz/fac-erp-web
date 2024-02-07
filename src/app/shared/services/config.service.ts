@@ -24,10 +24,13 @@ export class AppConfigService {
     const d = true;
     return of(d).pipe(delay(1));
   }
-
+  saveEmpresaSucursal(d: any): Observable<any> {
+    return this.http.post(`usuario-empresa-sucursal`, d);
+  }
   getDataApi2(): Observable<any> {
     return this.http.get(`empresa-efecto`);
   }
+
   getDataApi(): Observable<ItemModel[]> {
     const d = [{
       name: 'item 1',

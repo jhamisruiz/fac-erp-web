@@ -8,6 +8,7 @@ import { FacturaComponent } from './mantenedores/factura/factura.component';
 import { BoletaComponent } from './mantenedores/boleta/boleta.component';
 import { NotaCreditoComponent } from './mantenedores/nota-credito/nota-credito.component';
 import { NotaDebitoComponent } from './mantenedores/nota-debito/nota-debito.component';
+import { KarmafactComponent } from './mantenedores/karmafact/karmafact.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,11 @@ const routes: Routes = [
       {
         path: 'registro-de-notas-de-debito',
         component: NotaDebitoComponent,
+        canActivate: [UserGuard],
+      },
+      {
+        path: 'registro-de-karma',
+        component: KarmafactComponent,
         canActivate: [UserGuard],
       },
     ],

@@ -1,3 +1,4 @@
+import { ConversionService } from './valorLetras.class';
 
 
 export class Facturacion {
@@ -11,8 +12,14 @@ export class Facturacion {
     g_op_inafectas: 0,
     g_icbper: 0,
     g_total: 0,
+    g_descuento_global: 0,
+    g_total_sin_desc: 0,
   };
+  public g_desc_global = 0.0;
   public igv_porcentaje = 0.18;
+
+  public code_moneda = 'SOLES';
+  public texto!: string;
 
   constructor() { }
   transform(value: any): any {
@@ -73,37 +80,38 @@ export class Facturacion {
       const total_descuento = descuento.toFixed(2);
       d.subtotal_con_dscto = Number(total_descuento);
 
-      igv = d?.tipo_afectacion === 10 ? (Number(total_descuento) * this.igv_porcentaje) : 0.00;
+      igv = d?.tipo_afectacion === 10 ? (Number(d.sub_total) * this.igv_porcentaje) : 0.00;
 
       d.igv_porcentaje = this.igv_porcentaje;
       d.igv = igv.toFixed(2);
       d.icbper = icbper;
-      d.total = Number(total_descuento) + igv + icbper;
+      d.total = Number(Number(total_descuento) + igv + icbper).toFixed(2);
     }
   }
 
   public totalFactura(d: Array<any>, f: boolean): void {
     if (f) {
       this.rest();
-      let g_sub_total = 0.0;
-      let g_descuento = 0.0;
-      let g_subtotal_con_dscto = 0.0;
-      let g_igv = 0.0;
-      let g_op_exoneradas = 0.0;
-      let g_op_inafectas = 0.0;
-      let g_icbper = 0.0;
-      let g_total = 0.0; /**/
+      let g_sub_total = 0.0,
+        g_descuento = 0.0,
+        g_subtotal_con_dscto = 0.0,
+        g_igv = 0.0,
+        g_op_exoneradas = 0.0,
+        g_op_inafectas = 0.0,
+        g_icbper = 0.0,
+        g_total_sin_desc = 0.0,
+        g_total = 0.0;
 
       if (d?.length) {
         d.forEach(v => {
-          let sub_total = 0.00;
-          let descuento = 0.00;
-          let op_gravadas = 0.00;
-          let op_exoneradas = 0.00;
-          let op_inafectas = 0.00;
-          let icbper = 0.00;
-          let igv = 0.0;
-          let total = 0.0;
+          let sub_total = 0.00,
+            descuento = 0.00,
+            op_gravadas = 0.00,
+            op_exoneradas = 0.00,
+            op_inafectas = 0.00,
+            icbper = 0.00,
+            igv = 0.0,
+            total = 0.0;
 
           if (v?.tipo_afectacion === 10) {
             op_gravadas = (v?.valor_unitario ?? 0) * (v?.cantidad ?? 0);
@@ -131,29 +139,38 @@ export class Facturacion {
 
           const total_descuento = descuento.toFixed(2);
 
-          igv = v?.tipo_afectacion === 10 ? (Number(total_descuento) * this.igv_porcentaje) : 0.00;
+          igv = v?.tipo_afectacion === 10 ? (Number(sub_total) * this.igv_porcentaje) : 0.00;
 
           total = Number(total_descuento) + igv + icbper;
-
           g_sub_total = g_sub_total + sub_total;
-          g_descuento = g_descuento + v?.descuento;
+          g_descuento += Number(v?.descuento ? v?.descuento : 0);
           g_subtotal_con_dscto = g_subtotal_con_dscto + Number(total_descuento);
           g_igv = g_igv + Number(igv.toFixed(2));
           g_op_exoneradas = g_op_exoneradas + Number(op_exoneradas.toFixed(2));
           g_op_inafectas = g_op_inafectas + Number(op_inafectas.toFixed(2));
           g_icbper = g_icbper + icbper;
-          g_total = g_total + total;
+          g_total = Number((g_total + total).toFixed(2));
+          g_total_sin_desc = g_total;
         });
+
+        if (this.g_desc_global < g_total) { }
+        g_total = Number((g_total_sin_desc - this.g_desc_global).toFixed(2)); /**/
         this.g_total = {
           g_sub_total: g_sub_total,
-          g_descuento: g_descuento,
+          g_descuento: Number((g_descuento + this.g_desc_global).toFixed(2)),
           g_subtotal_con_dscto: g_subtotal_con_dscto,
-          g_igv: g_igv,
+          g_igv: Number(g_igv.toFixed(2)),
           g_op_exoneradas: g_op_exoneradas,
           g_op_inafectas: g_op_inafectas,
           g_icbper: g_icbper,
-          g_total: g_total,
+          g_total: g_total < 0 ? 0 : g_total,
+          g_descuento_global: g_total < 0 ? 0 : this.g_desc_global,
+          g_total_sin_desc: g_total_sin_desc,
         };
+        if (g_total) {
+          this.texto = this.CantidadEnLetra(g_total);
+        }
+        //this.g_desc_global = g_total < 0 ? 0 : this.g_desc_global;
       }
     }
   }
@@ -168,6 +185,13 @@ export class Facturacion {
       g_op_inafectas: 0,
       g_icbper: 0,
       g_total: 0,
+      g_descuento_global: 0,
+      g_total_sin_desc: 0,
     };
+  }
+
+  public CantidadEnLetra(n: any): string {
+    const str = new ConversionService();
+    return str.valorEnLetras(n, this.code_moneda);
   }
 }

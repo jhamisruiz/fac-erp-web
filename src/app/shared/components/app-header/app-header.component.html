@@ -48,9 +48,12 @@
           </button>
           <div class="dropdown-menu dropdown-menu-end">
             <h6 class="dropdown-header">Bienvenido!</h6>
-            <a class="dropdown-item" href="#">
+            <button class="dropdown-item" type="button" (click)="displayModal=true">
+              <i class="mdi mdi-arrow-top-right-bold-box text-muted fs-16 align-middle me-1"></i>
+              <span class="align-middle">Cambiar Empresa Y Suc.</span></button>
+            <button class="dropdown-item" type="button">
               <i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
-              <span class="align-middle">Perfil</span></a>
+              <span class="align-middle">Perfil</span></button>
             <a class="dropdown-item" href="#" (click)="logout()">
               <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
               <span class="align-middle" data-key="t-logout">Cerrar Sesión</span></a>
@@ -60,3 +63,36 @@
     </div>
   </div>
 </header>
+<p-toast [position]="'top-right'" [baseZIndex]="500000">
+</p-toast>
+<p-dialog header="Seleccionar Empresa " [(visible)]="displayModal" [modal]="true" [baseZIndex]="1"
+  [breakpoints]="{'1024px': '55%', '860px': '75%','580px': '100%' }" closeAriaLabel="cerrar"
+  [style]="{ width: '520px', height: 'auto' }" [position]="'top'" [draggable]="false" [draggable]="false"
+  [resizable]="true">
+  <form class="form" [formGroup]="form">
+    <div class="row">
+      <button class="btn btn-sm btn-secondary text-center" styleClass="p-button-sm" (click)="logout()">
+        <i class="mdi mdi-logout  align-middle me-1 " style="font-size: 28px;"></i>
+        <span class="align-middle" data-key="t-logout">Cerrar Sesión</span>
+      </button>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <app-select [currentPath]="'/empresa-buscar'" (OnChange)="OnChange($event)"
+          (selectChange)="selectChange($event)" formControlName="id_empresa" [showClear]="true" [filter]="false"
+          optionValue="id" optionLabel="razon_social" styleClass="p-0 w-100" placeholder="-Seleccionar-" label="EMPRESA"
+          [isTemplete]="true" [Labels]="['razon_social','nombre_comercial']"></app-select>
+      </div>
+      <div class="col-lg-12">
+        <app-select [currentPath]="pathSucursal" (OnChange)="OnChangeSucursal($event)" formControlName="id_sucursal"
+          [showClear]="true" [filter]="false" optionValue="id" optionLabel="codigo" styleClass="p-0 w-100"
+          placeholder="-Seleccionar-" label="SUCURSAL" [isTemplete]="true" [Labels]="['codigo','nombre']"></app-select>
+      </div>
+    </div>
+  </form>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple (click)="displayModal=false" *ngIf="form?.value?.id_empresa>0 && form?.value?.id_sucursal>0"
+      icon="pi pi-times" class="p-button p-button-danger" label="Cerrar">
+    </button>
+  </ng-template>
+</p-dialog>

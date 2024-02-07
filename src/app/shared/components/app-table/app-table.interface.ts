@@ -3,7 +3,15 @@ export interface AppTable {
   label: string;
   thStyle?: string;
   //suggest
+  /**
+   * @param fieldname contiene el nombre del parametro que almacenara el objeto
+   * @require `obj_Value` si es type=`select` requiere del parametro `obj_Value`
+   *  */
   fieldname?: string;
+  /**
+   * @param obj_Value es requerido si usa `fieldname` almacena el nombre del valor parametro del objeto que comprara
+   *  */
+  obj_Value?: string;
   labelClass?: string;
   id?: string;
   type?: string;
@@ -20,6 +28,9 @@ export interface AppTable {
   isArray?: boolean;
   imageP?: boolean;
   date?: boolean;
+  dateFormat?: string;
+  mindate?: number;
+  maxdate?: number;
   object?: any;
   array?: any;
   join?: number;
@@ -39,6 +50,9 @@ export interface AppTable {
   button?: any;
   icon?: string;
   btnClass?: string;
+  btnBoolClass?: string;
+  btnBoolIcon?: string;
+  btnBool?: true | false;
   center?: true;
   celClick?: any;
   minWidth?: string;

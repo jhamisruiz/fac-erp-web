@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Directive, ElementRef, HostBinding,
   HostListener, Input, Renderer2, ViewChild,

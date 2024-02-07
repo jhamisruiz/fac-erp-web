@@ -1,8 +1,8 @@
 import { UntypedFormArray, UntypedFormGroup, Validators } from '@angular/forms';
 import { AbstractDocument } from '@app/shared/common/classes';
 import { Component, OnInit, Injector } from '@angular/core';
-import { UniqueDoc } from '../../../../shared/validators/unique-document';
 import { AppTable } from '../../../../shared/components/app-table/app-table.interface';
+import { UniqueCode } from '@app/shared/validators/unique-code';
 
 @Component({
   selector: 'app-sucursal',
@@ -55,9 +55,9 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
   form: UntypedFormGroup = this.fb.group(
     {
       id: [],
-      id_empresa: ['', [Validators.required]],
+      id_empresa: [{ value: null, disabled: this.isEditMode }, [Validators.required]],
       codigo: [{ value: null, disabled: this.isEditMode }, [Validators.required, Validators.minLength(4), Validators.maxLength(4)],
-      Validators.composeAsync([UniqueDoc(this.codeValidator.bind(this))])],
+      Validators.composeAsync([UniqueCode(this.codeValidator.bind(this))])],
       nombre: ['', [Validators.required]],
       ubigeo: ['', [Validators.required]],
       direccion: [],
@@ -92,7 +92,6 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
       Labels: ['codigo', 'nombre'],
       separador: ' - ',
       required: true,
-      unique: true,
       parentsVals: [{
         field: 'serie',
         parentField: 'serie',
@@ -103,6 +102,7 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
       label: 'serie',
       toUpperCase: true,
       required: true,
+      unique: true,
     },
     {
       field: 'correlativo',
@@ -132,11 +132,23 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
     super.ngOnInit();
   }
 
+  selectChange(e: any): void {
+    if (this.isCreateMode && e?.ubigeo) {
+      this.form.patchValue({ ubigeo: e.ubigeo });
+    }
+    if (!this.isEditMode) {
+      if (this.paramsUniqueCode) {
+        this.form.patchValue({
+          codigo: null,
+        });
+      }
+      this.paramsUniqueCode = { idempresa: e.id };
+    }
+  }
+
   getUbigeo(e: any): void {
     this.form.patchValue({
-      departamento: e.departamento,
-      provincia: e.provincia,
-      distrito: e.distrito,
+      // retorna departamento,provincia,distrito,ubigeo
       ubigeo: e.ubigeo,
     });
   }

@@ -27,6 +27,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { BadgeModule } from 'primeng/badge';
 import { ChipModule } from 'primeng/chip';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { CalendarModule } from 'primeng/calendar';
 
 
 
@@ -60,6 +61,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     BadgeModule,
     ChipModule,
     RadioButtonModule,
+    CalendarModule,
   ],
   exports: [AppTableComponent],
 })

@@ -1,4 +1,19 @@
 <div class="row d-flex justify-content-center">
+  <div class="col-xl-2 col-md-4" *ngIf="empresa">
+    <div class="card card-animate shadow-class">
+      <div class="card-body" style="min-height: 157px;">
+        <div class="row">
+          <div class="col-lg-12">
+            <app-select [currentPath]="'/empresa-buscar'" (OnChange)="OnChange($event)"
+              (selectChange)="selectChange($event)" [(ngModel)]="id_empresa" [showClear]="true" [filter]="false"
+              optionValue="id" optionLabel="nombre_comercial" styleClass="p-0 w-100" placeholder="-Seleccionar-"
+              label="EMPRESA" [isTemplete]="true" [Labels]="['nombre_comercial']"></app-select>
+          </div>
+        </div>
+      </div><!-- end card body -->
+    </div>
+  </div>
+
   <div class="col-xl-2 col-md-4" *ngFor="let c of componentes">
     <a [routerLink]="[c.url]">
       <div class="card card-animate shadow-class">
