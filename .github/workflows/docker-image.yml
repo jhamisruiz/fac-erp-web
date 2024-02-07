@@ -1,0 +1,55 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    ## step:1- toma todo el codigo del repo
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+
+    ## step:2-
+    - name: Git Semantic Version
+      uses: PaulHatch/semantic-version@v4.0.3
+      with:
+        major_pattern: "major:"
+        minor_pattern: "feat:"
+        format: "${major}.${minor}.${patch}-prerelease${increment}"
+      # con el id se puede llamar desde otro step
+      id: version
+
+    ## step:3- Iniciar secion en docker
+    - name: Docker Login
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        echo "Iniciando login"
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        echo "Fin del login"
+
+    ## step:4- Build de la imagen en Docker
+    - name: Build the Docker image
+      env:
+         NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker build -t jhamisruiz/fac-erp-web:$NEW_VERSION .
+        docker build -t jhamisruiz/fac-erp-web:latest .
+
+    ## step:5- Build de la imagen en Docker
+    - name: Push Docker Image
+      env:
+         NEW_VERSION: ${{ steps.version.outputs.version }}
+      run: |
+        docker push jhamisruiz/fac-erp-web:$NEW_VERSION
+        docker push jhamisruiz/fac-erp-web:latest
