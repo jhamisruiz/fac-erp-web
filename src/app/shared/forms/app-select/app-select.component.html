@@ -14,24 +14,24 @@
     <ng-template let-select pTemplate="selectedItem" *ngIf="isTemplete">
       <div class="select-item select-item-value" *ngIf="descriptionValue">
         <div>
-          <p-badge *ngIf="(Labels.length>1) && (select[Labels[0]])" [value]="(select[Labels[0]])" severity="info"
+          <p-badge *ngIf="Labels.length > 1 && select && select[Labels[0]]" [value]="select[Labels[0]]" severity="info"
             styleClass="m-0 mr-1"></p-badge>
-          {{Labels.length===1?select[Labels[0]]:''}}
-          {{select[Labels[1]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[1]]: ''}}
-          {{select[Labels[2]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
-          {{select[Labels[3]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
+          {{Labels.length===1&&select?select[Labels[0]]:''}}
+          {{Labels.length===2&&select&&select[Labels[1]]?(separador? ' '+separador+' ': ' ')+ select[Labels[1]]:''}}
+          {{Labels.length===3&&select&&select[Labels[2]]?(separador? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
+          {{Labels.length===4&&select&&select[Labels[3]]?(separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
         </div>
       </div>
     </ng-template>
     <ng-template let-select pTemplate="item" *ngIf="isTemplete">
       <div class="select-item">
         <div>
-          <p-badge *ngIf="(Labels.length>1) && (select[Labels[0]])" [value]="(select[Labels[0]])" severity="info"
+          <p-badge *ngIf="Labels.length > 1 && select && select[Labels[0]]" [value]="select[Labels[0]]" severity="info"
             styleClass="m-0 mr-1"></p-badge>
-          {{Labels.length===1?select[Labels[0]]:''}}
-          {{select[Labels[1]] ? (separador ? ' '+separador+' ': ' ')+select[Labels[1]]: ''}}
-          {{select[Labels[2]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
-          {{select[Labels[3]] ? (separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
+          {{Labels.length===1&&select?select[Labels[0]]:''}}
+          {{Labels.length===2&&select&&select[Labels[1]]?(separador? ' '+separador+' ': ' ')+ select[Labels[1]]:''}}
+          {{Labels.length===3&&select&&select[Labels[2]]?(separador? ' '+separador+' ': ' ')+ select[Labels[2]]: ''}}
+          {{Labels.length===4&&select&&select[Labels[3]]?(separador ? ' '+separador+' ': ' ')+ select[Labels[3]]: ''}}
         </div>
       </div>
     </ng-template>

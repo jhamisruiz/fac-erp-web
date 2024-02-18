@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Optional, Output, ViewChild, forwardRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Optional, Output, ViewChild, forwardRef } from '@angular/core';
 import { UnspscService } from './unspsc.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -193,6 +193,7 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
     @Optional() private controlContainer: ControlContainer,
     private store: Store<AppState>,
     private sv: UnspscService,
+    private cdRef: ChangeDetectorRef,
   ) {
     moment.locale('es' /*navigator.language*/);
     this.element = el.nativeElement;
@@ -204,7 +205,6 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
   ngOnInit(): void {
     this.getInputValid();
     this.layoutMode = document.documentElement.getAttribute('data-layout-mode');
-    this.getSegmentos();
   }
 
   getInputValid(): void {
@@ -228,6 +228,8 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
     }
   }
   ngAfterViewInit(): void {
+    //Promise.resolve().then(() => this.getSegmentos());
+    this.cdRef.detectChanges();
     if (undefined !== this.tags) {
       // $(`#${this.id}`).tokenfield({
       //   trimValue: true,
@@ -474,12 +476,13 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
     }
     return '';
   }
+
   getSegmentos(): void {
     if (!this.value || this.value === ' ' || this.value === '  ') {
       this.value = null;
       this.limpiar();
     }
-    this.sv.getSegmentos().subscribe((r: UNSPSC[] | null) => {
+    this.sv.Segmentos().subscribe((r: UNSPSC[] | null) => {
       if (r) {
         this.segmentos = r;
         if (this.value) {
@@ -539,8 +542,9 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
     }
   }
 
-  getSuggstToProducto(e: any): void {
+  getSuggstToProducto(event: any): void {
     this.limpiar();
+    const e = event && event?.codigo ? event : event.value;
     if (e?.codigo) {
       this.loading$ = this.store.select(selectLoadingUnspsc);
       this.store.dispatch(loadUnspscAction());
@@ -570,9 +574,11 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
     const d = (this.value ?? '').substring(0, 4) + '0000';
     this.familia = this.familias.find(vd => vd.codigo === d);
   }
+
   claseCodigo(): void {
     const d = (this.value ?? '').substring(0, 6) + '00';
     this.clase = this.clases.find(vd => vd.codigo === d);
+
   }
   prodCodigo(): void {
     this.producto = this.productos.find(vd => vd.codigo === this.value);

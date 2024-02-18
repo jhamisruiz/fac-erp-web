@@ -13,7 +13,7 @@ export class UnspscService {
   ) { }
 
 
-  getSegmentos(): Observable<any> {
+  Segmentos(): Observable<any> {
     return this.http.get<any>(`producto-unspsc-segmentos`);
   }
 

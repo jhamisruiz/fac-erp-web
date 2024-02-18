@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AppConfigService } from '../shared/services/config.service';
 import { AppState } from '../store/state/app.state';
 import { Store } from '@ngrx/store';
 import { selectLoadingCompForm } from '../store/selectors/app.selectors';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { AppConfigService } from '@app/shared/services/config.service';
 
 @Component({
   selector: 'app-views',
@@ -19,8 +19,8 @@ export class ViewsComponent implements OnInit {
   viewMode = 'VIEW';
   constructor(
     private store: Store<AppState>,
-    private sv: AppConfigService,
     private router: Router,
+    private sv: AppConfigService,
   ) {
     this.store.select(selectLoadingCompForm).subscribe((r) => {
       if (r?.formMode) {
@@ -45,7 +45,7 @@ export class ViewsComponent implements OnInit {
   }
   update(): void {
     this.updateComponent = false;
-
+    // Promise.resolve().then(() => this.updateComponent = true);
     this.sv.getUpdate().subscribe((r) => {
       this.updateComponent = r;
     });

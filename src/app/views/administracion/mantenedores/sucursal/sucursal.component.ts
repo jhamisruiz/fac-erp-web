@@ -134,7 +134,7 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
 
   selectChange(e: any): void {
     if (this.isCreateMode && e?.ubigeo) {
-      this.form.patchValue({ ubigeo: e.ubigeo });
+      this.form.patchValue({ ubigeo: e?.ubigeo });
     }
     if (!this.isEditMode) {
       if (this.paramsUniqueCode) {
@@ -142,7 +142,7 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
           codigo: null,
         });
       }
-      this.paramsUniqueCode = { idempresa: e.id };
+      this.paramsUniqueCode = { idempresa: e?.id };
     }
   }
 

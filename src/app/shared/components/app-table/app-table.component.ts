@@ -526,8 +526,9 @@ export class AppTableComponent extends Facturacion implements OnInit, OnDestroy 
     }
   }
 
-  selectedItemSgst(e: any, d: any, field: any, oVal: any, p: Array<ParentVal>): void {
+  selectedItemSgst(event: any, d: any, field: any, oVal: any, p: Array<ParentVal>): void {
     //parents
+    const e = event && event.id ? event : event.value;
     if (e?.id || e[oVal]) {
       d[field] = e[oVal];
       if (p?.length) {

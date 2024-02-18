@@ -199,11 +199,13 @@
                     <ng-template let-tmt pTemplate="selectedItem" *ngIf="h?.isTemplete">
                       <div class="select-item select-item-value" *ngIf="d[h.field]">
                         <div>
-                          <p-badge *ngIf="(tmt[h?.Labels[0] ?? ''])" [value]="(tmt[h?.Labels[0] ?? ''])" severity="info"
-                            styleClass="m-0 mr-1"></p-badge>
-                          {{tmt[h?.Labels[1]??''] ? tmt[h?.Labels[1]??'']: ''}}
-                          {{tmt[h?.Labels[2]??''] ? (h?.separador ? h?.separador:' ')+ tmt[h?.Labels[2]??'']: ''}}
-                          {{tmt[h?.Labels[3]??''] ? (h?.separador ? h?.separador:' ')+ tmt[h?.Labels[3]??'']: ''}}
+                          <p-badge *ngIf="(tmt&&h&&tmt[h?.Labels[0] ?? ''])" [value]="(tmt[h?.Labels[0] ?? ''])"
+                            severity="info" styleClass="m-0 mr-1"></p-badge>
+                          {{tmt&&h&&tmt[h?.Labels[1]??''] ? tmt[h?.Labels[1]??'']: ''}}
+                          {{tmt&&h&&tmt[h?.Labels[2]??''] ? (h?.separador ? h?.separador:' ')+ tmt[h?.Labels[2]??'']:
+                          ''}}
+                          {{tmt&&h&&tmt[h?.Labels[3]??''] ? (h?.separador ? h?.separador:' ')+ tmt[h?.Labels[3]??'']:
+                          ''}}
                         </div>
                       </div>
                     </ng-template>
@@ -212,9 +214,11 @@
                         <div>
                           <p-badge *ngIf="(select[h?.Labels[0] ?? ''])" [value]="(select[h?.Labels[0] ?? ''])"
                             severity="info" styleClass="m-0 mr-1"></p-badge>
-                          {{select[h?.Labels[1]??''] ? select[h?.Labels[1]??'']: ''}}
-                          {{select[h?.Labels[2]??''] ? (h?.separador ? h?.separador:' ')+ select[h?.Labels[2]??'']: ''}}
-                          {{select[h?.Labels[3]??''] ? (h?.separador ? h?.separador:' ')+ select[h?.Labels[3]??'']: ''}}
+                          {{h&&select&&select[h?.Labels[1]??''] ? select[h?.Labels[1]??'']: ''}}
+                          {{h&&select&&select[h?.Labels[2]??''] ? (h?.separador ? h?.separador:' ')+
+                          select[h?.Labels[2]??'']: ''}}
+                          {{h&&select&&select[h?.Labels[3]??''] ? (h?.separador ? h?.separador:' ')+
+                          select[h?.Labels[3]??'']: ''}}
                         </div>
                       </div>
                     </ng-template>
@@ -545,22 +549,28 @@
                   <ng-template let-tmt pTemplate="selectedItem" *ngIf="h?.isTemplete">
                     <div class="select-item select-item-value" *ngIf="modal[h.field]">
                       <div>
-                        <p-badge *ngIf="(tmt[(h?.Labels ?? [])[0] ?? ''])" [value]="(tmt[(h?.Labels ?? [])[0]])"
-                          severity="info" styleClass="m-0 mr-1"></p-badge>
-                        {{tmt[(h?.Labels ?? [])[1]] ? tmt[(h?.Labels ?? [])[1]]: ''}}
-                        {{tmt[(h?.Labels ?? [])[2]] ? (h?.separador ? h?.separador:' ')+ tmt[(h?.Labels ?? [])[2]]: ''}}
-                        {{tmt[(h?.Labels ?? [])[3]] ? (h?.separador ? h?.separador:' ')+ tmt[(h?.Labels ?? [])[3]]: ''}}
+                        <p-badge *ngIf="(tmt && h && tmt[(h?.Labels ?? [])[0] ?? ''])"
+                          [value]="(tmt[(h?.Labels ?? [])[0]])" severity="info" styleClass="m-0 mr-1"></p-badge>
+                        <!-- <p-badge *ngIf="(tmt && h && h.Labels && h.Labels.length > 0 && tmt[h.Labels[0]])"
+                            [value]="(tmt && h && h.Labels && h.Labels.length > 0 && tmt[h.Labels[0]])" severity="info" styleClass="m-0 mr-1">
+                          </p-badge> -->
+
+                        {{tmt&&h &&tmt[(h?.Labels??[])[1]]?tmt[(h?.Labels?? [])[1]]:''}}
+                        {{tmt&&h &&tmt[(h?.Labels??[])[2]]?(h?.separador?h?.separador:' ')+tmt[(h?.Labels??[])[2]]: ''}}
+                        {{tmt&&h &&tmt[(h?.Labels??[])[3]]?(h?.separador?h?.separador:' ')+tmt[(h?.Labels??[])[3]]: ''}}
                       </div>
                     </div>
                   </ng-template>
                   <ng-template let-select pTemplate="item" *ngIf="h?.isTemplete">
                     <div class="select-item">
                       <div>
-                        <p-badge *ngIf="(select[(h?.Labels ?? [])[0] ?? ''])" [value]="(select[(h?.Labels ?? [])[0]])"
-                          severity="info" styleClass="m-0 mr-1"></p-badge>
-                        {{select[(h?.Labels ??[])[1]] ? select[(h?.Labels ?? [])[1]]: ''}}
-                        {{select[(h?.Labels ??[])[2]]?(h?.separador ? h?.separador:' ')+select[(h?.Labels??[])[2]]:''}}
-                        {{select[(h?.Labels ??[])[3]] ? (h?.separador? h?.separador:' ')+select[(h?.Labels??[])[3]]:''}}
+                        <p-badge *ngIf="(h&&select&&select[(h?.Labels ?? [])[0] ?? ''])"
+                          [value]="(select[(h?.Labels ?? [])[0]])" severity="info" styleClass="m-0 mr-1"></p-badge>
+                        {{h&&select&&select[(h?.Labels??[])[1]]?select[(h?.Labels ?? [])[1]]: ''}}
+                        {{h&&select&&select[(h?.Labels??[])[2]]?
+                        (h?.separador ? h?.separador:'')+select[(h?.Labels??[])[2]]:''}}
+                        {{h&&select&&select[(h?.Labels??[])[3]]?
+                        (h?.separador?h?.separador:'')+select[(h?.Labels??[])[3]]:''}}
                       </div>
                     </div>
                   </ng-template>
