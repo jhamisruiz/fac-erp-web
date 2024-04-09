@@ -30,7 +30,7 @@ export class UserService implements OnDestroy {
   public userToken = '';
   //public companyId = 0;
   //public corporationId = '';
-
+  private menuApp: any[] = [];
 
   private killTrigger: Subject<void> = new Subject();
   private status$ = new BehaviorSubject(USER_STATUS.DISABLED);
@@ -49,12 +49,11 @@ export class UserService implements OnDestroy {
     }
   }
 
-
   get isAuthenticated(): boolean {
     const expire = this.userLoginExpireAt;
     const userToken = this.persistence.get(STOREKEY.USER_TOKEN);
     const userId = this.persistence.get(STOREKEY.USER_ID);
-    return this.fechaexpire < expire && userToken && userId;
+    return this.fechaexpire < expire && !!userToken && !!userId;
   }
 
   get fechaexpire(): number {
@@ -84,7 +83,6 @@ export class UserService implements OnDestroy {
   }
   createSession(data: any, renew?: boolean): void {
     // Expiración del token
-    console.log('isAuthenticated', this.isAuthenticated, 'timex-exp:', (((data.login_expire ?? 0) * 1e3) > Date.now()));
     this.userLoginExpireAt = data.expire;//(data.login_expire ?? 0) * 1e3;
     this.userName = data?.name;
     if (((data.login_expire ?? 0) * 1e3) > Date.now()) {
@@ -96,14 +94,14 @@ export class UserService implements OnDestroy {
         this.persistence.set(STOREKEY.ID_EMPRESA, data.id_empresa ?? 0);
         this.persistence.set(STOREKEY.ID_SUCURSAL, data.id_sucursal ?? 0);
         this.persistence.set('userData', {
-          id: data.id,
-          names: data.names,
-          last_name: data.last_name,
-          email: data.email,
-          user_name: data.user_name,
-          phone: data.phone,
-          photo: data.photo,
-          expire: data.expire,
+          id: data.id ?? null,
+          names: data.nombres ?? null,
+          last_name: data.apellidos ?? null,
+          email: data.email ?? null,
+          user_name: data.username ?? null,
+          phone: data.telefono ?? null,
+          photo: data.photo ?? null,
+          expire: data.expire ?? null,
         });
       }
       this.persistence.set(STOREKEY.USER_LOGIN_EXPIRE, data.expire); //this.data.expire);

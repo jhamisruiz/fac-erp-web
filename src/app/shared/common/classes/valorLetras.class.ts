@@ -36,7 +36,7 @@ export class ConversionService {
     }
 
     if (frc !== this.VOID) {
-      amountInWords = amountInWords + ' CON ' + frc + '/100';
+      amountInWords = amountInWords + ' CON ' + (frc ?? 0) + '/100';
     }
 
     return signo + amountInWords + ' ' + moneda;

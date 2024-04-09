@@ -3,14 +3,14 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { UnspscService } from './unspsc.service';
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { AppState } from '@app/store/state/app.state';
-import { selectLoadingUnspsc } from '@app/store/selectors/app.selectors';
-import { loadUnspscAction, loadedUnspscAction } from '@app/store/actions/app.actions';
+import { AppStateStore } from '@store/app.state';
+import { selectLoadingUnspsc } from '@app/store/app/selectors/app.selectors';
+import { loadUnspscAction, loadedUnspscAction } from '@app/store/app/actions/app.actions';
 import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { INPUT_ERROR_MESSAGES, NsCustomFormControl } from '@app/shared/common/classes/form-controls.class';
 import { nanoid } from 'nanoid';
-import * as moment from 'moment';
-import 'src/resources/js/plugins/forms/tags/tokenfield.min.js';
+import moment from 'moment';
+//import 'src/resources/js/plugins/forms/tags/tokenfield.min.js';
 
 export interface UNSPSC {
   codigo: string | null;
@@ -191,7 +191,7 @@ export class UnspscComponent implements NsCustomFormControl, ControlValueAccesso
   constructor(
     private readonly el: ElementRef,
     @Optional() private controlContainer: ControlContainer,
-    private store: Store<AppState>,
+    private store: Store<AppStateStore>,
     private sv: UnspscService,
     private cdRef: ChangeDetectorRef,
   ) {

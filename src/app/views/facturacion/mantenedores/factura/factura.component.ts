@@ -1,6 +1,7 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormGroup, Validators } from '@angular/forms';
 import { AbstractDocument } from '@app/shared/common/classes';
+import { AppTableGrid } from '@app/shared/components/app-table-grid/app-table-grid.interface';
 import { AppTable } from '@app/shared/components/app-table/app-table.interface';
 import { AppServicesService } from '@app/shared/services/app-services/app-services.service';
 
@@ -11,7 +12,6 @@ import { AppServicesService } from '@app/shared/services/app-services/app-servic
 })
 export class FacturaComponent extends AbstractDocument implements OnInit {
   fullPath = '/factura';
-  data: any[] = [];
   activeEmpresa = false;
   activeCliente = false;
   activeDetalle = false;
@@ -127,7 +127,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
       enviar_sunat: [true],
     },
   );
-  headers_credito: AppTable[] = [
+  headers_credito: AppTableGrid[] = [
     {
       field: 'id', label: 'id',
       visible: false,
@@ -143,7 +143,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
       type: 'number', prefix: 'S/',
       showButtons: true,
       minFractionDigits: 2,
-      required: true, value: 1, min: 0,
+      required: true, value: 1, inputMin: 0,
     },
   ];
   parents = [
@@ -158,7 +158,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
     { field: 'factor_icbper', parentField: 'factor_icbper' },//..., 0.40, 0.50
     { field: 'afecto_icbper', parentField: 'afecto_icbper' },//0 or 1
   ];
-  headers_detalle: AppTable[] = [
+  headers_detalle: AppTableGrid[] = [
     {
       field: 'id', label: 'id',
       visible: false,
@@ -170,7 +170,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
       type: 'suggest',
       optionValue: 'id',
       url: '/producto-buscar',
-      olabel: 'nombre',
+      optLabel: 'nombre',
       codigo: 'codigo',
       parentsVals: this.parents,
       required: true,
@@ -219,7 +219,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
       parentsVals: [{ field: 'codigo', parentField: 'tipo_afectacion' }],
       isTemplete: true,
       required: true,
-      min: 0,
+      inputMin: 0,
     },
     {
       field: 'afecto_icbper', label: 'afecto_icbper',
@@ -243,7 +243,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
       colClass: 'col-xxl-2 col-md-3',
       required: true,
       value: 1,
-      min: 0,
+      inputMin: 0,
     },
     {
       field: 'valor_unitario', label: 'p. unitario',
@@ -256,21 +256,21 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
     },
     {
       field: 'sub_total', label: 'sub total',
-      min: 0, prefix: 'S/',
+      inputMin: 0, prefix: 'S/',
       type: 'number',
       toModalVisible: false,
       disabled: true,
     },
     {
       field: 'descuento', label: 'descuento',
-      min: 0, prefix: 'S/',
+      inputMin: 0, prefix: 'S/',
       type: 'number',
       showButtons: true,
       toModalVisible: false,
     },
     {
       field: 'subtotal_con_dscto', label: 'sub total descuento',
-      min: 0, prefix: 'S/',
+      inputMin: 0, prefix: 'S/',
       type: 'number',
       toModalVisible: false,
       minFractionDigits: 2,
@@ -279,13 +279,13 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
     { field: 'igv_porcentaje', label: 'igv_porcentaje', visible: false, toModalVisible: false },
     {
       field: 'igv', label: 'igv',
-      min: 0, prefix: 'S/',
+      inputMin: 0, prefix: 'S/',
       type: 'number',
       toModalVisible: false,
     },
     {
       field: 'factor_icbper', label: 'F. icbper',
-      prefix: 'S/', min: 0.1, max: 0.9, step: 0.1,
+      prefix: 'S/', inputMin: 0.1, inputMax: 0.9, step: 0.1,
       type: 'number', visible: false,
       showButtons: true,
       colClass: 'col-xxl-2 col-md-2',
@@ -307,7 +307,7 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
     },
     {
       field: 'total', label: 'p. total',
-      prefix: 'S/', min: 0,
+      prefix: 'S/', inputMin: 0,
       type: 'number',
       toModalVisible: false,
       required: true,
@@ -316,8 +316,23 @@ export class FacturaComponent extends AbstractDocument implements OnInit {
   pathSucursal = '/sucursal-empresa?start=0&length=10&search=&order=asc&cod=0&cod=0';
 
   mensaje: any;
+  setMessageSunat!: any[];
+
   constructor(injector: Injector, private sv: AppServicesService,
-  ) { super(injector); }
+  ) {
+    super(injector);
+    this.onSubmitResponse.subscribe((d: any) => {
+      if (this.isEditMode) {
+        if (d?.mensaje_sunat) {
+          if (d?.mensaje_sunat.slice(0, 12) === 'ERROR[sunat]') {
+            this.setMessageSunat = [{ severity: 'error', summary: 'Error Sunat', detail: d?.mensaje_sunat }];
+          } else {
+            this.setMessageSunat = [{ severity: 'success', summary: 'Success', detail: d?.mensaje_sunat }];
+          }
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     super.ngOnInit();

@@ -1,20 +1,20 @@
-import { loadCompAction } from './../../../store/actions/app.actions';
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { loadCompAction } from '../../../store/app/actions/app.actions';
 import { APP_KEY } from './../constants/app.constants';
-import { AfterViewInit, Directive, Inject, Injector, Optional } from '@angular/core';
+import { AfterViewInit, Directive, Injector } from '@angular/core';
 import { AbstractControl, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 import { cloneDeep } from 'lodash-es';
-import { Observable, Subject, Subscription } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { v4 } from 'uuid';
 import { DOCUMENT_VERSION, ID_FIELD, TRANSACTION_UID_FIELD } from '../constants';
 import { GetElements } from '../utils/dom/get-elements.util';
 import { AbstractComponent } from './abstract-component.class';
 import { HttpClient } from '@angular/common/http';
 import { FormService } from '@app/shared/services/util-services/form.service';
-import { selectLoadingCompForm } from '../../../store/selectors/app.selectors';
-import { ComponentModeType } from '../interfaces';
+import { selectLoadingCompForm } from '../../../store/app/selectors/app.selectors';
+import { ComponentModeType, PermisionMode } from '../interfaces';
 import { STOREKEY } from '@app/config/keys.config';
 declare const alertify: any;
 
@@ -71,8 +71,8 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   private postDisable = false;
   protected idempresa: 0;
   protected idsucursal: 0;
-  protected paramsUniqueCode?: any;
-
+  protected idusuario: 0;
+  protected paramasCodeValidator?: any;
   constructor(
     injector: Injector,
   ) {
@@ -83,6 +83,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     //this.fs = injector.get(FormService);
     this.idempresa = this.persistence.get(STOREKEY.ID_EMPRESA);
     this.idsucursal = this.persistence.get(STOREKEY.ID_SUCURSAL);
+    this.idusuario = this.persistence.get(STOREKEY.USER_ID);
     setTimeout(() => {
       if (!this.transactionId && this.isCreateMode) {
         this.transactionId = v4().toUpperCase();
@@ -90,7 +91,6 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
       this.loadComponentLabels();
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       this.form?.valueChanges.subscribe(x => {
         if (this.form?.touched) {
           this.isValidated = false;
@@ -113,9 +113,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     this.transactionId = transactionId;
   }
 
-
   submitForm(): void { }
-
 
   patchFormValue(data: any): void {
 
@@ -233,6 +231,11 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   /** Envia los campos del formulario para registrar */
   createForm(form: any): Observable<any> {
     const fm = this.hashValues?.length ? this.encrypt(form) : form;
+
+    if (!this.ValidaPermission(PermisionMode.CREATE)) {
+      return this.fs.noPermitido();
+    }
+
     return this.fs.create(fm);
   }
 
@@ -242,6 +245,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   /** Envia los campos del formulario para reemplazar el contenido */
   replaceForm(form: any): Observable<any> {
     const fm = this.hashValues?.length ? this.encrypt(form) : form;
+    if (!this.ValidaPermission(PermisionMode.UPDATE)) {
+      return this.fs.noPermitido();
+    }
     return this.fs.update(this.formId, fm);
   }
 
@@ -250,6 +256,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   }
 
   getForm(d: any): void {
+    if (!this.ValidaPermission(PermisionMode.READ)) {
+      return;
+    }
     if (undefined === this.formId && d[ID_FIELD]) {
       this.store.dispatch(loadCompAction({ formMode: 'EDIT', id: d[ID_FIELD] }));
     }
@@ -264,6 +273,9 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
   }
 
   delForm(d: any): void {
+    if (!this.ValidaPermission(PermisionMode.DELETE)) {
+      return;
+    }
     if (undefined === this.formId && d[ID_FIELD]) {
       this.changeMode('DELETE');
       this.formId = d[ID_FIELD];
@@ -345,6 +357,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
             if (this.isEditMode) {
               if (data?.data?.id) {
                 this.form?.patchValue(data?.data);
+
               }
             }
 
@@ -353,6 +366,7 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
               this.reset();
             }
             this.auto = true;
+            this.onSubmitResponse.emit(data);
           }
           this.formId = undefined;
         },
@@ -378,8 +392,8 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
 
   codeValidator(value: string): Observable<any> {
     let params = { code: value };
-    if (this.paramsUniqueCode) {
-      params = { ...params, ...this.paramsUniqueCode };
+    if (this.paramasCodeValidator) {
+      params = { ...params, ...this.paramasCodeValidator };
     }
     return this.httpClient.get(`/${this.fullPath}-codigo`, {
       params: params,
@@ -480,5 +494,28 @@ export abstract class AbstractForm extends AbstractComponent implements AfterVie
     return !Object.keys(data).length ? void 0 : data;
   }
 
+  ValidaPermission(p: PermisionMode): boolean {
+    const permisos = this.Permission ?? {};
+    if (!permisos[p]) {
+      this.alertPermission(p);
+    }
+    return permisos[p];
+  }
+  private alertPermission(p: any): void {
+    alertify.set('notifier', 'position', 'top-center');
+    const templateHtml = `
+      <p class="fs-16">No tienes permisos suficientes para:</p>
+      <div style="display:flex; justify-content: center;">
+      <div class="d-flex mt-3">
+        <i class="pi pi-times text-danger" style="font-size: 1rem"></i>
+        <div class="mx-1">${p === 'user_create' ? 'Crear' : (p === 'user_read' ? 'Leer' :
+        (p === 'user_update' ? 'Actualizar' : (p === 'user_delete' ? 'Eliminar' : '')))}</div>
+      </div>
+      </div>
+      <br/>
+    `;
 
+    const title = `<p class="text-danger">Error de Privilegios.</p>`;
+    alertify.alert(title, templateHtml);
+  }
 }

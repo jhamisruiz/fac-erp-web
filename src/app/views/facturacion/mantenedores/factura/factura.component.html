@@ -1,13 +1,14 @@
 <app-tools [setMessage]="mensaje" (OnClickNew)="changeMode($event)" (OnClickSave)="onSubmit()" [ViewMode]="modeType"
-  (OnClickBack)="changeMode($event)"><!-- [saveDisabled]="isEditMode" -->
+  (OnClickBack)="changeMode($event)" [Message]="setMessageSunat"><!-- [saveDisabled]="isEditMode" -->
 </app-tools>
 <ng-container *ngIf="isViewMode || isDeleteMode">
-  <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
+  <app-table (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
     [path]="fullPath+'?start=0&length=10&search=&order=asc'" [tableName]="'Factura'" [headers]="headers"
-    [btnEdit]="true" [crud]="false" [btnDelete]="true" [refresh]="auto">
+    [btnEdit]="true" [btnDelete]="true" [refresh]="auto">
   </app-table>
 </ng-container>
 <ng-container *ngIf="isCreateMode || isEditMode">
+  this.form.value?.mensaje_sunat:{{this.form.value?.mensaje_sunat}}
   <div class="card-body">
     <form [formGroup]="form" class="row gy-2 pb-2 border border-primary rounded">
       <div class="row  pt-2">
@@ -38,7 +39,7 @@
           (click)="(activeEmpresa =activeEmpresa?false:true)">
           <h4 class="p-tag mb-0 text-white">
             <i class="{{activeEmpresa? 'pi pi-plus' : 'pi pi-minus'}} mr-2"></i>
-            Datos deEmpresa
+            Datos de Empresa
           </h4>
         </a>
       </p-divider>
@@ -162,11 +163,11 @@
             </div>
           </div>
           <div class="col-xxl-6 col-md-6">
-            <app-table [dataSourse]="form.value.cuotas" (dataResponse)="updateCuotasResponse($event)"
+            <app-table-grid [dataSourse]="form.value.cuotas" (dataResponse)="updateCuotasResponse($event)"
               [totalRows]="this.form.value.numero_cuotas" [paginator]="false" modalFormName="Cuotas"
-              [headers]="headers_credito" [crud]="true" [addDias]="form.value.dias_cuotas" [isDelete]="false"
-              [isAdd]="false" [caption]="false" [menuContext]="false" [locked]="isEditMode">
-            </app-table>
+              [headers]="headers_credito" [addDias]="form.value.dias_cuotas" [isDelete]="false" [isAdd]="false"
+              [caption]="false" [locked]="isEditMode">
+            </app-table-grid>
           </div>
         </div>
       </div>
@@ -180,10 +181,10 @@
         </a>
       </p-divider>
       <div class="row collapse show" id="collapsProductos">
-        <app-table [dataSourse]="form.value.detalle" [paginator]="false" modalFormName="Factura" [isFacturacion]="true"
-          [headers]="headers_detalle" [modalForm]="true" [crud]="true" (dataResponse)="updateDataResponse($event)"
-          [menuContext]="false" [locked]="isEditMode">
-        </app-table>
+        <app-table-grid [dataSourse]="form.value.detalle" [paginator]="false" modalFormName="Factura"
+          [isFacturacion]="true" [headers]="headers_detalle" [modalForm]="true"
+          (dataResponse)="updateDataResponse($event)" [locked]="isEditMode">
+        </app-table-grid>
       </div>
       <div class="row">
         <app-total [dataSourse]="form.value" (OnCalc)="onCalc($event)" [currency]="form.value.codigo_moneda"

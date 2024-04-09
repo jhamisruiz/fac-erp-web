@@ -4,11 +4,11 @@
 
 export const environment = {
   production: false,
-  host: 'localhost:9080',
+  host: 'localhost:8090',
   wsHost: 'prueba/ws',
   wsSSL: true,
 
-  apiHost: 'localhost:9080',
+  apiHost: 'localhost:8090',
   apiVersion: 'v1',
   apiSSL: false,
 };

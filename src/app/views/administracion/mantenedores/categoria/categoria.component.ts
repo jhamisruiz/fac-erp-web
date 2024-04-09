@@ -11,19 +11,10 @@ import { AppTable } from '@app/shared/components/app-table/app-table.interface';
 export class CategoriaComponent extends AbstractDocument implements OnInit {
   fullPath = '/categoria';
   data: any[] = [];
-  headers: AppTable[] = [{
-    field: 'id',
-    label: 'id',
-    visible: false,
-  },
-  {
-    field: 'nombre',
-    label: 'nombre',
-  },
-  {
-    field: 'descripcion',
-    label: 'descripcion',
-  },
+  headers: AppTable[] = [{ field: 'id', label: 'id', visible: false },
+  { field: 'nombre', label: 'nombre' },
+  { field: 'descripcion', label: 'descripcion' },
+  { field: 'habilitado', label: 'habilitado', type: 'habilitado' },
   ];
 
   form: UntypedFormGroup = this.fb.group(

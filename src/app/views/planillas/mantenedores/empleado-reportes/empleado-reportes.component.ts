@@ -44,7 +44,6 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
       label: 'nombres',
     },
   ];
-  data: any[] = [];
   dateString = '';
   nombreMes = '';
   names = '';
@@ -227,6 +226,6 @@ export class EmpleadoReportesComponent extends AbstractDocument implements OnIni
 
   getPhat(): void {
     this.newPhat
-      = this.fullPath + `?start=0&length=10&search=${this.currentYearNumber}-${this.currentMontNumber <= 9 ? 0 : ''}${this.currentMontNumber}&order=asc`;
+      = this.fullPath + `?search=${this.currentYearNumber}-${this.currentMontNumber <= 9 ? 0 : ''}${this.currentMontNumber}`;
   }
 }

@@ -33,6 +33,20 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CalendarModule } from 'primeng/calendar';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DividerModule } from 'primeng/divider';
+import { ContextMenuModule } from 'primeng/contextmenu';
+import { CascadeSelectModule } from 'primeng/cascadeselect';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ImageModule } from 'primeng/image';
+import { GalleriaModule } from 'primeng/galleria';
+import { CarouselModule } from 'primeng/carousel';
+import { SidebarModule } from 'primeng/sidebar';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { BadgeModule } from 'primeng/badge';
+import { ChipModule } from 'primeng/chip';
+import { ToolbarModule } from 'primeng/toolbar';
+import { TagModule } from 'primeng/tag';
+import { RatingModule } from 'primeng/rating';
+
 @NgModule({
   declarations: [],
   imports: [CommonModule],
@@ -70,7 +84,20 @@ import { DividerModule } from 'primeng/divider';
     CalendarModule,
     InputSwitchModule,
     DividerModule,
+    ContextMenuModule,
+    CascadeSelectModule,
+    OverlayPanelModule,
+    ImageModule,
+    GalleriaModule,
+    CarouselModule,
+    SidebarModule,
+    ConfirmDialogModule,
+    BadgeModule,
+    ChipModule,
+    ToolbarModule,
+    TagModule,
+    RatingModule,
   ],
   providers: [MessageService, { provide: LOCALE_ID, useValue: 'es' }],
 })
-export class PrimengModule { }
+export class AppPrimengModule { }

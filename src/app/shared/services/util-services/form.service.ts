@@ -230,4 +230,11 @@ export class FormService implements OnDestroy {
         ),
       );
   }
+
+  noPermitido(): Observable<boolean> {
+    return new Observable<boolean>(observer => {
+      observer.next(false);
+      observer.complete();
+    });
+  }
 }

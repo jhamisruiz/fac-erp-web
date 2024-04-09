@@ -6,3 +6,10 @@ export interface UserConfiguration {
   profile: string;
   user_id: number;
 }
+
+export interface UserPermission {
+  user_create: boolean;
+  user_read: boolean;
+  user_update: boolean;
+  user_delete: boolean;
+}

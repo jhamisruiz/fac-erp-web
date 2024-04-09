@@ -3,8 +3,8 @@ import { AfterViewInit, Component, ElementRef, EventEmitter, forwardRef, Input, 
 import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 import { nanoid } from 'nanoid';
-import * as moment from 'moment';
-import 'src/resources/js/plugins/forms/tags/tokenfield.min.js';
+import moment from 'moment';
+//import 'src/resources/js/plugins/forms/tags/tokenfield.min.js';
 import { INPUT_ERROR_MESSAGES, NsCustomFormControl } from '../../common/classes/form-controls.class';
 import * as _ from 'lodash';
 import { delay, Observable, of } from 'rxjs';
@@ -89,11 +89,11 @@ export class AppInputComponent implements NsCustomFormControl, ControlValueAcces
   @Input() disabled = false;
   @Input() readonly = false;
 
-  @Input() inputType?: string;
+  @Input() inputType?: string | null;
   @Input() label: any;
   @Input() placeholder: string | undefined;
   @Input() value?: string | null;
-
+  pruebavalue!: number;
   //input number
   @Input() min?: number;
   @Input() max?: number;

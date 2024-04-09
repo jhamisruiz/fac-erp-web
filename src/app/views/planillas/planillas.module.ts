@@ -5,10 +5,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '@app/shared/shared.module';
 import { EmpleadoComponent } from './mantenedores/empleado/empleado.component';
-import { PlanilasRoutingModule } from './planilas-routing.module';
 import { EmpleadoReportesComponent } from './mantenedores/empleado-reportes/empleado-reportes.component';
 import { RouterModule } from '@angular/router';
 import { HomePlanillasComponent } from './home-planillas/home-planillas.component';
+import { PlanilasRoutingModule } from './planillas.routing';
 
 @NgModule({
   declarations: [

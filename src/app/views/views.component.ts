@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AppState } from '../store/state/app.state';
+import { AppStateStore } from '../store/app.state';
 import { Store } from '@ngrx/store';
-import { selectLoadingCompForm } from '../store/selectors/app.selectors';
+import { selectLoadingCompForm } from '../store/app/selectors/app.selectors';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { AppConfigService } from '@app/shared/services/config.service';
@@ -18,7 +18,7 @@ export class ViewsComponent implements OnInit {
 
   viewMode = 'VIEW';
   constructor(
-    private store: Store<AppState>,
+    private store: Store<AppStateStore>,
     private router: Router,
     private sv: AppConfigService,
   ) {

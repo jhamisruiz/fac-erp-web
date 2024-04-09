@@ -1,4 +1,3 @@
-
 import { Component, Injector, OnInit } from '@angular/core';
 import { UntypedFormGroup, Validators } from '@angular/forms';
 import { AbstractDocument } from '@app/shared/common/classes';
@@ -12,49 +11,13 @@ import { AppTable } from '@app/shared/components/app-table/app-table.interface';
 export class ProductoComponent extends AbstractDocument implements OnInit {
   fullPath = '/producto';
   data: any[] = [];
-  headers: AppTable[] = [{
-    field: 'id',
-    label: 'id',
-    visible: false,
-  },
-  {
-    field: 'nombre',
-    label: 'nombre',
-  },
-  {
-    field: 'descripcion',
-    label: 'descripcion',
-  },
-  {
-    field: 'id_categoria',
-    label: 'categoria',
-    optionLabel: 'nombre',
-    optionValue: 'id',
-    type: 'select',
-    placeholder: 'Select. categoria',
-    url: '/categoria-buscar',
-    Labels: ['nombre'],
-  },
-  {
-    field: 'idunidad_medida',
-    label: 'unidad medida',
-    optionLabel: 'nombre',
-    optionValue: 'id',
-    type: 'select',
-    placeholder: 'Select. U. Medida',
-    url: '/producto-unidad-medida-buscar',
-    Labels: ['codigo', 'descripcion'],
-    separador: ' - ',
-  },
-  {
-    field: 'cantidad',
-    label: 'cantidad',
-  },
-  {
-    field: 'id_marca',
-    label: 'marca',
-    visible: false,
-  },
+  headers: AppTable[] = [{ field: 'id', label: 'id', visible: false },
+  { field: 'nombre', label: 'nombre' },
+  { field: 'descripcion', label: 'descripcion' },
+  { field: 'nombre_categoria', label: 'categoria' },
+  { field: 'codigo_umedida', label: 'unidad medida' },
+  { field: 'cantidad', label: 'cantidad' },
+  { field: 'habilitado', label: 'habilitado', type: 'habilitado' },
   ];
 
   form: UntypedFormGroup = this.fb.group(

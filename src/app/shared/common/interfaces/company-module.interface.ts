@@ -39,5 +39,12 @@ export enum ComponentMode {
   DELETE = 'DELETE',
   PREVIEW = 'PREVIEW',
 }
+export enum PermisionMode {
+  CREATE = 'user_create',
+  READ = 'user_read',
+  UPDATE = 'user_update',
+  DELETE = 'user_delete',
+}
 
 export type ComponentModeType = keyof typeof ComponentMode;
+export type PermisionModeType = keyof typeof PermisionMode;

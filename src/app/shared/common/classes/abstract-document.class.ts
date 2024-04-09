@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { TRANSACTION_UID_FIELD } from './../constants/app.constants';
 import {
   ChangeDetectorRef,
   Directive, forwardRef, InjectFlags, InjectionToken, Injector, OnDestroy, OnInit,
@@ -13,7 +12,7 @@ import { cloneDeep } from 'lodash-es';
 import { takeUntil } from 'rxjs/operators';
 import { NsMetadata } from '../decorators';
 import { NsDocumentOptions } from '../decorators/document.decorator';
-import { ComponentMode, ComponentModeType, Modetype, tabId, WTab } from '../interfaces';
+import { ComponentMode, ComponentModeType, Modetype, PermisionMode, tabId, WTab } from '../interfaces';
 import { ComponentStatus } from './abstract-component.class';
 import { AbstractForm } from './abstract-form.class';
 import { WintabOptions } from './wintabs.class';
@@ -55,6 +54,7 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
 
   private cdr: ChangeDetectorRef;
 
+  //private router!: Router;
   public dataGrupo: any[] = [
     {
       id: 1,
@@ -138,7 +138,6 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
         takeUntil(this.destroyTrigger),
       )
       .subscribe(data => {
-
         // Combine local state
         this.patchFormValue({
           ...this.rawState,
@@ -162,12 +161,19 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     }
 
     if (this.isEditMode && this.formId) {
+      if (this.isEditMode && this.Permission && !this.ValidaPermission(PermisionMode.UPDATE)) {
+        this.form?.disable();
+      }
       this.newGetForm(this.formId);
     }
     if (this.isViewMode === undefined) {
       this.changeMode('VIEW');
     }
 
+
+    if (this.isCreateMode && this.Permission && !this.ValidaPermission(PermisionMode.CREATE)) {
+      this.form?.disable();
+    }
   }
 
   updateToolbar(): void {
@@ -256,16 +262,6 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
     this.updateWinTab(this.documentId, id, tab);
   }
 
-  // TODO: Hacer uno que permita borrar y crear nuevo
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // deleteRow(e?: Record<string, unknown>): void {
-  //   this.deleteForm().subscribe(() => {
-  //     this.closeWinTab(this.documentId, this.formId);
-  //   });
-  // }
-
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   saveCustomLabels(data: { [key: string]: string }): void {
     // return this.fs.saveCustomLabels(this.componentId, data);
@@ -274,10 +270,6 @@ export abstract class AbstractDocument extends AbstractForm implements OnInit, O
   clearLabel(): void {
     // return this.fs.clearLabel(this.formId);
   }
-
-  // updateDocumentSequence(idEstado: number | string): Observable<any> {
-  //   return this.fs.updateDocumentSequence(this.formId, Number(idEstado), this.componentId);
-  // }
 
   /**
    * Añadir un elemento a un Form Array

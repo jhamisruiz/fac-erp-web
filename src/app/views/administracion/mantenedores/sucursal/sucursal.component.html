@@ -3,9 +3,8 @@
 </app-tools>
 
 <ng-container *ngIf="isViewMode || isDeleteMode">
-  <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
-    [path]="fullPath+'?start=0&length=10&search=&order=asc'" [tableName]="'Sucursal'" [headers]="headers"
-    [btnEdit]="true" [crud]="false" [btnDelete]="true" [refresh]="auto">
+  <app-table [path]="fullPath" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)" [headers]="headers"
+    [btnDelete]="true" [btnEdit]="true" [refresh]="auto">
   </app-table>
 </ng-container>
 <ng-container *ngIf="isCreateMode || isEditMode">
@@ -23,7 +22,8 @@
         </div>
         <div class="col-xxl-3 col-md-6">
           <div>
-            <app-input inputClass="form-control" formControlName="codigo" label="CODIGO" type="text" [formValid]="ok">
+            <app-input inputClass="form-control" formControlName="codigo" label="CODIGO" type="text"
+              [locked]="!this.form.value?.id_empresa" [formValid]="ok">
             </app-input>
           </div>
         </div>
@@ -67,9 +67,8 @@
       </div>
 
       <div class="row">
-        <app-table [dataSourse]="form.value.detalle" [paginator]="false" [headers]="headers_sucursal_doc" [crud]="true"
-          (dataResponse)="updateDataResponse($event)" [menuContext]="false">
-        </app-table>
+        <app-table-grid [dataSourse]="form.value.detalle" [paginator]="false" [headers]="headers_sucursal_doc"
+          (dataResponse)="updateDataResponse($event)"></app-table-grid>
       </div>
     </form>
   </div>

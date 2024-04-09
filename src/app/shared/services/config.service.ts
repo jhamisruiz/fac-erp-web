@@ -1,7 +1,8 @@
+import { LocalStoreService } from './local-store.service';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, delay, of } from 'rxjs';
-import { ItemModel } from '../intrefaces/app.interface';
+import { STOREKEY } from '@app/config/keys.config';
 
 @Injectable({
   providedIn: 'root',
@@ -11,13 +12,18 @@ export class AppConfigService {
   private getComponents = new BehaviorSubject<any[] | null>(null);
   getComponents$ = this.getComponents.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private persistence: LocalStoreService,
+  ) { }
+
   setComponents(data: any[]): void {
     this.getComponents.next(data);
   }
 
   getMenu(): Observable<any> {
-    return this.http.get(`menu/1`);
+    const user_id = this.persistence.get(STOREKEY.USER_ID);
+    return this.http.get(`menu-buscar?userid=${user_id}&start=0&length=10&search=&order=asc`);
   }
 
   getUpdate(): Observable<boolean> {
@@ -27,103 +33,31 @@ export class AppConfigService {
   saveEmpresaSucursal(d: any): Observable<any> {
     return this.http.post(`usuario-empresa-sucursal`, d);
   }
-  getDataApi2(): Observable<any> {
-    return this.http.get(`empresa-efecto`);
-  }
 
-  getDataApi(): Observable<ItemModel[]> {
-    const d = [{
-      name: 'item 1',
-      price: 10.00,
-      image: '',
-    }, {
-      name: 'item 2',
-      price: 10.00,
-      image: '',
-    }, {
-      name: 'item 3',
-      price: 10.00,
-      image: '',
-    }];
-    return of(d).pipe(delay(1));
-  }
-  menuGlobal(): any[] {
-    return [
+  menuGlobal(): Observable<any[]> {
+    const images: any[] = [
       {
-        nombreModulo: 'Gestión de Compra',
-        url: 'gestion-de-compra',
-        icono: 'fas fa-dot-circle',
-        submenu: [
-          {
-            nombreModulo: 'Mantenedores',
-            url: 'mantenedores',
-            icono: 'fas fa-dot-circle',
-            submenu: [
-              {
-                nombreModulo: 'Proveedores',
-                url: 'proveedores',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-            ],
-          },
-          {
-            nombreModulo: 'Movimientos',
-            url: 'movimientos',
-            icono: 'fas fa-dot-circle',
-            submenu: [
-              {
-                nombreModulo: 'Requerimiento',
-                url: 'requerimiento',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Emisión de solicitud de cotización desde un Requerimiento',
-                url: 'emision-de-solicitud-de-cotizacion-desde-un-requerimiento',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Actualización de Cotización',
-                url: 'actualizacion-de-cotizacion',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Solicitud de Cotización',
-                url: 'solicitud-de-cotizacion',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Evaluación de Cotización',
-                url: 'evaluacion-de-cotizacion',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Orden de Compra',
-                url: 'orden-de-compra',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Aprobación de Orden de Compra',
-                url: 'aprobacion-de-orden-de-compra',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-              {
-                nombreModulo: 'Compra Directa',
-                url: 'compra-directa',
-                icono: 'fas fa-dot-circle',
-                submenu: [],
-              },
-            ],
-          },
-        ],
+        name: 'Camisa',
+        price: 25,
+        image: 'https://example.com/shirt.jpg',
+      },
+      {
+        name: 'Pantalón',
+        price: 35,
+        image: 'https://example.com/pants.jpg',
+      },
+      {
+        name: 'Zapatos',
+        price: 50,
+        image: 'https://example.com/shoes.jpg',
+      },
+      {
+        name: 'Bufanda',
+        price: 15,
+        image: 'https://example.com/scarf.jpg',
       },
     ];
+
+    return of(images);
   }
 }

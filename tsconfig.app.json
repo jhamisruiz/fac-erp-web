@@ -12,9 +12,5 @@
   ],
   "include": [
     "src/**/*.d.ts"
-  ],
-  "paths": {
-    "lodash": ["node_modules/lodash/lodash.js"],
-    "moment": ["node_modules/moment/moment.js"]
-  }
+  ]
 }

@@ -41,7 +41,6 @@ export class EmpleadoComponent extends AbstractDocument implements OnInit {
       dataKey: 'id',
     },
   ];
-  data: any[] = [];
 
   form: UntypedFormGroup = this.fb.group({
     id: [],

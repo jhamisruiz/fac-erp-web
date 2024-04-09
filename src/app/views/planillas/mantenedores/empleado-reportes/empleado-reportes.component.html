@@ -27,9 +27,9 @@
 </div>
 <ng-container>
   <div class="table-h bg-success">
-    <app-table [dataSourse]="data" [currentPath]="newPhat" [tableName]="'Personal'" [headers]="headers" [crud]="false"
-      (OnEdit)="OnRowSelect($event);" [refresh]="auto" [btnEdit]="true" (OnRowSelect)="OnRowSelect($event)"
-      [daysMont]="daysInEachMonth">
+    <!-- [daysMont]="daysInEachMonth" -->
+    <app-table [currentPath]="newPhat" [tableName]="'Personal'" [headers]="headers" (OnEdit)="OnRowSelect($event);"
+      [refresh]="auto" [btnEdit]="true" (OnRowSelect)="OnRowSelect($event)">
     </app-table>
   </div>
 </ng-container>

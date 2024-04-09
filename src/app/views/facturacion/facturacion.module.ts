@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FacturacionComponent } from './facturacion.component';
-import { FacturacionRoutingModule } from './facturacion.routing.module';
 import { HomeFacturacionComponent } from './home-facturacion/home-facturacion.component';
 import { BoletaComponent } from './mantenedores/boleta/boleta.component';
 import { FacturaComponent } from './mantenedores/factura/factura.component';
@@ -11,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from '@app/shared/shared.module';
-import { KarmafactComponent } from './mantenedores/karmafact/karmafact.component';
+import { FacturacionRoutingModule } from './facturacion.routing';
 
 @NgModule({
   declarations: [
@@ -21,7 +20,6 @@ import { KarmafactComponent } from './mantenedores/karmafact/karmafact.component
     FacturaComponent,
     NotaCreditoComponent,
     NotaDebitoComponent,
-    KarmafactComponent,
   ],
   imports: [
     CommonModule,
@@ -38,7 +36,6 @@ import { KarmafactComponent } from './mantenedores/karmafact/karmafact.component
     FacturaComponent,
     NotaCreditoComponent,
     NotaDebitoComponent,
-    KarmafactComponent,
   ],
 })
 export class FacturacionModule { }

@@ -1,61 +1,46 @@
-import { Location } from '@angular/common';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot,
-} from '@angular/router';
-import { STOREKEY } from '@app/config/keys.config';
-import { AppService } from '@app/shared/services/app.service';
-import { LocalStoreService } from '@app/shared/services/local-store.service';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import { PermissionService } from '@app/shared/services/permission.service';
 import { UserService } from '@app/shared/services/user.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-
 export class ModuleGuard implements CanActivate {
   constructor(
-    private location: Location,
-    private app: AppService,
     private user: UserService,
-    private persistence: LocalStoreService,
+    private pSv: PermissionService,
     private router: Router,
   ) { }
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    const url = state.url;
-    const arr = url.split('/');
-    let rutasPermitidas: any[];
+    return new Observable<boolean | UrlTree>((observer) => {
+      this.pSv.getModulos().subscribe((m) => {
 
-    const ruta = route.url[0].path;
-    const modulopath = this.persistence.get(STOREKEY.MODULOS_PATH);
-    //console.log('arr: ', arr);
-    const modulo = modulopath.find((modelule: any) => modelule.url === arr[1]);
-    if (modulo) {
-      const menu = modulo?.submenu ?? [];
-      const componente = menu.find((c: any) => c.url === arr[2]);
-      if (componente) {
-        rutasPermitidas = componente?.submenu ?? [];
-        const isruta = rutasPermitidas.find((r: any) => r.url === ruta);
-        if (isruta) {
-          //console.log('isrutas: ', isruta);
-          return true;
+        if (this.user.isAuthenticated) {
+          if (route?.data['home'] !== 'home') {
+            if (m?.length) {
+              if ((m.some(m => m.url === route?.routeConfig?.path))) {
+                observer.next(true);
+              } else {
+                this.router.navigate(['/']);
+                observer.next(true);
+              }
+            }
+          }
+          observer.next(true);
         } else {
-          //console.log('isruta: ', 'isruta');
-          this.router.navigate(['/', 'panel']);
+          this.router.navigate(['/', 'login']);
+          observer.next(false);
         }
-      }
-    }
-    return false;
-    // console.log('this.user.isValidPaths: ', modulopath);
-    // return true;
-    // if (rutasPermitidas.includes(ruta)) {
-    // } else {
-    //   // Redireccionar a una página de error 404
-    //   //this.router.navigate(['/404']);
-    //   return false;
-    // }
-  }
+        observer.complete();
+      });
+    });
 
+  }
 
 }

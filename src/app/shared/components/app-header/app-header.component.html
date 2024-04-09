@@ -41,30 +41,32 @@
             <span class="d-flex align-items-center">
               <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
                 alt="Header Avatar">
-              <span class="text-start ms-xl-2">
-                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{userData?.names}}</span>
+              <span class="text-start ms-xl-1">
+                <span class="d-none d-sm-inline-block ms-1 fw-medium user-name-text">{{userData?.names}}</span>
               </span>
             </span>
           </button>
           <div class="dropdown-menu dropdown-menu-end">
-            <h6 class="dropdown-header">Bienvenido!</h6>
+            <h6 class="dropdown-header">{{'Bienvenido!'}}</h6>
             <button class="dropdown-item" type="button" (click)="displayModal=true">
               <i class="mdi mdi-arrow-top-right-bold-box text-muted fs-16 align-middle me-1"></i>
-              <span class="align-middle">Cambiar Empresa Y Suc.</span></button>
+              <span class="align-middle">{{'Cambiar Empresa Y Suc.'}}</span></button>
             <button class="dropdown-item" type="button">
               <i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
-              <span class="align-middle">Perfil</span></button>
+              <span class="align-middle">{{'Perfil'}}</span></button>
             <a class="dropdown-item" href="#" (click)="logout()">
               <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
-              <span class="align-middle" data-key="t-logout">Cerrar Sesión</span></a>
+              <span class="align-middle" data-key="t-logout">{{'Cerrar Sesión'}}</span></a>
           </div>
         </div>
       </div>
     </div>
   </div>
 </header>
+
 <p-toast [position]="'top-right'" [baseZIndex]="500000">
 </p-toast>
+
 <p-dialog header="Seleccionar Empresa " [(visible)]="displayModal" [modal]="true" [baseZIndex]="1"
   [breakpoints]="{'1024px': '55%', '860px': '75%','580px': '100%' }" closeAriaLabel="cerrar"
   [style]="{ width: '520px', height: 'auto' }" [position]="'top'" [draggable]="false" [draggable]="false"

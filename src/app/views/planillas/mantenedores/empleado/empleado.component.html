@@ -3,9 +3,8 @@
 </app-tools>
 
 <ng-container *ngIf="isViewMode || isDeleteMode">
-  <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
-    [path]="fullPath+'?start=0&length=10&search=&order=asc'" [tableName]="'Personal'" [headers]="headers"
-    [btnEdit]="true" [crud]="false" [btnDelete]="true" [refresh]="auto">
+  <app-table (OnEdit)="getForm($event);" (OnDelete)="delForm($event)" [path]="fullPath" [tableName]="'Personal'"
+    [headers]="headers" [btnEdit]="true" [btnDelete]="true" [refresh]="auto">
   </app-table>
 </ng-container>
 

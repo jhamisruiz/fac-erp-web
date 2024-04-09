@@ -6,9 +6,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '@app/shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
-import { cajaRoutingModule } from './caja-routing.module';
 import { PlanCuentasComponent } from './mantenedores/plan-cuentas/plan-cuentas.component';
 import { RegistrosComponent } from './mantenedores/registros/registros.component';
+import { cajaRoutingModule } from './caja.routing';
 
 @NgModule({
   declarations: [
@@ -34,3 +34,4 @@ import { RegistrosComponent } from './mantenedores/registros/registros.component
   ],
 })
 export class CajaModule { }
+

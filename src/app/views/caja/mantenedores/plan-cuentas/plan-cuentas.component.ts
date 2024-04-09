@@ -1,9 +1,7 @@
-import { selectLoading, selectListItems } from './../../../../store/selectors/items.selectors';
+
 import { Component, OnInit } from '@angular/core';
-import { loadItems } from '@app/store/actions/items.actions';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { AppState } from '../../../../store/state/app.state';
+import { AppStateStore } from '../../../../store/app.state';
 
 @Component({
   selector: 'app-plan-cuentas',
@@ -12,17 +10,13 @@ import { AppState } from '../../../../store/state/app.state';
 })
 export class PlanCuentasComponent implements OnInit {
 
-  loading$: Observable<boolean> = new Observable();
-  items$: Observable<any> = new Observable();
+  items: any[] = [];
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppStateStore>) { }
 
   ngOnInit(): void {
     if (1) { }
-    this.loading$ = this.store.select(selectLoading);
-    this.store.dispatch(loadItems());
 
-    this.items$ = this.store.select(selectListItems);
   }
 
 }

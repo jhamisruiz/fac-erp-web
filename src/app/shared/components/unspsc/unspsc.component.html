@@ -1,5 +1,5 @@
 <div class="d-flex flex-column">
-  <label *ngIf="!(label===false || label==='false')" for="miImput" class="block text-capitalize {{labelClass}}">
+  <label *ngIf="!(label===false || label==='false')" for="miImput" class="block mb-0 text-capitalize {{labelClass}}">
     {{label??'label text'}}
     <i *ngIf="(initRequired || required)" class="text-danger">*</i>
   </label>

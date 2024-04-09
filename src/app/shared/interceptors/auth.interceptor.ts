@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { LOGIN_API_PATH } from '../common/constants';
 import { includes } from 'lodash-es';
-import { AppService } from '../services/app.service';
+import { AppService } from '../services/app-services/app.service';
 import { Router } from '@angular/router';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {

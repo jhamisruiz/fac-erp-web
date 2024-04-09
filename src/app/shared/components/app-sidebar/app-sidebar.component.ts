@@ -2,9 +2,11 @@ import { NavigationEnd, Router } from '@angular/router';
 import { AppConfigService } from './../../services/config.service';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { filter } from 'rxjs';
-import { loadCompAction } from '../../../store/actions/app.actions';
+import { loadCompAction } from '@app/store/app/actions/app.actions';
 import { Store } from '@ngrx/store';
-import { AppState } from '@app/store/state/app.state';
+import { AppStateStore } from '@store/app.state';
+import { selectListMenu, selectMenuLoading } from '@store/app-menu/selectors/app-menu.selectors';
+import { loadMenu } from '@store/app-menu/actions/app-menu.actions';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,11 +21,12 @@ export class AppSidebarComponent implements OnInit {
   menuSider: any[] = [];
   menuUrl = '';
   newURL = '';
+  preloader = false;
 
   constructor(
     private sv: AppConfigService,
     private router: Router,
-    private store: Store<AppState>,
+    private store: Store<AppStateStore>,
     private renderer: Renderer2,
   ) { }
 
@@ -32,10 +35,24 @@ export class AppSidebarComponent implements OnInit {
     const arr = url.split('/');
     this.menuUrl = arr[1];
     this.routerLink(arr[1]);
-    this.sv.getMenu().subscribe((r) => {
+    this.preloader = true;
+    this.store.select(selectMenuLoading).subscribe((r) => {
+      this.preloader = r;
+    },
+      () => {
+        this.preloader = false;
+      });
+
+    this.store.dispatch(loadMenu());
+
+    this.store.select(selectListMenu).subscribe((r) => {
       this.menuSider = r;
       this.sv.setComponents(r);
-    });
+      //this.preloader = false;
+    },
+      () => {
+        this.preloader = false;
+      });
   }
 
   onDoubleClick(e: Event, r: string): void {
@@ -91,11 +108,8 @@ export class AppSidebarComponent implements OnInit {
       .subscribe((e: any) => {
         const arr = e.url.split('/');
         this.store.dispatch(loadCompAction({ formMode: 'VIEW', id: null }));
-        //this.sv.setComponents(this.menuSider);
-        console.log(murl, 'urla', arr);
         if (arr[1] === murl) {
           this.menuUrl = murl;
-          console.log('this.menuUrl', this.menuUrl);
         }
       });
   }

@@ -16,7 +16,7 @@
         <img src="assets/images/logo-sm.png" alt="" height="22">
       </span>
       <span class="logo-lg">
-        <img src="assets/images/logo-light.png" alt="" height="17">
+        <img src="assets/images/logo-dev-dark.png" alt="" height="50">
       </span>
     </a>
     <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
@@ -48,8 +48,8 @@
             </ul>
           </div>
         </li>
-        <li class="menu-title"><span data-key="t-menu">Aplicación</span></li>
-        <li class="nav-item w-50 d-flex justify-content-center">
+        <li *ngIf="menuSider?.length" class="menu-title"><span data-key="t-menu">Aplicación</span></li>
+        <li *ngIf="menuSider?.length" class="nav-item w-50 d-flex justify-content-center">
           <button class="nav-link menu-link btn p-0 btn-sm active" (click)="sidebarVisible=true">
             <i class="bx bx-slider"></i>
           </button>
@@ -501,3 +501,5 @@
     </div>
   </ng-template>
 </p-sidebar>
+
+<app-preloader *ngIf="preloader"></app-preloader>

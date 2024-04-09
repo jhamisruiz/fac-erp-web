@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppStore } from '@app/shared/common/interfaces/store';
 import { Store } from '@ngrx/store';
-import * as moment from 'moment';
+import moment from 'moment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 import { WebsocketService } from './websocket.service';

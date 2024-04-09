@@ -1,7 +1,6 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdministracionComponent } from './administracion.component';
-import { AdministracionRoutingModule } from './administracion.routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -12,6 +11,7 @@ import { EmpresaComponent } from './mantenedores/empresa/empresa.component';
 import { SucursalComponent } from './mantenedores/sucursal/sucursal.component';
 import { CategoriaComponent } from './mantenedores/categoria/categoria.component';
 import { ProductoComponent } from './mantenedores/producto/producto.component';
+import { AdministracionRoutingModule } from './administracion.routing';
 
 @NgModule({
   declarations: [AdministracionComponent,

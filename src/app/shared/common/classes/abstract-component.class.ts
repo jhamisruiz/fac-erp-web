@@ -16,15 +16,17 @@ import {
 } from '@angular/core';
 import { LocalStoreService } from '@app/shared/services/local-store.service';
 import { Store } from '@ngrx/store';
-import { NGXLogger } from 'ngx-logger';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { v4 } from 'uuid';
-import { ENABLED_FIELD, ID_FIELD } from '../constants';
+import { APP_PHAT_COMPONENT, ENABLED_FIELD, ID_FIELD } from '../constants';
 import { ComponentSyncStatus } from '../enums/component-sync-status.enum';
 import { ComponentMode, ComponentModeType, WTab } from '../interfaces';
 import { WintabOptions } from './wintabs.class';
-import { AppState } from '../../../store/state/app.state';
+import { AppStateStore } from '../../../store/app.state';
+import { Router } from '@angular/router';
+import { selectPermission } from '@app/store/app-menu/selectors/app-menu.selectors';
+import { UserPermission } from '@app/shared/common/interfaces';
 
 export enum ComponentStatus {
   NONE = 0,
@@ -115,6 +117,9 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   public onChangeMode = new EventEmitter<ComponentModeType>();
 
   /** Emitir los cambios de modo del componente */
+  public onSubmitResponse = new EventEmitter<any>();
+
+  /** Emitir los cambios de modo del componente */
   public onChangeStatus = new EventEmitter<ComponentStatus>();
 
   /** Detecta los cambios de estado del componente */
@@ -153,8 +158,9 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   /** Defaut http client */
   protected httpClient: HttpClient;
 
-  protected store: Store<AppState>;
-
+  protected store: Store<AppStateStore>;
+  protected route: Router;
+  protected Permission!: UserPermission;
   /** Custom logger service */
   //protected logger: NGXLogger;
 
@@ -169,7 +175,8 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
   constructor(injector: Injector) {
     this.elRef = injector.get(ElementRef);
     this.element = this.elRef.nativeElement;
-    this.store = injector.get(Store<AppState>);
+    this.store = injector.get(Store<AppStateStore>);
+    this.route = injector.get(Router);
     this.persistence = injector.get(LocalStoreService);
     this.render = injector.get(Renderer2);
     this.httpClient = injector.get(HttpClient);
@@ -181,8 +188,11 @@ export abstract class AbstractComponent implements AfterViewInit, OnInit, OnDest
     };
 
     this.setActiveFromId(this.nsUniqueId);
-    // const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-    // this.render.setStyle(this.element, 'border-top', '2px solid #' + randomColor);
+    this.store.select(selectPermission).subscribe((p: UserPermission | null) => {
+      if (p) {
+        this.Permission = p;
+      }
+    });
   }
 
   @HostListener('focus') onFocus(): void {

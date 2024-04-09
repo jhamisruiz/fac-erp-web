@@ -3,9 +3,8 @@
 </app-tools>
 
 <ng-container *ngIf="isViewMode || isDeleteMode">
-  <app-table [dataSourse]="data" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)"
-    [path]="fullPath+'?start=0&length=10&search=&order=asc'" [tableName]="'Usuario'" [headers]="headers"
-    [btnEdit]="true" [crud]="false" [btnDelete]="true" [refresh]="auto">
+  <app-table [path]="fullPath" (OnEdit)="getForm($event);" (OnDelete)="delForm($event)" [headers]="headers"
+    [btnDelete]="true" [btnEdit]="true" [refresh]="auto">
   </app-table>
 </ng-container>
 
@@ -68,6 +67,17 @@
           </div>
         </div>
         <div class="col-xxl-3 col-md-6">
+          <div>
+            <app-select [currentPath]="'/rol-buscar'" (OnChange)="selectChange($event)" formControlName="id_rol"
+              [showClear]="true" [filter]="false" optionValue="id" optionLabel="nombre" styleClass="p-0 w-100"
+              placeholder="-Seleccionar-" label="ROL" [isTemplete]="true" [Labels]="['codigo','nombre']"
+              [formValid]="ok"></app-select>
+            <a href="/configuracion/registro-de-rol" class="text-info" rel="noopener noreferrer">
+              {{'Agregar Rol'}}
+            </a>
+          </div>
+        </div>
+        <div class="col-xxl-3 col-md-6">
           <div class="d-flex flex-column">
             <label for="" class="block text-capitalize">HABILITAR</label>
             <p-inputSwitch formControlName="habilitado"></p-inputSwitch>
@@ -76,5 +86,5 @@
       </div>
     </form>
   </div>
-
+  <p-confirmDialog></p-confirmDialog>
 </ng-container>

@@ -13,50 +13,20 @@ import { UniqueDoc } from '@app/shared/validators/unique-document';
     ProviderFunc(EmpresaComponent),
   ],
 })
+
 export class EmpresaComponent extends AbstractDocument implements OnInit {
   fullPath = '/empresa';
-  data: any[] = [];
   headers: AppTable[] = [
-    {
-      field: 'id',
-      label: 'id',
-      visible: false,
-    },
-    {
-      field: 'numero_documento',
-      label: 'numero documento',
-    },
-    {
-      field: 'razon_social',
-      label: 'razon social',
-    },
-    {
-      field: 'nombre_comercial',
-      label: 'nombre comercial',
-    },
-    {
-      field: 'departamento',
-      label: 'departamento',
-    },
-    {
-      field: 'provincia',
-      label: 'provincia',
-    },
-    {
-      field: 'distrito',
-      label: 'distrito',
-    },
-    {
-      field: 'usuario_emisor',
-      label: 'usuario_emisor',
-    },
-    {
-      field: 'habilitado',
-      label: 'habilitado',
-      estado: true,
-    },
+    { field: 'id', label: 'id', visible: false },
+    { field: 'numero_documento', label: 'numero documento' },
+    { field: 'razon_social', label: 'razon social' },
+    { field: 'nombre_comercial', label: 'nombre comercial' },
+    { field: 'departamento', label: 'departamento' },
+    { field: 'provincia', label: 'provincia' },
+    { field: 'distrito', label: 'distrito' },
+    { field: 'usuario_emisor', label: 'usuario_emisor' },
+    { field: 'habilitado', label: 'habilitado', type: 'habilitado' },
   ];
-
   form: UntypedFormGroup = this.fb.group(
     {
       id: [],

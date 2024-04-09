@@ -13,7 +13,6 @@
       </div><!-- end card body -->
     </div>
   </div>
-
   <div class="col-xl-2 col-md-4" *ngFor="let c of componentes">
     <a [routerLink]="[c.url]">
       <div class="card card-animate shadow-class">
@@ -32,7 +31,7 @@
           <div class="d-flex flex-column align-items-center mt-4">
             <div>
               <h4 class="fs-22 fw-semibold ff-secondary">
-                <span class="counter-value text-uppercase" data-target="183.35">{{c?.nombre}}</span>
+                <span class="counter-value text-uppercase">{{c?.nombre}}</span>
               </h4>
             </div>
             <div class="avatar-sm flex-shrink-0">

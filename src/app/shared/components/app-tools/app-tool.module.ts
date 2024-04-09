@@ -4,6 +4,7 @@ import { AppToolComponent } from './app-tool.component';
 import { FormsModule } from '@angular/forms';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { ToastModule } from 'primeng/toast';
+import { MessagesModule } from 'primeng/messages';
 
 @NgModule({
   imports: [
@@ -11,6 +12,7 @@ import { ToastModule } from 'primeng/toast';
     FormsModule,
     ContextMenuModule,
     ToastModule,
+    MessagesModule,
   ],
   declarations: [AppToolComponent],
   exports: [AppToolComponent],

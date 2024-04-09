@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { loadCompAction } from '../../../store/actions/app.actions';
+import { loadCompAction } from '../../../store/app/actions/app.actions';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../../store/state/app.state';
+import { AppStateStore } from '../../../store/app.state';
 import { AppTableService } from '../app-table/app-table.service';
 import { Modetype } from '@app/shared/common/interfaces';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { Message } from 'primeng/api';
 
 @Component({
   selector: 'app-tools',
@@ -21,9 +22,17 @@ export class AppToolComponent implements OnInit {
 
   @Input() isBtnBack = true;
   @Input() ViewMode!: Modetype;
+
+  @Input() set Message(sms: Message[]) {
+    if (sms?.length) {
+      this.messages = sms;
+    }
+  }
+  messages!: Message[];
+
   @Input() set setMessage(sms: any) {
     if (sms) {
-      this.message(sms);
+      this.toast(sms);
     }
   }
 
@@ -31,9 +40,8 @@ export class AppToolComponent implements OnInit {
   @Output() OnClickSave = new EventEmitter<any>();
   @Output() OnClickBack = new EventEmitter<any>();
 
-
   btnSave = false;
-  constructor(private store: Store<AppState>, private messageService: MessageService, private ts: AppTableService) {
+  constructor(private store: Store<AppStateStore>, private messageService: MessageService, private ts: AppTableService) {
     this.ts.changeState$.subscribe((r: boolean) => {
       this.btnSave = r ? false : true;
     });
@@ -57,7 +65,7 @@ export class AppToolComponent implements OnInit {
     this.OnClickBack.emit('VIEW');
   }
 
-  message(s: string): void {
+  toast(s: string): void {
     this.messageService.add({ severity: 'warning', summary: 'Warning', detail: s });
   }
 }

@@ -7,6 +7,8 @@ export const COMPONENT_ID_HEADER = 'app-component-id';
 export const CORPORATION_ID_HEADER = 'app-corporation-id';
 export const APP_KEY = '120DF37295A64838B2E8DF280E590AA6';
 
+export const APP_PHAT_COMPONENT = 0;
+
 // NOTE: DATA FIELDS
 export const ID_FIELD = 'id';
 export const CODE_FIELD = 'codigo';

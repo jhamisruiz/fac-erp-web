@@ -1,8 +1,9 @@
 import { UntypedFormArray, UntypedFormGroup, Validators } from '@angular/forms';
 import { AbstractDocument } from '@app/shared/common/classes';
 import { Component, OnInit, Injector } from '@angular/core';
-import { AppTable } from '../../../../shared/components/app-table/app-table.interface';
 import { UniqueCode } from '@app/shared/validators/unique-code';
+import { AppTableGrid } from '@app/shared/components/app-table-grid/app-table-grid.interface';
+import { AppTable } from '@app/shared/components/app-table/app-table.interface';
 
 @Component({
   selector: 'app-sucursal',
@@ -12,44 +13,13 @@ import { UniqueCode } from '@app/shared/validators/unique-code';
 
 export class SucursalComponent extends AbstractDocument implements OnInit {
   fullPath = '/sucursal';
-  data: any[] = [];
   headers: AppTable[] = [
-    {
-      field: 'id',
-      label: 'id',
-      visible: false,
-    },
-    {
-      field: 'id_empresa',
-      label: 'empresa',
-      optionLabel: 'razon_social',
-      optionValue: 'id',
-      type: 'select',
-      placeholder: 'Select. empresa.',
-      url: '/empresa-buscar',
-      isTemplete: true,
-      Labels: ['razon_social'],
-      separador: ' - ',
-      required: true,
-      unique: true,
-    },
-    {
-      field: 'codigo',
-      label: 'codigo sucursal',
-    },
-    {
-      field: 'nombre',
-      label: 'nombre sucursal',
-    },
-    {
-      field: 'direccion',
-      label: 'direccion',
-    },
-    {
-      field: 'habilitado',
-      label: 'habilitado',
-      estado: true,
-    },
+    { field: 'id', label: 'id', visible: false },
+    { field: 'razon_social', label: 'empresa' },
+    { field: 'codigo', label: 'codigo sucursal' },
+    { field: 'nombre', label: 'nombre sucursal' },
+    { field: 'direccion', label: 'direccion' },
+    { field: 'habilitado', label: 'habilitado', type: 'habilitado' },
   ];
 
   form: UntypedFormGroup = this.fb.group(
@@ -69,7 +39,7 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
     },
   );
 
-  headers_sucursal_doc: AppTable[] = [
+  headers_sucursal_doc: AppTableGrid[] = [
     {
       field: 'id',
       label: 'id',
@@ -125,8 +95,11 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
       visible: false,
     },
   ];
+
   comumentos: any[] = [];
-  constructor(injector: Injector) { super(injector); }
+  constructor(injector: Injector) {
+    super(injector);
+  }
 
   ngOnInit(): void {
     super.ngOnInit();
@@ -137,12 +110,12 @@ export class SucursalComponent extends AbstractDocument implements OnInit {
       this.form.patchValue({ ubigeo: e?.ubigeo });
     }
     if (!this.isEditMode) {
-      if (this.paramsUniqueCode) {
+      if (this.paramasCodeValidator) {
         this.form.patchValue({
           codigo: null,
         });
       }
-      this.paramsUniqueCode = { idempresa: e?.id };
+      this.paramasCodeValidator = { idempresa: e?.id };
     }
   }
 
